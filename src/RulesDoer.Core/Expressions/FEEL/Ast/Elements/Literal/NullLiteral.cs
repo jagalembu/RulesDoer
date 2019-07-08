@@ -1,3 +1,4 @@
+using System;
 using RulesDoer.Core.Runtime.Context;
 
 namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Literal {
@@ -5,8 +6,8 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Literal {
 
         public NullLiteral () { }
 
-        public void Execute (IAstVisitor visitor) {
-            visitor.VisitNullLiteral(this);
+        public object Execute (VariableContext context = null) {
+            return new Variable ();
         }
     }
 }

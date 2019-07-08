@@ -1,0 +1,169 @@
+10.3.1.2 Grammar rules - 
+The complete FEEL grammar is specified below. Grammar rules are numbered, and in some cases alternatives are lettered, for later reference. Boxed expression syntax (rule 55) is used to give execution semantics to boxed expressions.
+1. expression =
+a. boxed expression |
+b. textual expression ;
+
+2. textual expression =
+a. for expression | if expression | quantified expression |
+b. disjunction |
+c. conjunction |
+d. comparison |
+e. arithmetic expression |
+f. instance of |
+g. path expression | filter expression | function invocation |
+h. literal | simple positive unary test | name | "(" , textual expression , ")" ;
+
+3. textual expressions = textual expression , { "," , textual expression } ;
+
+4. arithmetic expression =
+a. addition | subtraction |
+b. multiplication | division |
+c. exponentiation |
+d. arithmetic negation ;
+
+5. simple expression = arithmetic expression | simple value ;
+
+6. simple expressions = simple expression , { "," , simple expression } ;
+
+7. simple positive unary test =
+a. [ "<" | "<=" | ">" | ">=" ] , endpoint |
+b. interval ;
+
+8. interval = ( open interval start | closed interval start ) , endpoint , ".." , endpoint , ( open interval end | closed interval end ) ;
+
+9. open interval start = "(" | "]" ;
+
+10. closed interval start = "[" ;
+
+11. open interval end = ")" | "[" ;
+
+12. closed interval end = "]" ;
+
+13. simple positive unary tests = simple positive unary test , { "," , simple positive unary test } ;
+
+14. simple unary tests =
+a. simple positive unary tests |
+b. "not", "(", simple positive unary tests, ")" |
+c. "-";
+
+15. positive unary test = expression ;
+
+16. positive unary tests = positive unary test , { "," , positive unary test } ;
+
+17. unary tests =
+a. positive unary tests |
+b. "not", " (", positive unary tests, ")" |
+c. "-"
+
+18. endpoint = simple value ;
+
+19. simple value = qualified name | simple literal ;
+
+20. qualified name = name , { "." , name } ;
+
+21. addition = expression , "+" , expression ;
+
+22. subtraction = expression , "-" , expression ;
+
+23. multiplication = expression , "*" , expression ;
+
+24. division = expression , "/" , expression ;
+
+25. exponentiation = expression, "**", expression ;
+
+26. arithmetic negation = "-" , expression ;
+
+27. name = name start , { name part | additional name symbols } ;
+
+28. name start = name start char, { name part char } ;
+
+29. name part = name part char , { name part char } ;
+
+30. name start char = "?" | [A-Z] | "_" | [a-z] | [\uC0-\uD6] | [\uD8-\uF6] | [\uF8-\u2FF] | [\u370-\u37D] | [\u37F-\u1FFF] | [\u200C-\u200D] | [\u2070-\u218F] | [\u2C00-\u2FEF] | [\u3001-\uD7FF] | [\uF900-\uFDCF] | [\uFDF0-\uFFFD] | [\ u10000-\uEFFFF] ;
+
+31. name part char = name start char | digit | \uB7 | [\u0300-\u036F] | [\u203F-\u2040] ;
+
+32. additional name symbols = "." | "/" | "-" | "’" | "+" | "*" ;
+
+33. literal = simple literal | "null" ;
+
+34. simple literal = numeric literal | string literal | Boolean literal | date time literal ;
+
+35. string literal = """, { character – (""" | vertical space) | string escape sequence}, """ ;
+
+36. Boolean literal = "true" | "false" ;
+
+37. numeric literal = [ "-" ] , ( digits , [ ".", digits ] | "." , digits ) ;
+
+38. digit=[0-9];
+
+39. digits = digit , {digit} ;
+
+40. function invocation = expression , parameters ;
+
+41. parameters = "(" , ( named parameters | positional parameters ) , ")" ;
+
+42. named parameters = parameter name , ":" , expression , { "," , parameter name , ":" , expression } ;
+
+43. parameter name = name ;
+
+44. positional parameters = [ expression , { "," , expression } ] ;
+
+45. path expression = expression , "." , name ;
+
+46. for expression = "for" , name , "in" , iteration context { "," , name , "in" , iteration context } , "return" , expression ;
+
+47. if expression = "if" , expression , "then" , expression , "else" expression ;
+
+48. quantified expression = ("some" | "every") , name , "in" , expression , { "," , name , "in" , expression } , "satisfies" , expression ;
+
+49. disjunction = expression , "or" , expression ;
+
+50. conjunction = expression , "and" , expression ;
+
+51. comparison =
+a. expression , ( "=" | "!=" | "<" | "<=" | ">" | ">=" ) , expression |
+b. expression , "between" , expression , "and" , expression |
+c. expression , "in" , positive unary test ;
+d. expression , "in" , " (", positive unary tests, ")" ;
+
+52. filter expression = expression , "[" , expression , "]" ;
+
+53. instance of = expression , "instance" , "of" , type ;
+
+54. type = qualified name ;
+
+55. boxed expression = list | function definition | context ;
+
+56. list = "[" , [ expression , { "," , expression } ] , "]" ;
+
+57. function definition = "function" , "(" , [ formal parameter { "," , formal parameter } ] , ")" , [ "external" ] , expression ;
+
+58. formal parameter = parameter name [":" type ] ;
+
+59. context = "{" , [context entry , { "," , context entry } ] , "}" ;
+
+60. context entry = key , ":" , expression ;
+
+61. key = name | string literal ;
+
+62. date time literal = function invocation;
+
+63. white space = vertical space | \u0009 | \u0020 | \u0085 | \u00A0 | \u1680 | \u180E | [\u2000-\u200B] | \u2028 | \u2029 | \u202F | \u205F | \u3000 | \uFEFF ;
+
+64. vertical space = [\u000A-\u000D]
+
+65. iteration context = expression, [ “..”, expression ];
+
+66. string escape sequence = "\'" | "\"" | "\\" | "\n" | "\r" | "\t" | "\u", hex digit, hex digit, hex digit, hex digit;
+
+Additional syntax rules:
+Operator precedence is given by the order of the alternatives in grammar rules 1, 2 and 4, in order from lowest to highest. 
+E.g., (boxed) invocation has higher precedence than multiplication, 
+multiplication has higher precedence than addition, 
+and addition has higher precedence than comparison. 
+Addition and subtraction have equal precedence, and like all FEEL infix binary operators, 
+are left associative.
+Java-style comments can be used, i.e. '//' to end of line and /* ... */.
+In rule 62, the only permitted functions are the builtins date, time, date and time. and duration.

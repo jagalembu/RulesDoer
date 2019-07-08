@@ -1,10 +1,13 @@
+using System;
+using RulesDoer.Core.Runtime.Context;
+
 namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Comparison
 {
     public class In : IComparisonExpression
     {
-        public void Execute(IAstVisitor visitor)
+        public object Execute(VariableContext context = null)
         {
-            visitor.Visit(this);
+           throw new NotImplementedException();
         }
     }
 }

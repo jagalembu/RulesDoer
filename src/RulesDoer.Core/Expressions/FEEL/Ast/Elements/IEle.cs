@@ -3,6 +3,6 @@ using RulesDoer.Core.Runtime.Context;
 
 namespace RulesDoer.Core.Expressions.FEEL.Ast {
     public interface IEle {
-        void Execute (IAstVisitor visitor);
+        object Execute (VariableContext context = null);
     }
 }

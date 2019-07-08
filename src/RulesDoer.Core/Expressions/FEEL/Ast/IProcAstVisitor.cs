@@ -1,12 +1,9 @@
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Literal;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Maths;
-using RulesDoer.Core.Runtime.Context;
 
 namespace RulesDoer.Core.Expressions.FEEL.Ast {
-    public interface IAstVisitor {
-
-        object Visit (IEle element);
+    public interface IProcAstVisitor {
 
         // //
         // // Tests
@@ -63,7 +60,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast {
         // //
         // // Expressions
         // //
-        IEle VisitManyExpressions (ManyExpressions ele);
+        object Visit (ManyExpressions ele);
 
         // //
         // // Logic expressions
@@ -86,11 +83,10 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast {
         // //
         // // Math expressions
         // //
-        Variable VisitAddition (Addition ele);
-        Variable VisitSubtraction (Subtraction ele);
-        Variable VisitDivision (Division ele);
-        Variable VisitMultiplication (Multiplication ele);
-
+        object Visit (Addition ele);
+        object Visit (Subtraction ele);
+        object Visit (Division ele);
+        object Visit (Multiplication ele);
 
         // //
         // // Postfix expressions
@@ -106,12 +102,12 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast {
         // //
         // // Literal expressions
         // //
-        Variable VisitBooleanLiteral (BooleanLiteral ele);
-        Variable VisitDateTimeLiteral (DateTimeLiteral ele);
+        object Visit (BooleanLiteral ele);
+        object Visit (DateTimeLiteral ele);
 
-        Variable VisitNullLiteral (NullLiteral ele);
-        Variable VisitNumericLiteral (NumericLiteral ele);
-        Variable VisitStringLiteral (StringLiteral ele);
+        object Visit (NullLiteral ele);
+        object Visit (NumericLiteral ele);
+        object Visit (StringLiteral ele);
 
         // Object Visit (DateTimeLiteral element, FEELContext params);
 

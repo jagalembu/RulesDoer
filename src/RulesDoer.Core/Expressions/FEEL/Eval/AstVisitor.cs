@@ -2,8 +2,9 @@ using System;
 using RulesDoer.Core.Expressions.FEEL.Ast;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Literal;
-using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Math;
+using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Maths;
 using RulesDoer.Core.Runtime.Context;
+using RulesDoer.Core.Types;
 
 namespace RulesDoer.Core.Expressions.FEEL.Eval {
     public class AstVisitor : IAstVisitor {
@@ -13,7 +14,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Eval {
             _variableContext = variableContext;
         }
 
-        public Variable Visit (IEle element) {
+        public object Visit (IEle element) {
             switch (element) {
                 case Addition e:
                     return VisitAddition (e);
@@ -38,42 +39,93 @@ namespace RulesDoer.Core.Expressions.FEEL.Eval {
             }
         }
 
-        public Variable VisitManyExpressions(ManyExpressions ele)
-        {
+        public IEle VisitManyExpressions (ManyExpressions ele) {
             //TODO: loop thru and return string of expression results
-            return new Variable();
+            return null;
         }
+
         public Variable VisitAddition (Addition ele) {
-            return new Variable (Visit (ele.Left).NumericVal + Visit (ele.Right).NumericVal);
+            var leftVal = Visit (ele.Left);
+            var rightVal = Visit (ele.Right);
+
+            if (leftVal is Variable l && rightVal is Variable r) {
+                switch (l.ValueType) {
+                    case DataTypeEnum.Decimal:
+                        return l.NumericVal + r.NumericVal;
+
+                    default:
+                        throw new FEELException ("Failed to perform addition to incorrect FEEL type");
+                }
+            }
+
+            throw new FEELException ("Failed to perform addition due to values not being a variable");
+
         }
         public Variable VisitDivision (Division ele) {
-            return new Variable (Visit (ele.Left).NumericVal / Visit (ele.Right).NumericVal);
+            var leftVal = Visit (ele.Left);
+            var rightVal = Visit (ele.Right);
+
+            if (leftVal is Variable l && rightVal is Variable r) {
+                switch (l.ValueType) {
+                    case DataTypeEnum.Decimal:
+                        return l.NumericVal + r.NumericVal;
+
+                    default:
+                        throw new FEELException ("Failed to perform addition to incorrect FEEL type");
+                }
+            }
+
+            throw new FEELException ("Failed to perform addition due to values not being a variable");
         }
         public Variable VisitMultiplication (Multiplication ele) {
-            return new Variable (Visit (ele.Left).NumericVal * Visit (ele.Right).NumericVal);
+            var leftVal = Visit (ele.Left);
+            var rightVal = Visit (ele.Right);
+
+            if (leftVal is Variable l && rightVal is Variable r) {
+                switch (l.ValueType) {
+                    case DataTypeEnum.Decimal:
+                        return l.NumericVal * r.NumericVal;
+
+                    default:
+                        throw new FEELException ("Failed to perform addition to incorrect FEEL type");
+                }
+            }
+
+            throw new FEELException ("Failed to perform addition due to values not being a variable");
         }
         public Variable VisitSubtraction (Subtraction ele) {
-            return new Variable (Visit (ele.Left).NumericVal - Visit (ele.Right).NumericVal);
+            var leftVal = Visit (ele.Left);
+            var rightVal = Visit (ele.Right);
+
+            if (leftVal is Variable l && rightVal is Variable r) {
+                switch (l.ValueType) {
+                    case DataTypeEnum.Decimal:
+                        return l.NumericVal - r.NumericVal;
+
+                    default:
+                        throw new FEELException ("Failed to perform addition to incorrect FEEL type");
+                }
+            }
+
+            throw new FEELException ("Failed to perform addition due to values not being a variable");
 
         }
         public Variable VisitNullLiteral (NullLiteral ele) {
-            return new Variable();
+            return new Variable ();
         }
-
         public Variable VisitNumericLiteral (NumericLiteral ele) {
             return ele.Value;
         }
-
         public Variable VisitStringLiteral (StringLiteral ele) {
             return ele.Value;
         }
-
         public Variable VisitBooleanLiteral (BooleanLiteral ele) {
             return ele.Value;
         }
 
         public Variable VisitDateTimeLiteral (DateTimeLiteral ele) {
-            return ele.Value;
+            return new Variable (true);
+            // return ele.Execute(this) as Variable;
         }
 
     }

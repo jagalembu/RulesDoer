@@ -1,3 +1,6 @@
+using System;
+using RulesDoer.Core.Runtime.Context;
+
 namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Comparison {
     public class Between : IComparisonExpression {
         public IExpression InputValue { get; private set; }
@@ -11,8 +14,8 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Comparison {
 
         }
 
-        public void Execute (IAstVisitor visitor) {
-            visitor.Visit (this);
+        public object Execute (VariableContext context = null) {
+            throw new NotImplementedException ();
         }
     }
 }

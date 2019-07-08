@@ -1,3 +1,4 @@
+using System;
 using RulesDoer.Core.Runtime.Context;
 
 namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Literal {
@@ -8,8 +9,8 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Literal {
             Value = new Variable (bool.Parse (expression));
         }
 
-        public void Execute (IAstVisitor visitor) {
-            visitor.VisitBooleanLiteral (this);
+        public object Execute (VariableContext context = null) {
+            return this.Value;
         }
     }
 }
