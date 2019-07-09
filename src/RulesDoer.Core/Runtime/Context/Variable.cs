@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using RulesDoer.Core.Expressions.FEEL.Eval;
 using RulesDoer.Core.Types;
 
@@ -16,10 +17,12 @@ namespace RulesDoer.Core.Runtime.Context {
         public object ObjectVal { get; set; }
         public List<Variable> ListVal { get; set; }
         public (Variable a, Variable b) TwoTuple { get; set; }
+        public ContextInputs ContextInputs { get; set; }
 
         public Variable () {
             ValueType = DataTypeEnum.Null;
         }
+
         public Variable (decimal number) {
             NumericVal = number;
             ValueType = DataTypeEnum.Decimal;
@@ -65,6 +68,11 @@ namespace RulesDoer.Core.Runtime.Context {
             ValueType = DataTypeEnum.Tuple;
         }
 
+        public Variable (ContextInputs context) {
+            ContextInputs = context;
+            ValueType = DataTypeEnum.Context;
+        }
+
         static public Variable Years (int years, int months = 0) {
             return Months (years * 12 + months);
         }
@@ -97,15 +105,82 @@ namespace RulesDoer.Core.Runtime.Context {
                     return this.TimeSpanVal.CompareTo (variable.TimeSpanVal);
                 case DataTypeEnum.YearMonthDuration:
                     return this.NumericVal.CompareTo (variable.NumericVal);
-
+                case DataTypeEnum.List:
+                case DataTypeEnum.Context:
+                    return 0;
                 default:
-                    throw new FEELException ($"{variable.ValueType} is not supported for comparisons");
+                    throw new FEELException ($"The following type {variable.ValueType} is not supported");
 
             }
         }
 
         public override bool Equals (object obj) {
+
+            if (this.ValueType == DataTypeEnum.List) {
+                return this.ListVal.SequenceEqual (((Variable) obj).ListVal);
+            }
+
+            if (this.ValueType == DataTypeEnum.Context) {
+
+                var compareVar = obj as Variable;
+                var match = this.ContextInputs.ContextDict.Keys.SequenceEqual (compareVar.ContextInputs.ContextDict.Keys);
+
+                if (match) {
+                    foreach (var item in this.ContextInputs.ContextDict.Keys) {
+                        this.ContextInputs.ContextDict.TryGetValue (item, out Variable inValVar);
+
+                        if (inValVar is null) {
+                            return false;
+                        }
+
+                        compareVar.ContextInputs.ContextDict.TryGetValue (item, out Variable compValVar);
+
+                        if (compValVar is null) {
+                            return false;
+                        }
+
+                        match = inValVar.Equals (compValVar);
+
+                        if (!match) {
+                            return false;
+                        }
+
+                    }
+                    return true;
+                }
+
+                return false;
+            }
+
             return this.CompareTo (obj as Variable) == 0;
+        }
+
+        public override int GetHashCode () {
+
+            int hashCode = 0;
+            switch (this.ValueType) {
+                case DataTypeEnum.Boolean:
+                    hashCode = this.BoolVal.GetHashCode ();
+                    break;
+                case DataTypeEnum.String:
+                    hashCode = this.StringVal.GetHashCode ();
+                    break;
+                case DataTypeEnum.DateTime:
+                case DataTypeEnum.Time:
+                case DataTypeEnum.Date:
+                    hashCode = this.DateTimeVal.GetHashCode ();
+                    break;
+                case DataTypeEnum.Decimal:
+                    hashCode = this.NumericVal.GetHashCode ();
+                    break;
+                case DataTypeEnum.DayTimeDuration:
+                    hashCode = this.TimeSpanVal.GetHashCode ();
+                    break;
+                case DataTypeEnum.YearMonthDuration:
+                    hashCode = this.NumericVal.GetHashCode ();
+                    break;
+            }
+            return hashCode;
         }
 
         public static bool operator > (Variable operand1, Variable operand2) {
@@ -148,6 +223,10 @@ namespace RulesDoer.Core.Runtime.Context {
             return new Variable (lst);
         }
 
+        static public implicit operator Variable (ContextInputs context) {
+            return new Variable (context);
+        }
+
         static public implicit operator bool (Variable ev) {
             if (ev.ValueType != DataTypeEnum.Boolean)
                 throw new NotSupportedException ("Expected boolean value.");
@@ -182,6 +261,12 @@ namespace RulesDoer.Core.Runtime.Context {
             if (ev.ValueType != DataTypeEnum.List)
                 throw new NotSupportedException ("Expected List value.");
             return ev.ListVal;
+        }
+
+        static public implicit operator ContextInputs (Variable ev) {
+            if (ev.ValueType != DataTypeEnum.Context)
+                throw new NotSupportedException ("Expected Context value.");
+            return ev.ContextInputs;
         }
 
     }

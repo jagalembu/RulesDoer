@@ -7,6 +7,30 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
     public class EvaluationExpressionTests {
 
         [Theory]
+        [ClassData (typeof (BoxedListDataTests))]
+        public void EvaluateExpression_Boxed_List (string exprText, Variable expected, Boolean expectedEqual) {
+            Variable variable = ParseAndEval (exprText);
+            if (expectedEqual) {
+                Assert.True (variable.Equals (expected));
+            } else {
+                Assert.False (variable.Equals (expected));
+            }
+
+        }
+
+        [Theory]
+        [ClassData (typeof (ContextDataTests))]
+        public void EvaluateExpression_Boxed_Context (string exprText, Variable expected, Boolean expectedEqual) {
+            Variable variable = ParseAndEval (exprText);
+            if (expectedEqual) {
+                Assert.True (variable.Equals (expected));
+            } else {
+                Assert.False (variable.Equals (expected));
+            }
+
+        }
+
+        [Theory]
         [InlineData ("substring(\"foobar\",3)", "obar", null, null)]
         [InlineData ("substring(\"foobar\",3,3)", "oba", null, null)]
         [InlineData ("substring(\"foobar\",-2, 1)", "a", null, null)]

@@ -29,6 +29,7 @@ using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Logic;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Maths;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Match;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function;
+using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Boxed;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements;
 
 using Antlr4.Runtime.Misc;
@@ -72,6 +73,46 @@ public interface IFEELRuleListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitExpression([NotNull] FEELRule.ExpressionContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="FEELRule.boxedExpression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterBoxedExpression([NotNull] FEELRule.BoxedExpressionContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="FEELRule.boxedExpression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitBoxedExpression([NotNull] FEELRule.BoxedExpressionContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="FEELRule.list"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterList([NotNull] FEELRule.ListContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="FEELRule.list"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitList([NotNull] FEELRule.ListContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="FEELRule.context"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterContext([NotNull] FEELRule.ContextContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="FEELRule.context"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitContext([NotNull] FEELRule.ContextContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="FEELRule.contextEntry"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterContextEntry([NotNull] FEELRule.ContextEntryContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="FEELRule.contextEntry"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitContextEntry([NotNull] FEELRule.ContextEntryContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="FEELRule.textualExpression"/>.
 	/// </summary>
@@ -272,5 +313,15 @@ public interface IFEELRuleListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitParameterName([NotNull] FEELRule.ParameterNameContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="FEELRule.key"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterKey([NotNull] FEELRule.KeyContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="FEELRule.key"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitKey([NotNull] FEELRule.KeyContext context);
 }
 } // namespace RulesDoer.Core.Expressions.FEEL

@@ -13,6 +13,7 @@ using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Logic;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Maths;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Match;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function;
+using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Boxed;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements;
 }
 
@@ -32,9 +33,34 @@ expressionBase
 //expression
 expression
 	returns[IExpression ast]:
-	textualExpression {$ast = $textualExpression.ast;};
+	boxedExpression {$ast = $boxedExpression.ast;}
+	| textualExpression {$ast = $textualExpression.ast;};
 
 //boxed expression
+boxedExpression
+	returns[IExpression ast]:
+	list {$ast = $list.ast;}
+	| context {$ast = $context.ast;};
+
+list
+	returns[IExpression ast]:
+	{List<IExpression> expressions = new List<IExpression>();} BRACKET_OPEN (
+		exp = expression {expressions.Add($exp.ast);} (
+			COMMA exp = expression {expressions.Add($exp.ast);}
+		)*
+	) BRACKET_CLOSE {$ast = new ListLiteral(expressions);};
+
+context
+	returns[IExpression ast]:
+	{List<IExpression> cnEntries = new List<IExpression>();} BRACE_OPEN (
+		contextEntry {cnEntries.Add($contextEntry.ast);} (
+			COMMA contextEntry {cnEntries.Add($contextEntry.ast);}
+		)*
+	)? BRACE_CLOSE {$ast = new ContextBoxed(cnEntries);};
+
+contextEntry
+	returns[IExpression ast]:
+	key COLON expression {$ast = new ContextEntryBoxed($key.text, $expression.ast);};
 
 //textual expression
 textualExpression
@@ -188,4 +214,10 @@ intervalEndPar
 
 parameterName
 	returns[string textVal]:
-	token = NAME {$textVal = $token.text;}; 
+	token = NAME {$textVal = $token.text;};
+
+key
+	returns[string textVal]:
+	identifier {$textVal = $identifier.text;}
+	| stringLiteral {var stringLitVar = $stringLiteral.ast.Execute(); $textVal = ((Variable)stringLitVar).StringVal;
+		}; 
