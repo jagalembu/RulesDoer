@@ -4,7 +4,7 @@ using RulesDoer.Core.Runtime.Context;
 using Xunit;
 
 namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
-    public class EvaluationSimpleUnaryTestsBaseTests {
+    public class EvaluationUnaryTestsBase {
 
         [Theory]
         [InlineData ("1", "number", true)]
@@ -40,23 +40,6 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
         [InlineData ("-", "number", true)]
         [InlineData ("-", "stringval", true)]
         public void Evaluate_Any (string exprText, string inputName, bool expected) {
-            VariableContext context = new VariableContext ();
-            context.InputNameDict = new Dictionary<string, Variable> () { { "number", 1 }, { "stringval", "abc" } };
-
-            var variable = ParseAndEval (exprText, context, inputName);
-            Assert.Equal<bool> (expected, variable);
-        }
-
-        [Theory]
-        [InlineData ("[0..1]", "number", true)]
-        [InlineData ("[1..1]", "number", true)]
-        [InlineData ("(0..2)", "number", true)]
-        [InlineData ("(0..1)", "number", false)]
-        [InlineData ("(0..1]", "number", true)]
-        [InlineData ("(0..0]", "number", false)]
-        [InlineData ("[1..2)", "number", true )]
-        [InlineData ("[1..1)", "number", false )]
-        public void Evaluate_Interval (string exprText, string inputName, bool expected) {
             VariableContext context = new VariableContext ();
             context.InputNameDict = new Dictionary<string, Variable> () { { "number", 1 }, { "stringval", "abc" } };
 

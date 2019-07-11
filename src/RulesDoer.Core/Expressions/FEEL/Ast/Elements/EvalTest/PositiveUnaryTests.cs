@@ -12,12 +12,12 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.EvalTest {
         public bool Execute (VariableContext context = null, string inputName = null) {
 
             foreach (var item in Expressions) {
-                if (!item.Execute (context, inputName)) {
-                    return false;
+                if (item.Execute (context, inputName)) {
+                    return true;
                 }
             }
 
-            return true;
+            return false;
         }
     }
 }

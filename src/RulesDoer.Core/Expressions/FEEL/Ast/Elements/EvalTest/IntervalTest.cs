@@ -28,6 +28,10 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.EvalTest {
                 throw new FEELException ($"Left value {inputVariable.ValueType} and right {leftVar.ValueType} are not the same for comparison");
             }
 
+            if (leftVar > rightVar) {
+                throw new FEELException ($"Left value {leftVar} cannot be greater than right value {rightVar}");
+            }
+
             var leftBool = false;
             var rightBool = false;
 
