@@ -13,6 +13,8 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Boxed {
 
             var contextInput = new ContextInputs ();
 
+            //TODO: Get item values from the context variables if any
+
             foreach (var item in ContextEntries) {
                 var itemVal = (Variable) item.Execute ();
                 contextInput.Add (itemVal.TwoTuple.a, itemVal.TwoTuple.b);

@@ -14,6 +14,7 @@ using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Maths;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Match;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Boxed;
+using RulesDoer.Core.Expressions.FEEL.Ast.Elements.EvalTest;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements;
 }
 
@@ -22,6 +23,7 @@ using RulesDoer.Core.Expressions.FEEL.Ast.Elements;
 }
 
 //base rule
+
 simpleExpressionsBase
 	returns[IExpression ast]:
 	simpleExpressions {$ast = $simpleExpressions.ast;} EOF;
@@ -30,11 +32,67 @@ expressionBase
 	returns[IExpression ast]:
 	expression {$ast = $expression.ast;} EOF;
 
+unaryTestsBase
+	returns[ITestExpression ast]:
+	unaryTests {$ast = $unaryTests.ast;} EOF;
+
+simpleUnaryTestsBase
+	returns[ITestExpression ast]:
+	simpleUnaryTests {$ast = $simpleUnaryTests.ast;} EOF;
+
 //expression
 expression
 	returns[IExpression ast]:
 	boxedExpression {$ast = $boxedExpression.ast;}
 	| textualExpression {$ast = $textualExpression.ast;};
+
+//tests
+simpleUnaryTests
+	returns[ITestExpression ast]:
+	simplePositiveUnaryTests {$ast =  $simplePositiveUnaryTests.ast;}
+	| NOT PAREN_OPEN simplePositiveUnaryTests PAREN_CLOSE {$ast = new NotTest($simplePositiveUnaryTests.ast);
+		}
+	| MINUS {$ast = new AnyTest();};
+
+simplePositiveUnaryTest
+	returns[ITestExpression ast]:
+	{var opEnum = OperatorEnum.NF;} (
+		op = LT { opEnum = OperatorEnum.LT;}
+		| op = GT { opEnum = OperatorEnum.GT;}
+		| op = LE { opEnum = OperatorEnum.LE;}
+		| op = GE { opEnum = OperatorEnum.GE;}
+	)* endpoint {$ast = new OperatorTest(opEnum, $endpoint.ast);}
+	| interval {$ast = $interval.ast;};
+
+interval
+	returns[ITestExpression ast]:
+	startNotation = intervalStartPar leftVal = endpoint DOT_DOT rightVal = endpoint endNotation =
+		intervalEndPar {$ast = new IntervalTest($startNotation.text, $endNotation.text, $leftVal.ast, $rightVal.ast);
+		};
+
+simplePositiveUnaryTests
+	returns[ITestExpression ast]:
+	{List<ITestExpression> expressions = new List<ITestExpression>();} st = simplePositiveUnaryTest
+		{expressions.Add($st.ast);
+		} (
+		COMMA st = simplePositiveUnaryTest {expressions.Add($st.ast);}
+	)* {$ast = new SimplePositiveUnaryTests(expressions);};
+
+positiveUnaryTest
+	returns[ITestExpression ast]:
+	expression {$ast = new PositiveUnaryTest($expression.ast);};
+
+positiveUnaryTests
+	returns[ITestExpression ast]:
+	{List<ITestExpression> expressions = new List<ITestExpression>();} pt = positiveUnaryTest {expressions.Add($pt.ast);
+		} (COMMA pt = positiveUnaryTest {expressions.Add($pt.ast);})* {$ast = new PositiveUnaryTests(expressions);
+		};
+
+unaryTests
+	returns[ITestExpression ast]:
+	positiveUnaryTests {$ast = $positiveUnaryTests.ast;}
+	| NOT PAREN_OPEN positiveUnaryTests PAREN_CLOSE {$ast = new NotTest($positiveUnaryTests.ast);}
+	| MINUS {$ast = new AnyTest();};
 
 //boxed expression
 boxedExpression
@@ -145,6 +203,10 @@ positionalParameters
 	) {$ast = new PositionalParameters(parameters);};
 
 //Literals
+endpoint
+	returns[IExpression ast]:
+	simpleValue {$ast = $simpleValue.ast;};
+
 simpleValue
 	returns[IExpression ast]:
 	(simpleLiteral {$ast = $simpleLiteral.ast; })

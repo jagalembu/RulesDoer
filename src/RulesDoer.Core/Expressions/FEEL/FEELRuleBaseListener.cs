@@ -30,6 +30,7 @@ using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Maths;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Match;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Boxed;
+using RulesDoer.Core.Expressions.FEEL.Ast.Elements.EvalTest;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements;
 
 
@@ -72,6 +73,30 @@ public partial class FEELRuleBaseListener : IFEELRuleListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitExpressionBase([NotNull] FEELRule.ExpressionBaseContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="FEELRule.unaryTestsBase"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterUnaryTestsBase([NotNull] FEELRule.UnaryTestsBaseContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="FEELRule.unaryTestsBase"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitUnaryTestsBase([NotNull] FEELRule.UnaryTestsBaseContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="FEELRule.simpleUnaryTestsBase"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterSimpleUnaryTestsBase([NotNull] FEELRule.SimpleUnaryTestsBaseContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="FEELRule.simpleUnaryTestsBase"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitSimpleUnaryTestsBase([NotNull] FEELRule.SimpleUnaryTestsBaseContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="FEELRule.expression"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -83,6 +108,90 @@ public partial class FEELRuleBaseListener : IFEELRuleListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitExpression([NotNull] FEELRule.ExpressionContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="FEELRule.simpleUnaryTests"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterSimpleUnaryTests([NotNull] FEELRule.SimpleUnaryTestsContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="FEELRule.simpleUnaryTests"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitSimpleUnaryTests([NotNull] FEELRule.SimpleUnaryTestsContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="FEELRule.simplePositiveUnaryTest"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterSimplePositiveUnaryTest([NotNull] FEELRule.SimplePositiveUnaryTestContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="FEELRule.simplePositiveUnaryTest"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitSimplePositiveUnaryTest([NotNull] FEELRule.SimplePositiveUnaryTestContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="FEELRule.interval"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterInterval([NotNull] FEELRule.IntervalContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="FEELRule.interval"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitInterval([NotNull] FEELRule.IntervalContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="FEELRule.simplePositiveUnaryTests"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterSimplePositiveUnaryTests([NotNull] FEELRule.SimplePositiveUnaryTestsContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="FEELRule.simplePositiveUnaryTests"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitSimplePositiveUnaryTests([NotNull] FEELRule.SimplePositiveUnaryTestsContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="FEELRule.positiveUnaryTest"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterPositiveUnaryTest([NotNull] FEELRule.PositiveUnaryTestContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="FEELRule.positiveUnaryTest"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitPositiveUnaryTest([NotNull] FEELRule.PositiveUnaryTestContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="FEELRule.positiveUnaryTests"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterPositiveUnaryTests([NotNull] FEELRule.PositiveUnaryTestsContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="FEELRule.positiveUnaryTests"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitPositiveUnaryTests([NotNull] FEELRule.PositiveUnaryTestsContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="FEELRule.unaryTests"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterUnaryTests([NotNull] FEELRule.UnaryTestsContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="FEELRule.unaryTests"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitUnaryTests([NotNull] FEELRule.UnaryTestsContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="FEELRule.boxedExpression"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -215,6 +324,18 @@ public partial class FEELRuleBaseListener : IFEELRuleListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitPositionalParameters([NotNull] FEELRule.PositionalParametersContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="FEELRule.endpoint"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterEndpoint([NotNull] FEELRule.EndpointContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="FEELRule.endpoint"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitEndpoint([NotNull] FEELRule.EndpointContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="FEELRule.simpleValue"/>.
 	/// <para>The default implementation does nothing.</para>

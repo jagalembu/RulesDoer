@@ -30,6 +30,7 @@ using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Maths;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Match;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Boxed;
+using RulesDoer.Core.Expressions.FEEL.Ast.Elements.EvalTest;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements;
 
 using Antlr4.Runtime.Misc;
@@ -64,6 +65,26 @@ public interface IFEELRuleListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitExpressionBase([NotNull] FEELRule.ExpressionBaseContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="FEELRule.unaryTestsBase"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterUnaryTestsBase([NotNull] FEELRule.UnaryTestsBaseContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="FEELRule.unaryTestsBase"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitUnaryTestsBase([NotNull] FEELRule.UnaryTestsBaseContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="FEELRule.simpleUnaryTestsBase"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterSimpleUnaryTestsBase([NotNull] FEELRule.SimpleUnaryTestsBaseContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="FEELRule.simpleUnaryTestsBase"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitSimpleUnaryTestsBase([NotNull] FEELRule.SimpleUnaryTestsBaseContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="FEELRule.expression"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -73,6 +94,76 @@ public interface IFEELRuleListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitExpression([NotNull] FEELRule.ExpressionContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="FEELRule.simpleUnaryTests"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterSimpleUnaryTests([NotNull] FEELRule.SimpleUnaryTestsContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="FEELRule.simpleUnaryTests"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitSimpleUnaryTests([NotNull] FEELRule.SimpleUnaryTestsContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="FEELRule.simplePositiveUnaryTest"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterSimplePositiveUnaryTest([NotNull] FEELRule.SimplePositiveUnaryTestContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="FEELRule.simplePositiveUnaryTest"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitSimplePositiveUnaryTest([NotNull] FEELRule.SimplePositiveUnaryTestContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="FEELRule.interval"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterInterval([NotNull] FEELRule.IntervalContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="FEELRule.interval"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitInterval([NotNull] FEELRule.IntervalContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="FEELRule.simplePositiveUnaryTests"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterSimplePositiveUnaryTests([NotNull] FEELRule.SimplePositiveUnaryTestsContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="FEELRule.simplePositiveUnaryTests"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitSimplePositiveUnaryTests([NotNull] FEELRule.SimplePositiveUnaryTestsContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="FEELRule.positiveUnaryTest"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterPositiveUnaryTest([NotNull] FEELRule.PositiveUnaryTestContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="FEELRule.positiveUnaryTest"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitPositiveUnaryTest([NotNull] FEELRule.PositiveUnaryTestContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="FEELRule.positiveUnaryTests"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterPositiveUnaryTests([NotNull] FEELRule.PositiveUnaryTestsContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="FEELRule.positiveUnaryTests"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitPositiveUnaryTests([NotNull] FEELRule.PositiveUnaryTestsContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="FEELRule.unaryTests"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterUnaryTests([NotNull] FEELRule.UnaryTestsContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="FEELRule.unaryTests"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitUnaryTests([NotNull] FEELRule.UnaryTestsContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="FEELRule.boxedExpression"/>.
 	/// </summary>
@@ -183,6 +274,16 @@ public interface IFEELRuleListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitPositionalParameters([NotNull] FEELRule.PositionalParametersContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="FEELRule.endpoint"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterEndpoint([NotNull] FEELRule.EndpointContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="FEELRule.endpoint"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitEndpoint([NotNull] FEELRule.EndpointContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="FEELRule.simpleValue"/>.
 	/// </summary>
