@@ -21,6 +21,9 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Maths {
                     case DataTypeEnum.Decimal:
                         return new Variable (l.NumericVal + r.NumericVal);
 
+                    case DataTypeEnum.String:
+                        return new Variable ($"{l.NumericVal}{r.NumericVal}");
+
                     default:
                         throw new FEELException ("Failed to perform addition to incorrect FEEL type");
                 }

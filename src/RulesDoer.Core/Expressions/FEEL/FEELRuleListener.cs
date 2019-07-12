@@ -42,7 +42,6 @@ using IToken = Antlr4.Runtime.IToken;
 /// <see cref="FEELRule"/>.
 /// </summary>
 [System.CodeDom.Compiler.GeneratedCode("ANTLR", "4.7.2")]
-[System.CLSCompliant(false)]
 public interface IFEELRuleListener : IParseTreeListener {
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="FEELRule.simpleExpressionsBase"/>.
