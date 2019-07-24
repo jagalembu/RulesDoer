@@ -10,7 +10,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Eval {
         }
         public override void ExitExpressionBase (FEELRule.ExpressionBaseContext context) {
             var ast = context.ast;
-            Value = (Variable) ast.Execute ();
+            Value = (Variable) ast.Execute (_variableContext);
 
         }
 

@@ -7,6 +7,9 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Serialization\Files\*.*" />
+    <EmbeddedResource Include="Repo\Files\*.*" />
+    <EmbeddedResource Include="DmnFiles\TCK\*\*\*.*" />
+    <EmbeddedResource Include="DmnFiles\Other\*.*" />   
   </ItemGroup>
   
   <ItemGroup>

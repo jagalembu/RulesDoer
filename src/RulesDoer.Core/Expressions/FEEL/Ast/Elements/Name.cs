@@ -9,6 +9,13 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements {
         }
 
         public object Execute (VariableContext context = null) {
+            if (context != null) {
+                var outVar = VariableContextHelper.RetrieveInputVariable (context, NameInput, false);
+                if (outVar != null) {
+                    return outVar;
+                }
+            }
+
             return new Variable (NameInput);
         }
     }

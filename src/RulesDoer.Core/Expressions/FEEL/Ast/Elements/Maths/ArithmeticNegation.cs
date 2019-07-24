@@ -12,7 +12,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Maths {
             Right = right;
         }
         public object Execute (VariableContext context = null) {
-            var num = this.Right.Execute ();
+            var num = this.Right.Execute (context);
 
             if (num is Variable n) {
                 switch (n.ValueType) {

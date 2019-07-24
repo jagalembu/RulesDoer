@@ -93,8 +93,8 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
                 context = new VariableContext ();
             }
 
-            var eval = new Evaluation (context);
-            var variable = eval.EvaluateSimpleExpressionsBase (exprText);
+            var eval = new Evaluation ();
+            var variable = eval.EvaluateSimpleExpressionsBase (exprText, context);
             return variable;
         }
 

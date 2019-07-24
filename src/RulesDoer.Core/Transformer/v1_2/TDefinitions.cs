@@ -1,3 +1,4 @@
+using System.Xml.Serialization;
 using RulesDoer.Core.Transformer.v1_2.DMNDI;
 
 namespace RulesDoer.Core.Transformer.v1_2 {
@@ -81,7 +82,8 @@ namespace RulesDoer.Core.Transformer.v1_2 {
 
         /// <summary>
         /// </summary>
-        [System.Xml.Serialization.XmlElementAttribute ("drgElement", Namespace = "http://www.omg.org/spec/DMN/20180521/MODEL/")]
+        [XmlElement ("inputData",typeof(TInputData), Namespace = "http://www.omg.org/spec/DMN/20180521/MODEL/")]
+        [XmlElement ("decision",typeof(TDecision), Namespace = "http://www.omg.org/spec/DMN/20180521/MODEL/")]
         public System.Collections.ObjectModel.Collection<TDRGElement> DrgElement {
             get {
                 return this._drgElement;

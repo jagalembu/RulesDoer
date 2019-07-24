@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using RulesDoer.Core.Expressions.FEEL.Eval;
 using RulesDoer.Core.Runtime.Context;
 using Xunit;
@@ -252,6 +253,16 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
         }
 
         [Theory]
+        [InlineData ("\"x1.234\" + item1", "x1.234somevalue")]
+        [InlineData ("\"x1.234\" + input Name", "x1.234somevalue2")]
+        public void EvaluateExpression_String_Plus (string exprText, string expected) {
+            var inputDict = new Dictionary<string, Variable> () { { "item1", "somevalue" }, { "input Name", "somevalue2" } };
+            Variable variable = ParseAndEval (exprText, new VariableContext() {InputNameDict = inputDict});
+            Assert.Equal<string> (expected, variable);
+
+        }
+
+        [Theory]
         [InlineData ("1+2", 3)]
         [InlineData ("1+1", 2)]
         [InlineData ("1000 + 2000", 3000)]
@@ -280,8 +291,8 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
                 context = new VariableContext ();
             }
 
-            var eval = new Evaluation (context);
-            var variable = eval.EvaluateExpressionsBase (exprText);
+            var eval = new Evaluation ();
+            var variable = eval.EvaluateExpressionsBase (exprText, context);
             return variable;
         }
     }

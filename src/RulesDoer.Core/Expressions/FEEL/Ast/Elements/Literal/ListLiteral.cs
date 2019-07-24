@@ -14,7 +14,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Literal {
             List<Variable> varList = new List<Variable> ();
 
             foreach (var item in Expressions) {
-                varList.Add ((Variable) item.Execute ());
+                varList.Add ((Variable) item.Execute (context));
             }
 
             return new Variable (varList);

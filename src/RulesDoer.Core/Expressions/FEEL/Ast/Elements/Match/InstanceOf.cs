@@ -12,8 +12,8 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Match {
         }
 
         public object Execute (VariableContext context = null) {
-            var leftVal = Left.Execute ();
-            var whichTypeVal = WhichType.Execute ();
+            var leftVal = Left.Execute (context);
+            var whichTypeVal = WhichType.Execute (context);
 
             if (whichTypeVal is Variable outType && outType.ValueType == DataTypeEnum.String) {
                 ValidTypeNames.StringTypeToEnum.TryGetValue (outType.StringVal, out DataTypeEnum outDataType);

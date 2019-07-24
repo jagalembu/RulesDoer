@@ -14,13 +14,13 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Maths {
         }
 
         public object Execute (VariableContext context = null) {
-            var leftVal = this.Left.Execute ();
-            var rightVal = this.Right.Execute ();
+            var leftVal = this.Left.Execute (context);
+            var rightVal = this.Right.Execute (context);
 
             if (leftVal is Variable l && rightVal is Variable r) {
                 switch (l.ValueType) {
                     case DataTypeEnum.Decimal:
-                        return  new Variable (l.NumericVal * r.NumericVal);
+                        return new Variable (l.NumericVal * r.NumericVal);
 
                     default:
                         throw new FEELException ("Failed to perform multiplication to incorrect FEEL type");

@@ -54,8 +54,8 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
         [InlineData ("(0..1)", "number", false)]
         [InlineData ("(0..1]", "number", true)]
         [InlineData ("(0..0]", "number", false)]
-        [InlineData ("[1..2)", "number", true )]
-        [InlineData ("[1..1)", "number", false )]
+        [InlineData ("[1..2)", "number", true)]
+        [InlineData ("[1..1)", "number", false)]
         public void Evaluate_Interval (string exprText, string inputName, bool expected) {
             VariableContext context = new VariableContext ();
             context.InputNameDict = new Dictionary<string, Variable> () { { "number", 1 }, { "stringval", "abc" } };
@@ -65,8 +65,8 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
         }
 
         private bool ParseAndEval (string exprText, VariableContext context, string inputName) {
-            var eval = new Evaluation (context, inputName);
-            var boolVal = eval.EvaluateSimpleUnaryTestsBase (exprText);
+            var eval = new Evaluation ();
+            var boolVal = eval.EvaluateSimpleUnaryTestsBase (exprText, context, inputName);
             return boolVal;
         }
     }

@@ -15,7 +15,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function {
 
         public object Execute (VariableContext context = null) {
 
-            var funcName = Function.Execute ();
+            var funcName = Function.Execute (context);
 
             if (funcName is Variable outFuncName && outFuncName.ValueType == DataTypeEnum.String) {
                 if (Parameters is PositionalParameters) {
@@ -25,7 +25,6 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function {
                             return StringFunctions.Execute (outFuncName.StringVal, listVars);
                         case DataTypeEnum.Decimal:
                             return NumericFunctions.Execute (outFuncName.StringVal, listVars);
-
 
                     }
 

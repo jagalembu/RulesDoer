@@ -13,8 +13,8 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Maths {
             Right = right;
         }
         public object Execute (VariableContext context = null) {
-            var leftVal = this.Left.Execute ();
-            var rightVal = this.Right.Execute ();
+            var leftVal = this.Left.Execute (context);
+            var rightVal = this.Right.Execute (context);
 
             if (leftVal is Variable l && rightVal is Variable r) {
                 switch (l.ValueType) {
@@ -22,7 +22,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Maths {
                         return new Variable (l.NumericVal + r.NumericVal);
 
                     case DataTypeEnum.String:
-                        return new Variable ($"{l.NumericVal}{r.NumericVal}");
+                        return new Variable ($"{l.StringVal}{r.StringVal}");
 
                     default:
                         throw new FEELException ("Failed to perform addition to incorrect FEEL type");

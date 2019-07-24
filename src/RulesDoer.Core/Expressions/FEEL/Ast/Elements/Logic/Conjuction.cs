@@ -13,8 +13,8 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Logic {
             Right = right;
         }
         public object Execute (VariableContext context = null) {
-            var leftVar = Left.Execute ();
-            var rightVar = Right.Execute ();
+            var leftVar = Left.Execute (context);
+            var rightVar = Right.Execute (context);
 
             if (leftVar is Variable outLVar && rightVar is Variable outRVar) {
                 if (outLVar.ValueType != DataTypeEnum.Boolean && outRVar.ValueType != DataTypeEnum.Boolean) {

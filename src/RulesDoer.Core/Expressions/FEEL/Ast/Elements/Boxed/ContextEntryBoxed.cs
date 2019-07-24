@@ -11,7 +11,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Boxed {
         }
 
         public object Execute (VariableContext context = null) {
-            return new Variable (KeyLiteral, (Variable) Expression.Execute ());
+            return new Variable (KeyLiteral, (Variable) Expression.Execute (context));
         }
     }
 }

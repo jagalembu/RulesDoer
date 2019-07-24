@@ -48,8 +48,8 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
         }
 
         private bool ParseAndEval (string exprText, VariableContext context, string inputName) {
-            var eval = new Evaluation (context, inputName);
-            var boolVal = eval.EvaluateSimpleUnaryTestsBase (exprText);
+            var eval = new Evaluation ();
+            var boolVal = eval.EvaluateSimpleUnaryTestsBase (exprText, context, inputName);
             return boolVal;
         }
     }

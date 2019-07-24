@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<definitions name="decision-litexpr-noinput" id="_decision-litexpr-noinput" xmlns="http://www.omg.org/spec/DMN/20180521/MODEL/" xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/" xmlns:dmndi="http://www.omg.org/spec/DMN/20180521/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:triso="http://www.trisotech.com/2015/triso/modeling" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <decision name="Decision1" id="d_Decision1">
+        <variable typeRef="string" name="Decision1"/>
+        <literalExpression>
+            <text>"foo bar"</text>
+        </literalExpression>
+    </decision>
+</definitions>    

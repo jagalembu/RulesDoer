@@ -14,8 +14,8 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Comparison {
             Right = right;
         }
         public object Execute (VariableContext context = null) {
-            var leftVar = (Variable) Left.Execute ();
-            var rightVar = (Variable) Right.Execute ();
+            var leftVar = (Variable) Left.Execute ( context);
+            var rightVar = (Variable) Right.Execute ( context);
 
             if (leftVar.ValueType != rightVar.ValueType) {
                 throw new FEELException ($"Left value {leftVar.ValueType} and right {rightVar.ValueType} are not the same for comparison");

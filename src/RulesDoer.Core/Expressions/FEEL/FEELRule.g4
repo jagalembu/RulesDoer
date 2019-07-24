@@ -173,7 +173,7 @@ arithmeticExpression
 	| function = arithmeticExpression pm = parameters {$ast = new FunctionInvocation($function.ast, $pm.ast);
 		}
 	| lit = literal {$ast = $lit.ast;}
-	| token = identifier {$ast = new Name($token.text);}
+	| token = identifier {$ast = new Name($token.textVal);}
 	| PAREN_OPEN arithmeticExpression {$ast = $arithmeticExpression.ast;} PAREN_CLOSE;
 
 //Function Invocation
@@ -218,8 +218,8 @@ typeIs
 
 qualifiedName
 	returns[IExpression ast]:
-	{List<string> namelist = new List<string>();} name = identifier {namelist.Add($name.text);} (
-		DOT name = identifier {namelist.Add($name.text);}
+	{List<string> namelist = new List<string>();} name = identifier {namelist.Add($name.textVal);} (
+		DOT name = identifier {namelist.Add($name.textVal);}
 	)* {$ast = new QualifiedName(namelist);};
 
 literal
@@ -242,7 +242,9 @@ dateTimeLiteral
 
 identifier
 	returns[string textVal]: (
-		token = NAME {$textVal = $token.text;}
+		token = NAME {$textVal += $token.text;} (
+			token2 = NAME {$textVal += " " + $token2.text;}
+		)+
 	)
 	| token = DATETIMELIT {$textVal = $token.text;}
 	| ( token = OR {$textVal = $token.text;})
@@ -280,6 +282,6 @@ parameterName
 
 key
 	returns[string textVal]:
-	identifier {$textVal = $identifier.text;}
+	identifier {$textVal = $identifier.textVal;}
 	| stringLiteral {var stringLitVar = $stringLiteral.ast.Execute(); $textVal = ((Variable)stringLitVar).StringVal;
 		}; 

@@ -16,7 +16,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function {
 
         public object Execute (VariableContext context = null) {
 
-            var parentVal = Parent.Execute ();
+            var parentVal = Parent.Execute (context);
 
             if (parentVal is Variable parentVar) {
 
@@ -62,7 +62,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function {
                     var remainder = yearMonthVar.NumericVal % 12;
                     return new Variable (new Variable ((yearMonthVar.NumericVal - remainder) / 12), new Variable (remainder));
                 case "months":
-                    return new Variable (new Variable(0), new Variable(yearMonthVar.NumericVal));
+                    return new Variable (new Variable (0), new Variable (yearMonthVar.NumericVal));
                 default:
                     throw new FEELException ($"The following property {prop} is not supported for day time duration type");
             }

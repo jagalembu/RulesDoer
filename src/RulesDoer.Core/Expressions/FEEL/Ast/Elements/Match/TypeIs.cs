@@ -14,7 +14,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Match {
         }
 
         public object Execute (VariableContext context = null) {
-            var exprVal = Expr.Execute ();
+            var exprVal = Expr.Execute (context);
 
             if (exprVal is List<string> outExprVal && outExprVal.Count == 1) {
 

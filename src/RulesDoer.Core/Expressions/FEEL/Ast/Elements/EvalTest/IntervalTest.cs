@@ -18,8 +18,8 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.EvalTest {
         public bool Execute (VariableContext context = null, string inputName = null) {
             var inputVariable = VariableContextHelper.RetrieveInputVariable (context, inputName);
 
-            var leftVar = (Variable) LeftExpression.Execute ();
-            var rightVar = (Variable) RightExpression.Execute ();
+            var leftVar = (Variable) LeftExpression.Execute (context);
+            var rightVar = (Variable) RightExpression.Execute (context);
 
             if (inputVariable.ValueType != rightVar.ValueType) {
                 throw new FEELException ($"Right value {inputVariable.ValueType} and right {rightVar.ValueType} are not the same for comparison");

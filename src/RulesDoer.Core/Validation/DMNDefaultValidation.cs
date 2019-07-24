@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using RulesDoer.Core.Transformer;
+using RulesDoer.Core.Transformer.v1_2;
 
 namespace RulesDoer.Core.Validation {
-    public class DMNDefaultValidation : DMNValidation {
+    public class DMNDefaultValidation : IDMNValidation {
         private readonly ILogger<DMNDefaultValidation> _logger;
 
         public DMNDefaultValidation (ILogger<DMNDefaultValidation> logger) {

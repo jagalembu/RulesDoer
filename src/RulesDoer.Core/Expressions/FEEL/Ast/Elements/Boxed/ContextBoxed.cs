@@ -16,7 +16,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Boxed {
             //TODO: Get item values from the context variables if any
 
             foreach (var item in ContextEntries) {
-                var itemVal = (Variable) item.Execute ();
+                var itemVal = (Variable) item.Execute (context);
                 contextInput.Add (itemVal.TwoTuple.a, itemVal.TwoTuple.b);
             }
 
