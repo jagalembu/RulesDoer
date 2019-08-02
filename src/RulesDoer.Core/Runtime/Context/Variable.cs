@@ -18,6 +18,7 @@ namespace RulesDoer.Core.Runtime.Context {
         public List<Variable> ListVal { get; set; }
         public (Variable a, Variable b) TwoTuple { get; set; }
         public ContextInputs ContextInputs { get; set; }
+        public DecisionTableResult DecisionTableResult { get; set; }
 
         public Variable () {
             ValueType = DataTypeEnum.Null;
@@ -71,6 +72,11 @@ namespace RulesDoer.Core.Runtime.Context {
         public Variable (ContextInputs context) {
             ContextInputs = context;
             ValueType = DataTypeEnum.Context;
+        }
+
+        public Variable (DecisionTableResult dtr) {
+            DecisionTableResult = dtr;
+            ValueType = DataTypeEnum.DecisionTableResult;
         }
 
         static public Variable Years (int years, int months = 0) {
@@ -227,6 +233,10 @@ namespace RulesDoer.Core.Runtime.Context {
             return new Variable (context);
         }
 
+        static public implicit operator Variable (DecisionTableResult dtr) {
+            return new Variable (dtr);
+        }
+
         static public implicit operator bool (Variable ev) {
             if (ev.ValueType != DataTypeEnum.Boolean)
                 throw new NotSupportedException ("Expected boolean value.");
@@ -267,6 +277,12 @@ namespace RulesDoer.Core.Runtime.Context {
             if (ev.ValueType != DataTypeEnum.Context)
                 throw new NotSupportedException ("Expected Context value.");
             return ev.ContextInputs;
+        }
+
+        static public implicit operator DecisionTableResult (Variable ev) {
+            if (ev.ValueType != DataTypeEnum.DecisionTableResult)
+                throw new NotSupportedException ("Expected Decision Table Result value.");
+            return ev.DecisionTableResult;
         }
 
     }

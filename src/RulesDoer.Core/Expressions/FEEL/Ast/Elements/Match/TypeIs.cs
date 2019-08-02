@@ -16,13 +16,13 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Match {
         public object Execute (VariableContext context = null) {
             var exprVal = Expr.Execute (context);
 
-            if (exprVal is List<string> outExprVal && outExprVal.Count == 1) {
+            if (exprVal is Variable exprOut && exprOut.ValueType == DataTypeEnum.String) {
 
-                return new Variable (outExprVal[0]);
+                return exprVal;
 
             }
 
-            throw new FEELException ("The expression does not return a list of one string value");
+            throw new FEELException ("The instance type value is not a string type.");
         }
     }
 }

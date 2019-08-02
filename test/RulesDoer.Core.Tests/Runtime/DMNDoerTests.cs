@@ -26,5 +26,23 @@ namespace RulesDoer.Core.Tests.Runtime {
             Assert.Equal ("Hello some dude", decisionRslt);
         }
 
+        [Fact]
+        public void EvaluateDecisions_DecisionTable_Unique () {
+            var rslt = _fixture._dmnDoer.EvaluateDecisions (new VariableContext () { InputNameDict = new Dictionary<string, Variable> () { { "Age", 18 }, { "RiskCategory", "Medium" }, { "isAffordable", true } } }, "0004-simpletable-U");
+            rslt.TryGetValue ("Approval Status", out var decisionRslt);
+            Assert.NotNull (decisionRslt);
+            DecisionTableResult tRslt = decisionRslt;
+            Assert.NotNull (tRslt);
+            Assert.NotNull (tRslt.OutputResult);
+            Assert.Equal (1, tRslt.OutputResult.Count);
+
+            var actualValues = tRslt.OutputResult[0].Values;
+
+            foreach (var item in actualValues) {
+                Assert.Equal<string> ("Approved", item);
+            }
+
+        }
+
     }
 }

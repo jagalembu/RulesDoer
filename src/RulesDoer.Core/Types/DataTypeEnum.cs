@@ -13,6 +13,7 @@ namespace RulesDoer.Core.Types {
         Context,
         Function,
         Tuple,
-        Any
+        Any,
+        DecisionTableResult
     }
 }

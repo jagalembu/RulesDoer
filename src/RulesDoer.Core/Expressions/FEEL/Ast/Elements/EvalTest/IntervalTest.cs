@@ -15,7 +15,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.EvalTest {
             RightExpression = rightExpression;
         }
 
-        public bool Execute (VariableContext context = null, string inputName = null) {
+        public object Execute (VariableContext context = null, string inputName = null) {
             var inputVariable = VariableContextHelper.RetrieveInputVariable (context, inputName);
 
             var leftVar = (Variable) LeftExpression.Execute (context);
@@ -64,7 +64,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.EvalTest {
                     throw new FEELException ($"Incorrect end {End} interval character");
             }
 
-            return leftBool && rightBool;
+            return new Variable(leftBool && rightBool);
         }
 
     }

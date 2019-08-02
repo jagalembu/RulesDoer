@@ -277,6 +277,18 @@ public partial class FEELRuleBaseListener : IFEELRuleListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitSimpleExpression([NotNull] FEELRule.SimpleExpressionContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="FEELRule.comparison"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterComparison([NotNull] FEELRule.ComparisonContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="FEELRule.comparison"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitComparison([NotNull] FEELRule.ComparisonContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="FEELRule.arithmeticExpression"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>

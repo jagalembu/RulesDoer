@@ -235,6 +235,16 @@ public interface IFEELRuleListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitSimpleExpression([NotNull] FEELRule.SimpleExpressionContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="FEELRule.comparison"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterComparison([NotNull] FEELRule.ComparisonContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="FEELRule.comparison"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitComparison([NotNull] FEELRule.ComparisonContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="FEELRule.arithmeticExpression"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

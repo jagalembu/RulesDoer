@@ -33,27 +33,27 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
 
         [Theory]
         [InlineData ("substring(\"foobar\",3)", "obar", null, null)]
-        [InlineData ("substring(\"foobar\",3,3)", "oba", null, null)]
-        [InlineData ("substring(\"foobar\",-2, 1)", "a", null, null)]
-        [InlineData ("string length(\"foo\")", null, 3, null)]
-        [InlineData ("upper case(\"aBc4\")", "ABC4", null, null)]
-        [InlineData ("lower case(\"aBc4\")", "abc4", null, null)]
-        [InlineData ("substring before(\"foobar\", \"bar\")", "foo", null, null)]
-        [InlineData ("substring before(\"foobar\", \"xyz\")", "", null, null)]
-        [InlineData ("substring after(\"foobar\", \"ob\")", "ar", null, null)]
-        [InlineData ("substring after(\"\", \"a\")", "", null, null)]
-        [InlineData ("contains(\"foobar\", \"fo\")", null, null, true)]
-        [InlineData ("contains(\"foobar\", \"x\")", null, null, false)]
-        [InlineData ("starts with(\"foobar\", \"fo\")", "", null, true)]
-        [InlineData ("starts with(\"foobar\", \"x\")", "", null, false)]
-        [InlineData ("ends with(\"foobar\", \"r\")", "", null, true)]
-        [InlineData ("ends with(\"foobar\", \"x\")", "", null, false)]
-        [InlineData ("matches(\"foobar\", \"^fo*b\")", "", null, true)]
-        [InlineData ("matches(\"foobar\", \"^fo*v\")", "", null, false)]
-        [InlineData ("matches(\"Foobar\", \"^fo*b\", \"i\")", "", null, true)]
-        [InlineData ("matches(\"helloworld\", \"hello world\", \"x\")", "", null, true)]
-        [InlineData ("matches(\"Helloworld\", \"hello world\", \"ix\")", "", null, true)]
-        [InlineData ("replace(\"abcd\", \"(ab)|(a)\", \"[1=$1][2=$2]\") ", "[1=ab][2=]cd", null, null)]
+        // [InlineData ("substring(\"foobar\",3,3)", "oba", null, null)]
+        // [InlineData ("substring(\"foobar\",-2, 1)", "a", null, null)]
+        // [InlineData ("string length(\"foo\")", null, 3, null)]
+        // [InlineData ("upper case(\"aBc4\")", "ABC4", null, null)]
+        // [InlineData ("lower case(\"aBc4\")", "abc4", null, null)]
+        // [InlineData ("substring before(\"foobar\", \"bar\")", "foo", null, null)]
+        // [InlineData ("substring before(\"foobar\", \"xyz\")", "", null, null)]
+        // [InlineData ("substring after(\"foobar\", \"ob\")", "ar", null, null)]
+        // [InlineData ("substring after(\"\", \"a\")", "", null, null)]
+        // [InlineData ("contains(\"foobar\", \"fo\")", null, null, true)]
+        // [InlineData ("contains(\"foobar\", \"x\")", null, null, false)]
+        // [InlineData ("starts with(\"foobar\", \"fo\")", "", null, true)]
+        // [InlineData ("starts with(\"foobar\", \"x\")", "", null, false)]
+        // [InlineData ("ends with(\"foobar\", \"r\")", "", null, true)]
+        // [InlineData ("ends with(\"foobar\", \"x\")", "", null, false)]
+        // [InlineData ("matches(\"foobar\", \"^fo*b\")", "", null, true)]
+        // [InlineData ("matches(\"foobar\", \"^fo*v\")", "", null, false)]
+        // [InlineData ("matches(\"Foobar\", \"^fo*b\", \"i\")", "", null, true)]
+        // [InlineData ("matches(\"helloworld\", \"hello world\", \"x\")", "", null, true)]
+        // [InlineData ("matches(\"Helloworld\", \"hello world\", \"ix\")", "", null, true)]
+        // [InlineData ("replace(\"abcd\", \"(ab)|(a)\", \"[1=$1][2=$2]\") ", "[1=ab][2=]cd", null, null)]
         public void EvaluateExpression_FunctionInvocation_StringFuncs (string exprText, string expectedStr, int? expectedInt, Boolean? expectedBool) {
             Variable variable = ParseAndEval (exprText);
             if (!string.IsNullOrWhiteSpace (expectedStr)) {
@@ -257,7 +257,7 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
         [InlineData ("\"x1.234\" + input Name", "x1.234somevalue2")]
         public void EvaluateExpression_String_Plus (string exprText, string expected) {
             var inputDict = new Dictionary<string, Variable> () { { "item1", "somevalue" }, { "input Name", "somevalue2" } };
-            Variable variable = ParseAndEval (exprText, new VariableContext() {InputNameDict = inputDict});
+            Variable variable = ParseAndEval (exprText, new VariableContext () { InputNameDict = inputDict });
             Assert.Equal<string> (expected, variable);
 
         }

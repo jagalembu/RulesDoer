@@ -24,6 +24,17 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
         }
 
         [Theory]
+        [InlineData (">1", "number", false)]
+        [InlineData ("<2", "number", true)]
+        public void Evaluate_Operator (string exprText, string inputName, bool expected) {
+            VariableContext context = new VariableContext ();
+            context.InputNameDict = new Dictionary<string, Variable> () { { "number", 1 }, { "stringval", "abc" } };
+
+            var variable = ParseAndEval (exprText, context, inputName);
+            Assert.Equal<bool> (expected, variable);
+        }
+
+        [Theory]
         [InlineData ("not(1)", "number", false)]
         [InlineData ("not(2)", "number", true)]
         [InlineData ("not(\"kfc\")", "stringval", true)]
@@ -49,7 +60,7 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
 
         private bool ParseAndEval (string exprText, VariableContext context, string inputName) {
             var eval = new Evaluation ();
-            var boolVal = eval.EvaluateSimpleUnaryTestsBase (exprText, context, inputName);
+            var boolVal = eval.EvaluateUnaryTestsBase (exprText, context, inputName);
             return boolVal;
         }
     }

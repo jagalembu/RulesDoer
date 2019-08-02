@@ -13,7 +13,10 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.EvalTest {
             Right = right;
         }
 
-        public bool Execute (VariableContext context = null, string inputName = null) {
+        public object Execute (VariableContext context = null, string inputName = null) {
+            if (Operator == OperatorEnum.NF && inputName is null) {
+                return Right.Execute (context);
+            }
 
             var inputVariable = VariableContextHelper.RetrieveInputVariable (context, inputName);
 
@@ -26,19 +29,19 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.EvalTest {
             switch (Operator) {
 
                 case OperatorEnum.GT:
-                    return inputVariable > rightVar;
+                    return new Variable (inputVariable > rightVar);
 
                 case OperatorEnum.GE:
-                    return inputVariable >= rightVar;
+                    return new Variable (inputVariable >= rightVar);
 
                 case OperatorEnum.LT:
-                    return inputVariable < rightVar;
+                    return new Variable (inputVariable < rightVar);
 
                 case OperatorEnum.LE:
-                    return inputVariable <= rightVar;
+                    return new Variable (inputVariable <= rightVar);
 
                 case OperatorEnum.NF:
-                    return inputVariable.Equals (rightVar);
+                    return new Variable (inputVariable.Equals (rightVar));
 
                 default:
                     throw new FEELException ($"The following operator {Operator} is not supported");

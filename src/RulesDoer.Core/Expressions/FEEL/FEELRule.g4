@@ -20,6 +20,7 @@ using RulesDoer.Core.Expressions.FEEL.Ast.Elements;
 
 @parser::members {
 
+
 }
 
 //base rule
@@ -56,12 +57,14 @@ simpleUnaryTests
 
 simplePositiveUnaryTest
 	returns[ITestExpression ast]:
-	{var opEnum = OperatorEnum.NF;} (
-		op = LT { opEnum = OperatorEnum.LT;}
-		| op = GT { opEnum = OperatorEnum.GT;}
-		| op = LE { opEnum = OperatorEnum.LE;}
-		| op = GE { opEnum = OperatorEnum.GE;}
-	)* endpoint {$ast = new OperatorTest(opEnum, $endpoint.ast);}
+	(
+		{var opEnum = OperatorEnum.NF;} (
+			op = LT { opEnum = OperatorEnum.LT;}
+			| op = GT { opEnum = OperatorEnum.GT;}
+			| op = LE { opEnum = OperatorEnum.LE;}
+			| op = GE { opEnum = OperatorEnum.GE;}
+		)? endpoint {$ast = new OperatorTest(opEnum, $endpoint.ast);}
+	)
 	| interval {$ast = $interval.ast;};
 
 interval
@@ -127,15 +130,8 @@ textualExpression
 		}
 	| left = textualExpression AND right = textualExpression {$ast = new Conjuction($left.ast, $right.ast);
 		}
-	| as1 = textualExpression {var opEnum = OperatorEnum.NF;} (
-		op = EQ { opEnum = OperatorEnum.EQ;}
-		| op = NE { opEnum = OperatorEnum.NE;}
-		| op = LT { opEnum = OperatorEnum.LT;}
-		| op = GT { opEnum = OperatorEnum.GT;}
-		| op = LE { opEnum = OperatorEnum.LE;}
-		| op = GE { opEnum = OperatorEnum.GE;}
-	) as2 = textualExpression {$ast = new Relational(opEnum, $as1.ast, $as2.ast);}
-	| arithmeticExpression {$ast = $arithmeticExpression.ast;}
+	| comparison {$ast = $comparison.ast;}
+	//	| arithmeticExpression {$ast = $arithmeticExpression.ast;}
 	| PAREN_OPEN textualExpression {$ast = $textualExpression.ast;} PAREN_CLOSE;
 
 //simple expression
@@ -150,6 +146,19 @@ simpleExpression
 		arithmeticExpression {$ast = $arithmeticExpression.ast;}
 	)
 	| (simpleValue {$ast = $simpleValue.ast; });
+
+// Comparison
+comparison
+	returns[IExpression ast]:
+	as1 = comparison {var opEnum = OperatorEnum.NF;} (
+		op = EQ { opEnum = OperatorEnum.EQ;}
+		| op = NE { opEnum = OperatorEnum.NE;}
+		| op = LT { opEnum = OperatorEnum.LT;}
+		| op = GT { opEnum = OperatorEnum.GT;}
+		| op = LE { opEnum = OperatorEnum.LE;}
+		| op = GE { opEnum = OperatorEnum.GE;}
+	) as2 = comparison {$ast = new Relational(opEnum, $as1.ast, $as2.ast);}
+	| arithmeticExpression {$ast = $arithmeticExpression.ast;};
 
 //arithmetic expression
 arithmeticExpression
@@ -173,6 +182,7 @@ arithmeticExpression
 	| function = arithmeticExpression pm = parameters {$ast = new FunctionInvocation($function.ast, $pm.ast);
 		}
 	| lit = literal {$ast = $lit.ast;}
+	| simplePositiveUnaryTest {$ast = new TestWrapper($simplePositiveUnaryTest.ast);}
 	| token = identifier {$ast = new Name($token.textVal);}
 	| PAREN_OPEN arithmeticExpression {$ast = $arithmeticExpression.ast;} PAREN_CLOSE;
 
@@ -244,11 +254,10 @@ identifier
 	returns[string textVal]: (
 		token = NAME {$textVal += $token.text;} (
 			token2 = NAME {$textVal += " " + $token2.text;}
-		)+
+		)*
 	)
-	| token = DATETIMELIT {$textVal = $token.text;}
-	| ( token = OR {$textVal = $token.text;})
-	| ( token = AND {$textVal = $token.text;});
+	| token = DATETIMELIT {$textVal = $token.text;};
+// | ( token = OR {$textVal = $token.text;}) | ( token = AND {$textVal = $token.text;});
 
 stringLiteral
 	returns[IExpression ast]:

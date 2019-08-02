@@ -64,6 +64,17 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
             Assert.Equal<bool> (expected, variable);
         }
 
+        [Theory]
+        [InlineData (">1", "number", false)]
+        [InlineData ("<2", "number", true)]
+        public void Evaluate_Operator (string exprText, string inputName, bool expected) {
+            VariableContext context = new VariableContext ();
+            context.InputNameDict = new Dictionary<string, Variable> () { { "number", 1 }, { "stringval", "abc" } };
+
+            var variable = ParseAndEval (exprText, context, inputName);
+            Assert.Equal<bool> (expected, variable);
+        }
+
         private bool ParseAndEval (string exprText, VariableContext context, string inputName) {
             var eval = new Evaluation ();
             var boolVal = eval.EvaluateSimpleUnaryTestsBase (exprText, context, inputName);

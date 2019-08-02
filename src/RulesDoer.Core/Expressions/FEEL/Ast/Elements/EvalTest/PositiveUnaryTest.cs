@@ -9,7 +9,12 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.EvalTest {
             Expression = expression;
         }
 
-        public bool Execute (VariableContext context = null, string inputName = null) {
+        public object Execute (VariableContext context = null, string inputName = null) {
+
+            if (Expression is TestWrapper testwrap) {
+                testwrap.InputDataName = inputName;
+                return testwrap.Execute (context);
+            }
 
             if (Expression is IExpression expr) {
                 var exprVar = (Variable) expr.Execute (context);
@@ -20,7 +25,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.EvalTest {
                     throw new FEELException ($"Left value {inputVariable.ValueType} and right {exprVar.ValueType} are not the same for comparison");
                 }
 
-                return inputVariable.Equals (exprVar);
+                return new Variable (inputVariable.Equals (exprVar));
             }
 
             if (Expression is ITestExpression texpr) {

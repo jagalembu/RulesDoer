@@ -15,7 +15,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Eval {
         public override void ExitSimpleUnaryTestsBase (FEELRule.SimpleUnaryTestsBaseContext context) {
             var ast = context.ast;
 
-            Value = ast.Execute (_variableContext, _inputName);
+            Value = ((Variable)ast.Execute (_variableContext, _inputName)).BoolVal;
         }
 
     }

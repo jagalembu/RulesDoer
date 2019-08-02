@@ -86,6 +86,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function {
             if (dateVar.ValueType == DataTypeEnum.DateTime || dateVar.ValueType == DataTypeEnum.Time) {
                 switch (prop) {
                     case "hour":
+                        //TODO: needs to account for time zone
                         return new Variable (dateVar.DateTimeVal.Hour);
                     case "minute":
                         return new Variable (dateVar.DateTimeVal.Minute);

@@ -42,6 +42,10 @@ namespace RulesDoer.Core.Runtime {
                             results.Add (decision.Name, _feelExpression.EvaluateExpressionsBase (litExpr.Text, runtimeContext));
                             break;
 
+                        case TDecisionTable decisionTable:
+                            results.Add (decision.Name, EvalDecisionTable (decisionTable, runtimeContext));
+                            break;
+
                         default:
                             throw new DMNException ($"Decision expression {decision.Expression.Id} is not supported yet");
                     }
@@ -105,6 +109,41 @@ namespace RulesDoer.Core.Runtime {
                 itemMeta.ItemComponents = dict;
             }
 
+        }
+
+        private Variable EvalDecisionTable (TDecisionTable decisionTable, VariableContext runtimeContext) {
+            var outputList = new List<Variable> ();
+            var matchedList = new List<Dictionary<string, Variable>> ();
+
+            foreach (var rule in decisionTable.Rule) {
+                var matched = false;
+                for (int i = 0; i < rule.InputEntry.Count; i++) {
+                    //TODO: the input clause for input variable name is literal epression which need to run through feel epresion evaluater
+                    matched = _feelExpression.EvaluateUnaryTestsBase (rule.InputEntry[i].Text, runtimeContext, decisionTable.Input[i].InputExpression.Text);
+                    if (!matched) {
+                        break;
+                    }
+                }
+
+                if (matched) {
+                    var outputDict = new Dictionary<string, Variable> ();
+                    for (int i = 0; i < decisionTable.Output.Count; i++) {
+                        outputDict.Add (decisionTable.Output[i].OutputValues.Text, _feelExpression.EvaluateExpressionsBase (rule.OutputEntry[i].Text, runtimeContext));
+                    }
+                    matchedList.Add (outputDict);
+
+                }
+
+            }
+
+            if (matchedList.Any ()) {
+                var dtr = new DecisionTableResult ();
+                dtr.MatchedList = matchedList;
+                dtr.OutputResult = HitPolicyHelper.Output (decisionTable.HitPolicy, matchedList);
+                return dtr;
+            }
+
+            return null;
         }
     }
 }

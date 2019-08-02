@@ -10,8 +10,8 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.EvalTest {
             Expression = expression;
         }
 
-        public bool Execute (VariableContext context = null, string inputName = null) {
-            return !Expression.Execute (context, inputName);
+        public object Execute (VariableContext context = null, string inputName = null) {
+            return new Variable(!((Variable)Expression.Execute (context, inputName)).BoolVal);
         }
 
     }

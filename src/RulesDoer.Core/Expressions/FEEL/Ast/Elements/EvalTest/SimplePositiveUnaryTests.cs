@@ -9,14 +9,14 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.EvalTest {
             Expressions = expressions;
         }
 
-        public bool Execute (VariableContext context = null, string inputName = null) {
+        public object Execute (VariableContext context = null, string inputName = null) {
             foreach (var item in Expressions) {
-                if (item.Execute (context, inputName)) {
-                    return true;
+                if (((Variable)item.Execute (context, inputName)).BoolVal == true) {
+                    return new Variable(true);
                 }
             }
 
-            return false;
+            return new Variable(false);
         }
     }
 }
