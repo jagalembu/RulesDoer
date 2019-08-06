@@ -17,26 +17,25 @@ namespace RulesDoer.Core.Runtime {
             _repository = repository;
         }
 
-        public Dictionary<string, Variable> EvaluateDecisions (VariableContext runtimeContext, string definitionName, int? versionNo = null) {
+        public Dictionary<string, Variable> EvaluateDecisions (VariableContext runtimeContext, string definitionName, int? versionNo = null, string decisionName = null) {
 
-            var definitions = _repository.FindDefinitions (definitionName, versionNo);
+            var metaDef = BuildInputMeta (definitionName, versionNo);
+            var definitions = metaDef.Item2;
 
-            //build item definition meta
-            if (definitions.ItemDefinitionSpecified) {
-                runtimeContext.ItemDefinitionMeta = BuildItemDefinitionsMeta (definitions);
-            }
+            runtimeContext.InputDataMetaById = metaDef.Item1.InputDataMetaById;
+            runtimeContext.InputDataMetaByName = metaDef.Item1.InputDataMetaByName;
+            runtimeContext.ItemDefinitionMeta = metaDef.Item1.ItemDefinitionMeta;
 
-            //build input data meta
-            var inputDicts = BuildInputDataMeta (definitions);
-            runtimeContext.InputDataMetaById = inputDicts.Item1;
-            runtimeContext.InputDataMetaByName = inputDicts.Item2;
-
-            //check inputs match input data
+            //TODO: check inputs match input data
 
             var results = new Dictionary<string, Variable> ();
             //evaluate decisions
+            //TODO: Needs to handle calls to individual decision by name
             foreach (var item in definitions.DrgElement) {
                 if (item is TDecision decision) {
+                    if (decisionName != null && decision.Name != decisionName) {
+                        continue;
+                    }
                     switch (decision.Expression) {
                         case TLiteralExpression litExpr:
                             results.Add (decision.Name, _feelExpression.EvaluateExpressionsBase (litExpr.Text, runtimeContext));
@@ -55,6 +54,24 @@ namespace RulesDoer.Core.Runtime {
             }
 
             return results;
+        }
+
+        public (VariableContext, TDefinitions) BuildInputMeta (string definitionName, int? versionNo = null) {
+            var metaContext = new VariableContext ();
+
+            //TODO: cache candidate
+            var definitions = _repository.FindDefinitions (definitionName, versionNo);
+
+            if (definitions.ItemDefinitionSpecified) {
+                metaContext.ItemDefinitionMeta = BuildItemDefinitionsMeta (definitions);
+            }
+
+            var inputDicts = BuildInputDataMeta (definitions);
+            metaContext.InputDataMetaByName = inputDicts.Item1;
+            metaContext.InputDataMetaById = inputDicts.Item2;
+
+            //TODO: meta context is a cachd candidate
+            return (metaContext, definitions);
         }
 
         private (Dictionary<string, InputDataMeta>, Dictionary<string, InputDataMeta>) BuildInputDataMeta (TDefinitions definitions) {

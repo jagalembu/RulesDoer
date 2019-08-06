@@ -26,7 +26,7 @@ namespace RulesDoer.Core.Tests {
 
             string xmlContent;
             foreach (var resourceName in resourceNames) {
-                if (resourceName.Contains ("DmnFiles")) {
+                if (resourceName.Contains ("DmnFiles") && resourceName.EndsWith("dmn")) {
                     var resourceStream = assembly.GetManifestResourceStream (resourceName);
 
                     using (TextReader textReader = new StreamReader (resourceStream, Encoding.UTF8)) {
