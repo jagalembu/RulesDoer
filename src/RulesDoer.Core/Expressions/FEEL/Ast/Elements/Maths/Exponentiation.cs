@@ -13,16 +13,29 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Maths {
             Right = right;
         }
         public object Execute (VariableContext context = null) {
-            var leftVal = this.Left.Execute (context);
-            var rightVal = this.Right.Execute (context);
+            var leftVal = (Variable) Left.Execute (context);
+            var rightVal = (Variable) Right.Execute (context);
 
             if (leftVal is Variable l && rightVal is Variable r) {
+                if (l.ValueType != r.ValueType) {
+                    throw new FEELException ("The variable type does not match for the arithmetic action");
+                }
                 switch (l.ValueType) {
                     case DataTypeEnum.Decimal:
-                        var leftDbl = (double) leftVal;
-                        var rightDbl = (double) rightVal;
-                        var rslt = Math.Pow (leftDbl, rightDbl);
-                        return new Variable (new decimal (rslt));
+
+                        var x = Decimal.Parse (rightVal.NumericVal.ToString ());
+                        Decimal powV = 1;
+                        if (x < 0) {
+                            x = x * -1;
+                        }
+
+                        for (; x > 0; x--) {
+                            powV *= leftVal.NumericVal;
+                        }
+                        if (rightVal.NumericVal < 0) {
+                            powV = 1 / powV;
+                        }
+                        return new Variable (powV);
 
                     default:
                         throw new FEELException ("Failed to perform exponentiation to incorrect FEEL type");

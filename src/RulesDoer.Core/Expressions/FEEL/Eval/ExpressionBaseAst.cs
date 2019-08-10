@@ -1,3 +1,4 @@
+using System;
 using RulesDoer.Core.Runtime.Context;
 
 namespace RulesDoer.Core.Expressions.FEEL.Eval {
@@ -10,7 +11,11 @@ namespace RulesDoer.Core.Expressions.FEEL.Eval {
         }
         public override void ExitExpressionBase (FEELRule.ExpressionBaseContext context) {
             var ast = context.ast;
-            Value = (Variable) ast.Execute (_variableContext);
+            try {
+                Value = (Variable) ast.Execute (_variableContext);
+            } catch (Exception) {
+                Value = new Variable ();
+            }
 
         }
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using RulesDoer.Core.Runtime;
 using RulesDoer.Core.Runtime.Context;
 using RulesDoer.Core.Tests.TCK.Transformer;
@@ -49,26 +50,79 @@ namespace RulesDoer.Core.Tests.TCK.Run {
             actualrslt.TryGetValue (rsltnode.Name, out var rsltVar);
             Assert.NotNull (rsltVar);
 
-            switch (rsltVar.ValueType) {
-                case DataTypeEnum.Boolean:
-                case DataTypeEnum.Date:
-                case DataTypeEnum.DateTime:
-                case DataTypeEnum.DayTimeDuration:
-                case DataTypeEnum.YearMonthDuration:
-                case DataTypeEnum.Decimal:
-                case DataTypeEnum.String:
-                    AssertResultByIndividualType (rsltnode.Expected.Value, rsltVar);
-                    break;
+            AssertResultValueType (rsltnode.Expected, rsltnode.Name, null, rsltVar);
+        }
 
-                case DataTypeEnum.DecisionTableResult:
-                case DataTypeEnum.List:
-                default:
-                    throw new TCKException ("Not implemented result matching");
+        private void AssertResultValueType (ValueType expected, string name, Dictionary<string, Variable> actualrsltDic = null, Variable actualrslt = null) {
+
+            if (actualrslt != null && DataTypeEnum.DecisionTableResult == actualrslt.ValueType) {
+                AssertDecisionTableResult (expected, name, actualrslt.DecisionTableResult.OutputResult);
+                return;
+            }
+
+            if (expected.ComponentSpecified) {
+                AssertResultComponent (expected.Component, name, actualrsltDic);
+                return;
+            }
+
+            if (expected.ListSpecified) {
+                AssertResultList (expected.List, name, null, actualrslt);
+                return;
+            }
+
+            AssertResultByIndividualType (expected.Value, actualrslt, name);
+
+        }
+
+        private void AssertDecisionTableResult (ValueType expected, string name, List<Dictionary<string, Variable>> actualrslts) {
+            if (expected.ComponentSpecified) {
+                AssertResultComponent (expected.Component, name, actualrslts[0]);
+                return;
+            }
+
+            if (expected.ListSpecified) {
+                AssertResultList (expected.List, name, actualrslts);
+                return;
+            }
+
+            throw new TCKException ("Decision table expected component or list result");
+        }
+
+        private void AssertResultList (Collection<ValueType> expected, string name, List<Dictionary<string, Variable>> actualrsltList = null, Variable actualRslt = null) {
+
+            for (int i = 0; i < expected.Count; i++) {
+                if (actualrsltList != null) {
+                    if (actualrsltList[i].Count > 1) {
+                        AssertResultValueType (expected[i], name, actualrsltList[i]);
+                    } else {
+                        foreach (var item in actualrsltList[i].Values) {
+                            AssertResultValueType (expected[i], name, null, item);
+                        }
+                    }
+
+                } else {
+                    AssertResultValueType (expected[i], name, null, actualRslt);
+                }
             }
 
         }
 
-        private void AssertResultByIndividualType (object expected, Variable actualrslt) {
+        private void AssertResultComponent (Collection<ValueTypeComponent> expected, string name, Dictionary<string, Variable> actualrslt) {
+
+            foreach (var item in expected) {
+                actualrslt.TryGetValue (item.Name, out var rslt);
+                AssertResultValueType (item, name, null, rslt);
+            }
+
+        }
+
+        private void AssertResultByIndividualType (object expected, Variable actualrslt, string name = null) {
+            if (expected == null) {
+                Assert.True (actualrslt.ValueType == DataTypeEnum.Null, name);
+                Assert.True (expected == null, name);
+                return;
+            }
+            
 
             Assert.Equal<Variable> (VariableHelper.MakeVariable (expected, actualrslt.ValueType), actualrslt);
 

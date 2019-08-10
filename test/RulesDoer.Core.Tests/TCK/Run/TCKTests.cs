@@ -12,8 +12,8 @@ namespace RulesDoer.Core.Tests.TCK.Run {
         }
 
         [Theory]
-        [RuleFile ("DmnFiles.TCK.compliance_level_2._0001_input_data_string.0001-input-data-string-test-01.xml")]
-        public void Compliance_Level_2 (string inputTckXml) {
+        [TCKFiles ("compliance_level_2._0009")]
+        public void Compliance_Level_2 (string filename, string inputTckXml) {
 
             var mockLogTrans = new Mock<ILogger<TCKTransformer>> ();
             ILogger<TCKTransformer> loggerTransfomer = mockLogTrans.Object;

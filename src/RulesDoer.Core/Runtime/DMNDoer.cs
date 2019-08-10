@@ -6,6 +6,7 @@ using RulesDoer.Core.Repo;
 using RulesDoer.Core.Runtime.Context;
 using RulesDoer.Core.Serialization;
 using RulesDoer.Core.Transformer.v1_2;
+using RulesDoer.Core.Types;
 
 namespace RulesDoer.Core.Runtime {
     public class DMNDoer {
@@ -100,7 +101,7 @@ namespace RulesDoer.Core.Runtime {
                 var itemDefMeta = new ItemDefinitionMeta ();
                 itemDefMeta.AllowedValues = item.AllowedValues;
                 itemDefMeta.Name = item.Name;
-                itemDefMeta.TypeLanguage = item.TypeRef;
+                itemDefMeta.TypeName = item.TypeRef;
                 itemDefMeta.TypeLanguage = item.TypeLanguage;
                 itemDefMeta.IsCollection = item.IsCollection;
                 CreateItemDefinitionMeta (item.ItemComponent, ref itemDefMeta);
@@ -116,7 +117,7 @@ namespace RulesDoer.Core.Runtime {
                 var itemDefMeta = new ItemDefinitionMeta ();
                 itemDefMeta.AllowedValues = item.AllowedValues;
                 itemDefMeta.Name = item.Name;
-                itemDefMeta.TypeLanguage = item.TypeRef;
+                itemDefMeta.TypeName = item.TypeRef;
                 itemDefMeta.TypeLanguage = item.TypeLanguage;
                 itemDefMeta.IsCollection = item.IsCollection;
                 CreateItemDefinitionMeta (item.ItemComponent, ref itemDefMeta);
@@ -131,6 +132,26 @@ namespace RulesDoer.Core.Runtime {
         private Variable EvalDecisionTable (TDecisionTable decisionTable, VariableContext runtimeContext) {
             var outputList = new List<Variable> ();
             var matchedList = new List<Dictionary<string, Variable>> ();
+            if (decisionTable.HitPolicy == THitPolicy.PRIORITY || decisionTable.HitPolicy == THitPolicy.OUTPUT_ORDER) {
+                var outcnt = decisionTable.Output.Count;
+                for (int i = 0; i < decisionTable.Output.Count; i++) {
+                    if (decisionTable.Output[i].OutputValues != null) {
+                        var itemlist = _feelExpression.EvaluateSimpleExpressionsBase (decisionTable.Output[i].OutputValues.Text, runtimeContext);
+                        if (itemlist.ValueType != DataTypeEnum.List) {
+                            outcnt--;
+                            continue;
+                        }
+                        var listCnt = itemlist.ListVal.Count;
+                        for (int x = 0; x < itemlist.ListVal.Count; x++) {
+                            decisionTable.Output[i].PriorityList.Add (itemlist.ListVal[x], outcnt * listCnt);
+                            listCnt--;
+
+                        }
+                        outcnt--;
+                    }
+                }
+
+            }
 
             foreach (var rule in decisionTable.Rule) {
                 var matched = false;
@@ -144,9 +165,22 @@ namespace RulesDoer.Core.Runtime {
 
                 if (matched) {
                     var outputDict = new Dictionary<string, Variable> ();
+                    int prioritySum = 0;
                     for (int i = 0; i < decisionTable.Output.Count; i++) {
-                        outputDict.Add (decisionTable.Output[i].OutputValues.Text, _feelExpression.EvaluateExpressionsBase (rule.OutputEntry[i].Text, runtimeContext));
+                        var outName = (decisionTable.Output[i].Name != null) ? decisionTable.Output[i].Name : i.ToString ();
+                        var outVar = _feelExpression.EvaluateExpressionsBase (rule.OutputEntry[i].Text, runtimeContext);
+                        outputDict.Add (outName, outVar);
+                        if (decisionTable.HitPolicy == THitPolicy.PRIORITY || decisionTable.HitPolicy == THitPolicy.OUTPUT_ORDER) {
+                            if (decisionTable.Output[i].PriorityList.Any ()) {
+                                decisionTable.Output[i].PriorityList.TryGetValue (outVar, out var priorityNum);
+                                prioritySum += priorityNum;
+                            }
+                        }
                     }
+                    if (decisionTable.HitPolicy == THitPolicy.PRIORITY || decisionTable.HitPolicy == THitPolicy.OUTPUT_ORDER) {
+                        outputDict.Add ("__p__", prioritySum);
+                    }
+
                     matchedList.Add (outputDict);
 
                 }
@@ -156,7 +190,15 @@ namespace RulesDoer.Core.Runtime {
             if (matchedList.Any ()) {
                 var dtr = new DecisionTableResult ();
                 dtr.MatchedList = matchedList;
-                dtr.OutputResult = HitPolicyHelper.Output (decisionTable.HitPolicy, matchedList);
+                dtr.OutputResult = HitPolicyHelper.Output (decisionTable.HitPolicy, matchedList, decisionTable.Aggregation);
+
+                if (dtr.OutputResult.Count == 1 && dtr.OutputResult[0].Count == 1) {
+                    foreach (var item in dtr.OutputResult[0]) {
+                        return item.Value;
+                    }
+
+                }
+
                 return dtr;
             }
 

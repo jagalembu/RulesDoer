@@ -5,6 +5,9 @@ using RulesDoer.Core.Utils;
 namespace RulesDoer.Core.Runtime.Context {
     public static class VariableHelper {
         public static Variable MakeVariable (object value, string typename) {
+            if (value == null) {
+                return new Variable ();
+            }
             switch (typename) {
                 case "string":
                     return value.ToString ();
@@ -28,6 +31,9 @@ namespace RulesDoer.Core.Runtime.Context {
         }
 
         public static Variable MakeVariable (object value, DataTypeEnum typeEnum) {
+            if (value == null) {
+                return new Variable ();
+            }
             switch (typeEnum) {
                 case DataTypeEnum.String:
                     return value.ToString ();
@@ -45,6 +51,8 @@ namespace RulesDoer.Core.Runtime.Context {
                     return DurationHelper.MakeYearMonth (value.ToString ());
                 case DataTypeEnum.DayTimeDuration:
                     return DurationHelper.MakeDayTime (value.ToString ());
+                case DataTypeEnum.Null:
+                    return new Variable();    
                 default:
                     throw new NotImplementedException ($"The following type: {typeEnum} is not supported for a variable");
             }

@@ -70,7 +70,7 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
         [InlineData ("1000 + 2000", 3000)]
         [InlineData ("1.1 + 2.1", 3.2)]
         [InlineData ("2 + (3 * 3)", 11)]
-        [InlineData ("2 + 3 * 3", 15)]
+        [InlineData ("2 + 3 * 3", 11)]
         [InlineData ("0 - 1", -1)]
         [InlineData ("3-1", 2)]
         [InlineData ("3 * 1", 3)]
@@ -81,6 +81,8 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
         [InlineData ("6.2/2", 3.1)]
         [InlineData ("-(-3)", 3)]
         [InlineData ("-3", -3)]
+        [InlineData ("-10+-5", -15)]
+        [InlineData ("(-10)+(-5)", -15)]     
         public void EvaluationExpression_Math_Numeric (string exprText, decimal expected) {
 
             Variable variable = ParseAndEval (exprText);

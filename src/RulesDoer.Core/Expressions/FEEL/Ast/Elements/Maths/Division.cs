@@ -12,15 +12,19 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Maths {
             Left = left;
             Right = right;
         }
-        
+
         public object Execute (VariableContext context = null) {
             var leftVal = this.Left.Execute (context);
             var rightVal = this.Right.Execute (context);
 
             if (leftVal is Variable l && rightVal is Variable r) {
+                if (l.ValueType != r.ValueType) {
+                    throw new FEELException ("The variable type does not match for the arithmetic action");
+                }
                 switch (l.ValueType) {
                     case DataTypeEnum.Decimal:
-                        return  new Variable (l.NumericVal / r.NumericVal);
+                        //return new Variable (Math.Round(l.NumericVal / r.NumericVal, 11, MidpointRounding.ToEven));
+                        return new Variable (l.NumericVal / r.NumericVal);
 
                     default:
                         throw new FEELException ("Failed to perform division to incorrect FEEL type");

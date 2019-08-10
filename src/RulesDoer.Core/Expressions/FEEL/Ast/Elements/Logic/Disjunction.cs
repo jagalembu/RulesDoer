@@ -12,17 +12,33 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Logic {
             Left = left;
             Right = right;
         }
+
+        //  a    b  a and b a or b
+        // true true true true
+        // true false false true
+        // true otherwise null true
+        // false true false true
+        // false false false false
+        // false otherwise false null
+        // otherwise true null true
+        // otherwise false false null
+        // otherwise otherwise null null 
         public object Execute (VariableContext context = null) {
             var leftVar = Left.Execute (context);
             var rightVar = Right.Execute (context);
 
             if (leftVar is Variable outLVar && rightVar is Variable outRVar) {
-                if (outLVar.ValueType != DataTypeEnum.Boolean && outRVar.ValueType != DataTypeEnum.Boolean) {
-                    throw new FEELException ($"Expected both left {outLVar.ValueType} and right {outRVar.ValueType} values to be booleans");
+                if (outLVar.ValueType == DataTypeEnum.Boolean && outRVar.ValueType == DataTypeEnum.Boolean) {
+                    return new Variable (outLVar.BoolVal || outRVar.BoolVal);
+                }
+                if (outLVar.ValueType == DataTypeEnum.Boolean && outLVar.BoolVal == true) {
+                    return new Variable (true);
+                }
+                if (outRVar.ValueType == DataTypeEnum.Boolean && outRVar.BoolVal == true) {
+                    return new Variable (true);
                 }
 
-                return new Variable (outLVar.BoolVal || outRVar.BoolVal);
-
+                return new Variable ();
             }
 
             throw new FEELException ("Expected both left and right values to be a variable");

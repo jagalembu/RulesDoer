@@ -106,6 +106,7 @@ namespace RulesDoer.Core.Runtime.Context {
                 case DataTypeEnum.Date:
                     return this.DateTimeVal.CompareTo (variable.DateTimeVal);
                 case DataTypeEnum.Decimal:
+
                     return this.NumericVal.CompareTo (variable.NumericVal);
                 case DataTypeEnum.DayTimeDuration:
                     return this.TimeSpanVal.CompareTo (variable.TimeSpanVal);

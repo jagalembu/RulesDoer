@@ -1,6 +1,9 @@
-namespace RulesDoer.Core.Transformer.v1_2
-{
-     /// <summary>
+using System.Collections.Generic;
+using System.Xml.Serialization;
+using RulesDoer.Core.Runtime.Context;
+
+namespace RulesDoer.Core.Transformer.v1_2 {
+    /// <summary>
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCodeAttribute ("XmlSchemaClassGenerator", "2.0.0.0")]
     [System.SerializableAttribute ()]
@@ -28,5 +31,8 @@ namespace RulesDoer.Core.Transformer.v1_2
         /// </summary>
         [System.Xml.Serialization.XmlAttributeAttribute ("typeRef", Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
         public string TypeRef { get; set; }
+
+        [XmlIgnore]
+        public Dictionary<Variable, int> PriorityList { get; set; } = new Dictionary<Variable, int> ();
     }
 }

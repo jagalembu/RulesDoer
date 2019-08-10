@@ -48,6 +48,7 @@ namespace RulesDoer.Core.Transformer.v1_2 {
         /// <summary>
         /// </summary>
         [System.Xml.Serialization.XmlElementAttribute ("expression", Namespace = "http://www.omg.org/spec/DMN/20180521/MODEL/")]
+        [System.Xml.Serialization.XmlElementAttribute ("literalExpression", typeof (TLiteralExpression), Namespace = "http://www.omg.org/spec/DMN/20180521/MODEL/")]        
         public TExpression Expression { get; set; }
 
         [System.Xml.Serialization.XmlIgnoreAttribute ()]

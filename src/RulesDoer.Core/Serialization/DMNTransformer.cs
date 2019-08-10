@@ -15,6 +15,8 @@ namespace RulesDoer.Core.Serialization {
 
         public TDefinitions Transform (string dmn) {
 
+            _errorList.Clear ();
+
             TDefinitions def;
             using (var reader = new StringReader (dmn)) {
                 var xmlSerializer = new XmlSerializer (typeof (TDefinitions));

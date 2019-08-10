@@ -18,6 +18,9 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Maths {
             var rightVal = this.Right.Execute (context);
 
             if (leftVal is Variable l && rightVal is Variable r) {
+                if (l.ValueType != r.ValueType) {
+                    throw new FEELException ("The variable type does not match for the arithmetic action");
+                }
                 switch (l.ValueType) {
                     case DataTypeEnum.Decimal:
                         return new Variable (l.NumericVal - r.NumericVal);

@@ -8,6 +8,10 @@ namespace RulesDoer.Core.Transformer.v1_2 {
 
         /// <summary>
         /// </summary>
+        NONE,
+
+        /// <summary>
+        /// </summary>
         SUM,
 
         /// <summary>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testCases xmlns="http://www.omg.org/spec/DMN/20160719/testcase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<testCases xmlns="http://www.omg.org/spec/DMN/20160719/testcase" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelName>0008-LX-arithmetic.dmn</modelName>
 	<labels>
 		<label>Compliance Level 2</label>
@@ -23,7 +24,7 @@
 		</inputNode>
 		<resultNode name="payment" type="decision">
 			<expected>
-				<value>2778.69354943277</value>
+				<value>2778.6935494327667680885203832</value>
 			</expected>
 		</resultNode>
 	</testCase>
@@ -41,7 +42,7 @@
 		</inputNode>
 		<resultNode name="payment" type="decision">
 			<expected>
-				<value>562.707359373292</value>
+				<value>562.70735937326592715621433243</value>
 			</expected>
 		</resultNode>
 	</testCase>
@@ -59,7 +60,7 @@
 		</inputNode>
 		<resultNode name="payment" type="decision">
 			<expected>
-				<value>2861.03377700389</value>
+				<value>2861.03377700390163671626278</value>
 			</expected>
 		</resultNode>
 	</testCase>

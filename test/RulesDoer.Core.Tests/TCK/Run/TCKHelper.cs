@@ -11,12 +11,33 @@ namespace RulesDoer.Core.Tests.TCK.Run {
 
             foreach (var inputnode in testCase.InputNode) {
                 if (inputnode.ComponentSpecified) {
-                    throw new NotImplementedException ("TCK Component inputs not supported yet");
+                    context.InputDataMetaByName.TryGetValue (inputnode.Name, out InputDataMeta inputMeta);
+                    context.ItemDefinitionMeta.TryGetValue (inputMeta.TypeName, out var itemMeta);
+                    var ctx = new ContextInputs (inputnode.Name);
+                    ctx.IsItemDefinition = true;
+                    var itemDict = new Dictionary<string, Variable> ();
+                    foreach (var item in inputnode.Component) {
+                        itemMeta.ItemComponents.TryGetValue (item.Name, out var itemComponent);
+                        ctx.Add (item.Name, VariableHelper.MakeVariable (item.Value, itemComponent.TypeName));
+
+                    }
+                    inputDicts.Add (inputnode.Name, ctx);
+
                 } else if (inputnode.ListSpecified) {
                     throw new NotImplementedException ("TCK List inputs not supported yet");
                 } else {
                     context.InputDataMetaByName.TryGetValue (inputnode.Name, out InputDataMeta inputMeta);
-                    inputDicts.Add (inputnode.Name, VariableHelper.MakeVariable (inputnode.Value, inputMeta.TypeName));
+                    if (context.ItemDefinitionMeta != null) {
+                        context.ItemDefinitionMeta.TryGetValue (inputMeta.TypeName, out var itemMeta);
+                        if (itemMeta != null) {
+                            inputDicts.Add (inputnode.Name, VariableHelper.MakeVariable (inputnode.Value, itemMeta.TypeName));
+                        } else {
+                            inputDicts.Add (inputnode.Name, VariableHelper.MakeVariable (inputnode.Value, inputMeta.TypeName));
+                        }
+                    } else {
+                        inputDicts.Add (inputnode.Name, VariableHelper.MakeVariable (inputnode.Value, inputMeta.TypeName));
+                    }
+
                 }
 
             }
