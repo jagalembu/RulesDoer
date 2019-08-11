@@ -93,10 +93,10 @@ positiveUnaryTests
 
 unaryTests
 	returns[ITestExpression ast]:
-	positiveUnaryTests {$ast = $positiveUnaryTests.ast;}
+	 MINUS {$ast = new AnyTest();}
 	| NOT PAREN_OPEN positiveUnaryTests PAREN_CLOSE {$ast = new NotTest($positiveUnaryTests.ast);}
-	| MINUS {$ast = new AnyTest();};
-
+	| positiveUnaryTests {$ast = $positiveUnaryTests.ast;};
+	
 //boxed expression
 boxedExpression
 	returns[IExpression ast]:
@@ -131,7 +131,6 @@ textualExpression
 	| left = textualExpression AND right = textualExpression {$ast = new Conjuction($left.ast, $right.ast);
 		}
 	| comparison {$ast = $comparison.ast;}
-	//	| arithmeticExpression {$ast = $arithmeticExpression.ast;}
 	| PAREN_OPEN textualExpression {$ast = $textualExpression.ast;} PAREN_CLOSE;
 
 //simple expression
@@ -147,7 +146,7 @@ simpleExpression
 	)
 	| (simpleValue {$ast = $simpleValue.ast; });
 
-// Comparison
+//comparison
 comparison
 	returns[IExpression ast]:
 	as1 = comparison {var opEnum = OperatorEnum.NF;} (
@@ -158,6 +157,12 @@ comparison
 		| op = LE { opEnum = OperatorEnum.LE;}
 		| op = GE { opEnum = OperatorEnum.GE;}
 	) as2 = comparison {$ast = new Relational(opEnum, $as1.ast, $as2.ast);}
+	| as1 = comparison BETWEEN left = comparison AND right = comparison {$ast = new Between($as1.ast, $left.ast, $right.ast);
+		}
+	| as1 = comparison IN pu = positiveUnaryTest { new In($as1.ast, $pu.ast);
+		}
+	| as1 = comparison IN PAREN_OPEN pus = positiveUnaryTests PAREN_CLOSE {new In($as1.ast, $pus.ast);
+		}
 	| arithmeticExpression {$ast = $arithmeticExpression.ast;};
 
 //arithmetic expression
@@ -169,11 +174,11 @@ arithmeticExpression
 	| left = arithmeticExpression STAR right = arithmeticExpression {$ast = new Multiplication($left.ast, $right.ast);
 			}
 	| left = arithmeticExpression FORWARD_SLASH right = arithmeticExpression {$ast = new Division($left.ast, $right.ast);
-			}	
+			}
 	| left = arithmeticExpression PLUS right = arithmeticExpression {$ast = new Addition($left.ast, $right.ast);
 			}
 	| left = arithmeticExpression MINUS right = arithmeticExpression {$ast = new Subtraction($left.ast, $right.ast);
-			}	
+			}
 	| expr = arithmeticExpression INSTANCE_OF typeIs {$ast = new InstanceOf($expr.ast, $typeIs.ast);
 		}
 	| parent = arithmeticExpression DOT child = NAME {$ast = new PathExpression($parent.ast, $child.text);
@@ -256,8 +261,8 @@ identifier
 			token2 = NAME {$textVal += " " + $token2.text;}
 		)*
 	)
-	| token = DATETIMELIT {$textVal = $token.text;};
-// | ( token = OR {$textVal = $token.text;}) | ( token = AND {$textVal = $token.text;});
+	| token = DATETIMELIT {$textVal = $token.text;}
+	| token = NOT {$textVal = $token.text;};
 
 stringLiteral
 	returns[IExpression ast]:

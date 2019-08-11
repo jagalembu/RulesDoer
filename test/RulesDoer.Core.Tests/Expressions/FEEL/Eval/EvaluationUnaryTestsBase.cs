@@ -39,6 +39,7 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
         [InlineData ("not(2)", "number", true)]
         [InlineData ("not(\"kfc\")", "stringval", true)]
         [InlineData ("not(\"abc\")", "stringval", false)]
+        [InlineData ("not(number)", "number", false)]
         public void Evaluate_Not (string exprText, string inputName, bool expected) {
             VariableContext context = new VariableContext ();
             context.InputNameDict = new Dictionary<string, Variable> () { { "number", 1 }, { "stringval", "abc" } };

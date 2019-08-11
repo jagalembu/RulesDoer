@@ -7,6 +7,19 @@ using Xunit;
 namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
     public class EvaluationExpressionTests {
 
+
+        [Theory]
+        [InlineData ("not(true)", false)]
+        [InlineData ("not(A)", false)]
+        public void Evaluate_Not (string exprText, bool expected) {
+            VariableContext context = new VariableContext ();
+            context.InputNameDict = new Dictionary<string, Variable> () { { "A", true }, { "B", false }, {"stringval", "blah"} };
+
+            var variable = ParseAndEval (exprText, context);
+            Assert.Equal<bool> (expected, variable);
+        }
+
+
         [Theory]
         [ClassData (typeof (BoxedListDataTests))]
         public void EvaluateExpression_Boxed_List (string exprText, Variable expected, Boolean expectedEqual) {
@@ -32,6 +45,7 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
         }
 
         [Theory]
+        [InlineData ("string length(stringval)", null, 4, null)]
         [InlineData ("substring(\"foobar\",3)", "obar", null, null)]
         [InlineData ("substring(\"foobar\",3,3)", "oba", null, null)]
         [InlineData ("substring(\"foobar\",-2, 1)", "a", null, null)]
@@ -55,7 +69,10 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
         [InlineData ("matches(\"Helloworld\", \"hello world\", \"ix\")", "", null, true)]
         [InlineData ("replace(\"abcd\", \"(ab)|(a)\", \"[1=$1][2=$2]\") ", "[1=ab][2=]cd", null, null)]
         public void EvaluateExpression_FunctionInvocation_StringFuncs (string exprText, string expectedStr, int? expectedInt, Boolean? expectedBool) {
-            Variable variable = ParseAndEval (exprText);
+            VariableContext context = new VariableContext ();
+            context.InputNameDict = new Dictionary<string, Variable> () { { "stringval", "blah" } };
+
+            Variable variable = ParseAndEval (exprText, context);
             if (!string.IsNullOrWhiteSpace (expectedStr)) {
                 Assert.Equal<string> (expectedStr, variable);
             } else if (expectedBool.HasValue) {

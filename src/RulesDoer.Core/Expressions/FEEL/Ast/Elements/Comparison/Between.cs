@@ -3,9 +3,9 @@ using RulesDoer.Core.Runtime.Context;
 
 namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Comparison {
     public class Between : IComparisonExpression {
-        public IExpression InputValue { get; private set; }
-        public IExpression Left { get; private set; }
-        public IExpression Right { get; private set; }
+        public readonly IExpression InputValue;
+        public readonly IExpression Left;
+        public readonly IExpression Right;
 
         public Between (IExpression value, IExpression left, IExpression right) {
             InputValue = value;
@@ -15,7 +15,13 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Comparison {
         }
 
         public object Execute (VariableContext context = null) {
-            throw new NotImplementedException ();
+            var inputVal = (Variable) InputValue.Execute (context);
+            var leftVal = (Variable) Left.Execute (context);
+            var rightVal = (Variable) Right.Execute (context);
+
+            var betweenVal = (inputVal >= leftVal && inputVal <= rightVal);
+
+            return new Variable (betweenVal);
         }
     }
 }

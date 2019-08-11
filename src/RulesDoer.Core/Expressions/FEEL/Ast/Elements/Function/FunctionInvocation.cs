@@ -19,12 +19,15 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function {
 
             if (funcName is Variable outFuncName && outFuncName.ValueType == DataTypeEnum.String) {
                 if (Parameters is PositionalParameters) {
-                    var listVars = RetrieveListOfParameters ();
+                    var listVars = RetrieveListOfParameters (context);
+                    //TODO : functions invocations should be based on the function name instead of data type
                     switch (listVars[0].ValueType) {
                         case DataTypeEnum.String:
                             return StringFunctions.Execute (outFuncName.StringVal, listVars);
                         case DataTypeEnum.Decimal:
                             return NumericFunctions.Execute (outFuncName.StringVal, listVars);
+                        case DataTypeEnum.Boolean:
+                            return BooleanFunctions.Execute (outFuncName.StringVal, listVars);
 
                     }
 
@@ -36,16 +39,14 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function {
 
         }
 
-        private List<Variable> RetrieveListOfParameters () {
-            var expressions = Parameters.Execute ();
-
-            //TODO: future function to add input context if there is any
+        private List<Variable> RetrieveListOfParameters (VariableContext context) {
+            var expressions = Parameters.Execute (context);
 
             var outList = new List<Variable> ();
 
             if (expressions is List<IExpression> outExprs) {
                 foreach (var item in outExprs) {
-                    outList.Add ((Variable) item.Execute ());
+                    outList.Add ((Variable) item.Execute (context));
                 }
             }
 

@@ -13,6 +13,8 @@ namespace RulesDoer.Core.Tests.TCK.Transformer {
 
         public TestCases Transform (string xml) {
 
+            _errorList.Clear ();
+            
             TestCases def;
             using (var reader = new StringReader (xml)) {
                 var xmlSerializer = new XmlSerializer (typeof (TestCases));
