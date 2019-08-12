@@ -16,6 +16,19 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function {
         public const string Odd_Func = "odd";
         public const string Even_Func = "even";
 
+        public static readonly List<string> NumericFuncs = new List<string> () {
+            Decimal_Func,
+            Floor_Func,
+            Ceiling_Func,
+            Abs_Func,
+            Modulo_Func,
+            Sqrt_Func,
+            Log_Func,
+            Exp_Func,
+            Odd_Func,
+            Even_Func
+        };
+
         public static Variable Execute (string functionName, List<Variable> parameters) {
             switch (functionName) {
                 case Decimal_Func:

@@ -12,7 +12,7 @@ namespace RulesDoer.Core.Tests.TCK.Run {
         }
 
         [Theory]
-        [TCKFiles ("compliance_level_2.")]
+        [TCKFiles ("compliance_level_2")]
         public void Compliance_Level_2 (string filename, string inputTckXml) {
 
             var mockLogTrans = new Mock<ILogger<TCKTransformer>> ();
@@ -26,7 +26,7 @@ namespace RulesDoer.Core.Tests.TCK.Run {
         }
 
         [Theory]
-        [TCKFiles ("compliance_level_3")]
+        [TCKFiles ("compliance_level_3.")]
         public void Compliance_Level_3 (string filename, string inputTckXml) {
 
             var mockLogTrans = new Mock<ILogger<TCKTransformer>> ();

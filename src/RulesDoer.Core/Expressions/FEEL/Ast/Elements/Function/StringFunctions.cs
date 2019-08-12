@@ -22,6 +22,21 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function {
         public const string Matches = "matches";
         public const string Split = "split";
 
+        public static readonly List<string> StringFuncs = new List<string>{
+            Substring,
+            String_Length,
+            Upper_Case,
+            Lower_Case,
+            Substring_Before,
+            Substring_After,
+            Replace,
+            Contains,
+            Starts_With,
+            End_With,
+            Matches,
+            Split
+        };
+
         public static Variable Execute (string functionName, List<Variable> parameters) {
 
             switch (functionName) {

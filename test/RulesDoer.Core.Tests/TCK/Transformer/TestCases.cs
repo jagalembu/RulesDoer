@@ -8,7 +8,9 @@ namespace RulesDoer.Core.Tests.TCK.Transformer
     [System.Xml.Serialization.XmlRootAttribute("testCases", Namespace="http://www.omg.org/spec/DMN/20160719/testcase")]
     public partial class TestCases
     {
-        
+        [System.Xml.Serialization.XmlAttributeAttribute("schemaLocation", Form = System.Xml.Schema.XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/2001/XMLSchema-instance")]
+        public string SchemaLocation { get; set; }
+               
         [System.Xml.Serialization.XmlElementAttribute("modelName", Namespace="http://www.omg.org/spec/DMN/20160719/testcase")]
         public string ModelName { get; set; }
         

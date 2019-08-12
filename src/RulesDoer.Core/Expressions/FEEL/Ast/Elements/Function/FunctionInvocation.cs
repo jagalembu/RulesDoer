@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using RulesDoer.Core.Expressions.FEEL.Eval;
+using RulesDoer.Core.Runtime;
 using RulesDoer.Core.Runtime.Context;
 using RulesDoer.Core.Types;
 
@@ -20,15 +21,23 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function {
             if (funcName is Variable outFuncName && outFuncName.ValueType == DataTypeEnum.String) {
                 if (Parameters is PositionalParameters) {
                     var listVars = RetrieveListOfParameters (context);
-                    //TODO : functions invocations should be based on the function name instead of data type
-                    switch (listVars[0].ValueType) {
-                        case DataTypeEnum.String:
-                            return StringFunctions.Execute (outFuncName.StringVal, listVars);
-                        case DataTypeEnum.Decimal:
-                            return NumericFunctions.Execute (outFuncName.StringVal, listVars);
-                        case DataTypeEnum.Boolean:
-                            return BooleanFunctions.Execute (outFuncName.StringVal, listVars);
 
+                    //TODO: create reserved function names logic to prevent overlap function names
+
+                    if (VariableContextHelper.RetrieveBkm (outFuncName, context, out var bkmMeta)) {
+                        return DMNDoerHelper.EvalBkm (bkmMeta.BKMModel, context, listVars);
+                    }
+
+                    if (BooleanFunctions.Not_Func == outFuncName) {
+                        return BooleanFunctions.Execute (outFuncName.StringVal, listVars);
+                    }
+
+                    if (StringFunctions.StringFuncs.Contains (outFuncName)) {
+                        return StringFunctions.Execute (outFuncName.StringVal, listVars);
+                    }
+
+                    if (NumericFunctions.NumericFuncs.Contains (outFuncName)) {
+                        return NumericFunctions.Execute (outFuncName.StringVal, listVars);
                     }
 
                 }

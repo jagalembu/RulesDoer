@@ -2,6 +2,23 @@ using RulesDoer.Core.Expressions.FEEL.Eval;
 
 namespace RulesDoer.Core.Runtime.Context {
     public static class VariableContextHelper {
+
+        public static bool RetrieveBkm (string bkmName, VariableContext context, out BkmMeta outBkmMeta) {
+            context.BKMMetaByName.TryGetValue (bkmName, out var bkmMeta);
+            outBkmMeta = bkmMeta;
+
+            return (bkmMeta == null)? false : true;
+        }
+
+        public static VariableContext MakeACopy (VariableContext context) {
+            return new VariableContext () {
+                BKMMetaByName = context.BKMMetaByName,
+                    InputDataMetaById = context.InputDataMetaById,
+                    InputDataMetaByName = context.InputDataMetaByName,
+                    ItemDefinitionMeta = context.ItemDefinitionMeta
+            };
+        }
+
         public static Variable RetrieveInputVariable (VariableContext context = null, string inputName = null, bool doException = true) {
             if (context.InputNameDict == null) {
                 if (doException) {

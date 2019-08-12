@@ -50,7 +50,7 @@ namespace RulesDoer.Core.Tests {
 
             _dmnRepository = new DMNRepository (_dmnTransformer, _dmnPersistence, _dmnValidation);
 
-            _dmnDoer = new DMNDoer (new Evaluation (), _dmnRepository);
+            _dmnDoer = new DMNDoer ( _dmnRepository);
 
         }
 

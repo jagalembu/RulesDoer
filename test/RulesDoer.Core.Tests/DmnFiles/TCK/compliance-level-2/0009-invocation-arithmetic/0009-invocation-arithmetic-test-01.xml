@@ -27,7 +27,7 @@
 		</inputNode>
 		<resultNode name="MonthlyPayment" type="decision">
 			<expected>
-				<value>2878.69354943277</value>
+				<value>2878.6935494327667680885203832</value>
 			</expected>
 		</resultNode>
 	</testCase>
@@ -48,7 +48,7 @@
 		</inputNode>
 		<resultNode name="MonthlyPayment" type="decision">
 			<expected>
-				<value>662.707359373292</value>
+				<value>662.70735937326592715621433243</value>
 			</expected>
 		</resultNode>
 	</testCase>
@@ -69,7 +69,7 @@
 		</inputNode>
 		<resultNode name="MonthlyPayment" type="decision">
 			<expected>
-				<value>2961.03377700389</value>
+				<value>2961.03377700390163671626278</value>
 			</expected>
 		</resultNode>
 	</testCase>
