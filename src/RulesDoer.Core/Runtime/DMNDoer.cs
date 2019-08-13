@@ -47,6 +47,10 @@ namespace RulesDoer.Core.Runtime {
                             results.Add (decision.Name, DMNDoerHelper.EvalDecisionTable (decisionTable, runtimeContext));
                             break;
 
+                        case TContext contextDecision:
+                            results.Add (decision.Name, DMNDoerHelper.EvalContextDecision (contextDecision, runtimeContext));
+                            break;
+
                         default:
                             throw new DMNException ($"Decision expression {decision.Expression.Id} is not supported yet");
                     }

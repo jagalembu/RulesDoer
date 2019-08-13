@@ -61,7 +61,11 @@ namespace RulesDoer.Core.Tests.TCK.Run {
             }
 
             if (expected.ComponentSpecified) {
-                AssertResultComponent (expected.Component, name, actualrsltDic);
+                if (actualrsltDic != null) {
+                    AssertResultComponent (expected.Component, name, actualrsltDic);
+                    return;
+                }
+                AssertResultComponent (expected.Component, name, null, actualrslt);
                 return;
             }
 
@@ -107,12 +111,26 @@ namespace RulesDoer.Core.Tests.TCK.Run {
 
         }
 
-        private void AssertResultComponent (Collection<ValueTypeComponent> expected, string name, Dictionary<string, Variable> actualrslt) {
+        private void AssertResultComponent (Collection<ValueTypeComponent> expected, string name, Dictionary<string, Variable> actualRsltDict = null, Variable actualRslt = null) {
 
-            foreach (var item in expected) {
-                actualrslt.TryGetValue (item.Name, out var rslt);
-                AssertResultValueType (item, name, null, rslt);
+            if (actualRslt != null && actualRslt.ValueType == DataTypeEnum.Context) {
+                foreach (var item in expected) {
+                    actualRslt.ContextInputs.ContextDict.TryGetValue (item.Name, out var rslt);
+                    AssertResultValueType (item, name, null, rslt);
+                }
+
+                return;
             }
+
+            if (actualRsltDict != null) {
+                foreach (var item in expected) {
+                    actualRsltDict.TryGetValue (item.Name, out var rslt);
+                    AssertResultValueType (item, name, null, rslt);
+                }
+                return;
+            }
+
+            throw new TCKException ("Missing variable to assert components");
 
         }
 
@@ -122,7 +140,6 @@ namespace RulesDoer.Core.Tests.TCK.Run {
                 Assert.True (expected == null, name);
                 return;
             }
-            
 
             Assert.Equal<Variable> (VariableHelper.MakeVariable (expected, actualrslt.ValueType), actualrslt);
 

@@ -4,10 +4,14 @@ namespace RulesDoer.Core.Runtime.Context {
     public static class VariableContextHelper {
 
         public static bool RetrieveBkm (string bkmName, VariableContext context, out BkmMeta outBkmMeta) {
+            if (context.BKMMetaByName == null) {
+                outBkmMeta = null;
+                return false;
+            }
             context.BKMMetaByName.TryGetValue (bkmName, out var bkmMeta);
             outBkmMeta = bkmMeta;
 
-            return (bkmMeta == null)? false : true;
+            return (bkmMeta == null) ? false : true;
         }
 
         public static VariableContext MakeACopy (VariableContext context) {

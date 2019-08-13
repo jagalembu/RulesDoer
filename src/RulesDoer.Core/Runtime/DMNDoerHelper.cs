@@ -87,11 +87,32 @@ namespace RulesDoer.Core.Runtime {
 
         public static Variable EvalLiteralExpression (string litExpression, VariableContext runtimeContext) {
 
-            //var enclogic = bkmModel.EncapsulatedLogic.Expression
             Evaluation evalExpression = new Evaluation ();
 
             return evalExpression.EvaluateExpressionsBase (litExpression, runtimeContext);
 
+        }
+
+        public static Variable EvalContextDecision (TContext decisionContext, VariableContext runtimeContext) {
+            var contextout = new ContextInputs ();
+            Evaluation evalExpression = new Evaluation ();
+
+            foreach (var item in decisionContext.ContextEntry) {
+                switch (item.Expression) {
+                    case TLiteralExpression litExpr:
+                        contextout.Add (item.Variable.Name, DMNDoerHelper.EvalLiteralExpression (litExpr.Text, runtimeContext));
+                        break;
+
+                    case TDecisionTable decisionTable:
+                        contextout.Add (item.Variable.Name, DMNDoerHelper.EvalDecisionTable (decisionTable, runtimeContext));
+                        break;
+
+                    default:
+                        throw new DMNException ($"Expression {item.Expression.GetType()} is not supported yet");
+                }
+            }
+
+            return contextout;
         }
 
         public static Variable EvalBkm (TBusinessKnowledgeModel bkmModel, VariableContext runtimeContext, List<Variable> inputParamVars) {

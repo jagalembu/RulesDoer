@@ -286,5 +286,35 @@ namespace RulesDoer.Core.Runtime.Context {
             return ev.DecisionTableResult;
         }
 
+
+        public override string ToString () {
+            switch (this.ValueType) {
+                case DataTypeEnum.Boolean:
+                    return this.BoolVal.ToString ();
+
+                case DataTypeEnum.String:
+                    return this.StringVal;
+
+                case DataTypeEnum.DateTime:
+                case DataTypeEnum.Time:
+                case DataTypeEnum.Date:
+                    return this.DateTimeVal.ToString ();
+
+                case DataTypeEnum.Decimal:
+                    return this.NumericVal.ToString ();
+
+                case DataTypeEnum.DayTimeDuration:
+                    return this.TimeSpanVal.ToString ();
+
+                case DataTypeEnum.YearMonthDuration:
+                    return this.NumericVal.ToString ();
+
+                default:
+                    return null;
+
+            }
+
+        }
+
     }
 }

@@ -26,7 +26,7 @@ namespace RulesDoer.Core.Tests.TCK.Run {
         }
 
         [Theory]
-        [TCKFiles ("compliance_level_3.")]
+        [TCKFiles ("compliance_level_3._0002")]
         public void Compliance_Level_3 (string filename, string inputTckXml) {
 
             var mockLogTrans = new Mock<ILogger<TCKTransformer>> ();

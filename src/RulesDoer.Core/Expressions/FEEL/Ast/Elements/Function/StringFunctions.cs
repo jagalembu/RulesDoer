@@ -21,8 +21,9 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function {
         public const string End_With = "ends with";
         public const string Matches = "matches";
         public const string Split = "split";
+        public const string StringFunc = "string";
 
-        public static readonly List<string> StringFuncs = new List<string>{
+        public static readonly List<string> StringFuncs = new List<string> {
             Substring,
             String_Length,
             Upper_Case,
@@ -34,12 +35,18 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function {
             Starts_With,
             End_With,
             Matches,
-            Split
+            Split,
+            StringFunc
         };
 
         public static Variable Execute (string functionName, List<Variable> parameters) {
 
             switch (functionName) {
+                case StringFunc:
+                    if (parameters.Count == 1) {
+                        return parameters[0].ToString ();
+                    }
+                    throw new FEELException ($"Incorrect parameters for {functionName} function");
                 case Substring:
                     if (parameters.Count == 2) {
                         var startIndex = int.Parse (parameters[1].NumericVal.ToString ());
