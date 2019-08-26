@@ -1,6 +1,12 @@
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Xml;
+using System.Xml.Serialization;
 using Microsoft.Extensions.Logging;
 using Moq;
 using RulesDoer.Core.Tests.TCK.Transformer;
+using RulesDoer.Core.Transformer.v1_2;
 using Xunit;
 
 namespace RulesDoer.Core.Tests.TCK.Run {
@@ -26,7 +32,7 @@ namespace RulesDoer.Core.Tests.TCK.Run {
         }
 
         [Theory]
-        [TCKFiles ("compliance_level_3._0002")]
+        [TCKFiles ("compliance_level_3._002")]
         public void Compliance_Level_3 (string filename, string inputTckXml) {
 
             var mockLogTrans = new Mock<ILogger<TCKTransformer>> ();
@@ -38,6 +44,7 @@ namespace RulesDoer.Core.Tests.TCK.Run {
             executeTCK.RunTest (inputTckXml);
 
         }
+
 
     }
 }

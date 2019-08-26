@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Serialization;
 using Microsoft.Extensions.Logging;
@@ -18,7 +20,9 @@ namespace RulesDoer.Core.Serialization {
             _errorList.Clear ();
 
             TDefinitions def;
-            using (var reader = new StringReader (dmn)) {
+
+            using (var memS = new MemoryStream(Encoding.UTF8.GetBytes(dmn)))
+            using (var reader = new StreamReader (memS, Encoding.UTF8)) {
                 var xmlSerializer = new XmlSerializer (typeof (TDefinitions));
 
                 xmlSerializer.UnknownAttribute +=
@@ -27,7 +31,7 @@ namespace RulesDoer.Core.Serialization {
                     new XmlElementEventHandler (Serializer_UnknownElementEvent);
                 xmlSerializer.UnknownNode +=
                     new XmlNodeEventHandler (Serializer_UnknownNodeEvent);
-
+                    
                 def = (TDefinitions) xmlSerializer.Deserialize (reader);
             }
 

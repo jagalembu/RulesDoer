@@ -54,7 +54,8 @@ namespace RulesDoer.Core.Expressions.FEEL.Eval {
         }
 
         private FEELRule RetrieveParser (string exprText) {
-            var inputStream = new AntlrInputStream (new StringReader (exprText));
+            var inputStream = CharStreams.fromstring(exprText);
+            //var inputStream = new AntlrInputStream (new StringReader (exprText));
             var lexer = new FEELLexer (inputStream);
             lexer.RemoveErrorListeners ();
             lexer.AddErrorListener (new LexerErrors ());

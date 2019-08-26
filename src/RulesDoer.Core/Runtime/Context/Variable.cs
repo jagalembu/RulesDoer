@@ -92,7 +92,7 @@ namespace RulesDoer.Core.Runtime.Context {
         }
 
         static public Variable Date (DateTime tm) {
-            return new Variable (DataTypeEnum.Date, tm);
+            return new Variable (DataTypeEnum.Date, tm.Date);
         }
 
         public int CompareTo (Variable variable) {

@@ -140,7 +140,7 @@ namespace RulesDoer.Core.Tests.TCK.Run {
                 Assert.True (expected == null, name);
                 return;
             }
-
+            
             Assert.Equal<Variable> (VariableHelper.MakeVariable (expected, actualrslt.ValueType), actualrslt);
 
         }

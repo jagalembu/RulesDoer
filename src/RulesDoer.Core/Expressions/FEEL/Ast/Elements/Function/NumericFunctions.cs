@@ -4,7 +4,7 @@ using RulesDoer.Core.Expressions.FEEL.Eval;
 using RulesDoer.Core.Runtime.Context;
 
 namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function {
-    public class NumericFunctions {
+    public static class NumericFunctions {
         public const string Decimal_Func = "decimal";
         public const string Floor_Func = "floor";
         public const string Ceiling_Func = "ceiling";

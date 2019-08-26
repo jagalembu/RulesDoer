@@ -1,6 +1,7 @@
-namespace RulesDoer.Core.Transformer.v1_2
-{
-     /// <summary>
+using RulesDoer.Core.Utils;
+
+namespace RulesDoer.Core.Transformer.v1_2 {
+    /// <summary>
     /// </summary>
     [System.CodeDom.Compiler.GeneratedCodeAttribute ("XmlSchemaClassGenerator", "2.0.0.0")]
     [System.SerializableAttribute ()]
@@ -10,10 +11,12 @@ namespace RulesDoer.Core.Transformer.v1_2
     [System.Xml.Serialization.XmlRootAttribute ("literalExpression", Namespace = "http://www.omg.org/spec/DMN/20180521/MODEL/")]
     public partial class TLiteralExpression : TExpression {
 
+        private string _text;
+
         /// <summary>
         /// </summary>
         [System.Xml.Serialization.XmlElementAttribute ("text", Namespace = "http://www.omg.org/spec/DMN/20180521/MODEL/")]
-        public string Text { get; set; }
+        public string Text { get => _text; set => _text = StringUtils.Unescape (value); }
 
         /// <summary>
         /// </summary>

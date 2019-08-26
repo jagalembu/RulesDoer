@@ -84,7 +84,8 @@ namespace RulesDoer.Core.Transformer.v1_2 {
         /// </summary>
         [XmlElement ("inputData",typeof(TInputData), Namespace = "http://www.omg.org/spec/DMN/20180521/MODEL/")]
         [XmlElement ("decision",typeof(TDecision), Namespace = "http://www.omg.org/spec/DMN/20180521/MODEL/")]
-        [XmlElement ("businessKnowledgeModel",typeof(TBusinessKnowledgeModel), Namespace = "http://www.omg.org/spec/DMN/20180521/MODEL/")]        
+        [XmlElement ("businessKnowledgeModel",typeof(TBusinessKnowledgeModel), Namespace = "http://www.omg.org/spec/DMN/20180521/MODEL/")]
+        [XmlElement ("knowledgeSource",typeof(TKnowledgeSource), Namespace = "http://www.omg.org/spec/DMN/20180521/MODEL/")]                
         public System.Collections.ObjectModel.Collection<TDRGElement> DrgElement {
             get {
                 return this._drgElement;

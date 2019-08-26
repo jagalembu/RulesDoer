@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
+using System.Xml;
 using System.Xml.Serialization;
 using Microsoft.Extensions.Logging;
 
@@ -14,9 +16,12 @@ namespace RulesDoer.Core.Tests.TCK.Transformer {
         public TestCases Transform (string xml) {
 
             _errorList.Clear ();
-            
+
             TestCases def;
-            using (var reader = new StringReader (xml)) {
+            var setttings = new XmlReaderSettings ();
+            setttings.IgnoreWhitespace = false;
+            using (var mem = new MemoryStream (Encoding.UTF8.GetBytes (xml)))
+            using (var xmlR = XmlReader.Create (mem, setttings)) {
                 var xmlSerializer = new XmlSerializer (typeof (TestCases));
 
                 xmlSerializer.UnknownAttribute +=
@@ -26,7 +31,7 @@ namespace RulesDoer.Core.Tests.TCK.Transformer {
                 xmlSerializer.UnknownNode +=
                     new XmlNodeEventHandler (Serializer_UnknownNodeEvent);
 
-                def = (TestCases) xmlSerializer.Deserialize (reader);
+                def = (TestCases) xmlSerializer.Deserialize (xmlR);
             }
 
             if (_errorList.Count > 0) {

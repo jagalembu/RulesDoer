@@ -8,7 +8,7 @@ using RulesDoer.Core.Runtime.Context;
 using RulesDoer.Core.Types;
 
 namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function {
-    public class StringFunctions {
+    public static class StringFunctions {
         public const string Substring = "substring";
         public const string String_Length = "string length";
         public const string Upper_Case = "upper case";
@@ -54,7 +54,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function {
                     }
                     if (parameters.Count == 3) {
                         var startIndex = int.Parse (parameters[1].NumericVal.ToString ());
-                        return parameters[0].StringVal.Substring (startIndex > 0 ? startIndex - 1 : parameters[0].StringVal.Length - (startIndex * -1), int.Parse (parameters[2].NumericVal.ToString ()));
+                        return parameters[0].StringVal.Substring (startIndex > 0 ? startIndex - 1 : parameters[0].StringVal.Length - (startIndex * -1), int.Parse (Math.Truncate (parameters[2].NumericVal).ToString ()));
                     }
                     throw new FEELException ($"Incorrect parameters for {functionName} function");
                 case String_Length:
@@ -96,7 +96,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function {
                     if (parameters.Count == 4) {
                         flagOpts = MatchesOptions (parameters[3]);
                     }
-                    if (parameters.Count <= 3) {
+                    if (parameters.Count == 3 || parameters.Count == 4) {
                         return Regex.Replace (parameters[0], parameters[1], parameters[2], flagOpts);
                     }
                     throw new FEELException ($"Incorrect parameters for {functionName} function");

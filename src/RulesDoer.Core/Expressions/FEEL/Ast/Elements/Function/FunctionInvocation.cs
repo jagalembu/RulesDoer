@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using RulesDoer.Core.Expressions.FEEL.Eval;
 using RulesDoer.Core.Runtime;
 using RulesDoer.Core.Runtime.Context;
@@ -41,7 +42,24 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function {
                     }
 
                 }
-                //TODO: do named parameters functions runs
+
+                if (Parameters is NamedParameters) {
+                    var namedDict = RetrieveNamedParameters ();
+
+                    if (BooleanFunctions.Not_Func == outFuncName) {
+                        return BooleanFunctions.Execute (outFuncName.StringVal, namedDict.Values.ToList ());
+                    }
+
+                    if (StringFunctions.StringFuncs.Contains (outFuncName)) {
+                        return StringFunctions.Execute (outFuncName.StringVal, namedDict.Values.ToList ());
+                    }
+
+                    if (NumericFunctions.NumericFuncs.Contains (outFuncName)) {
+                        return NumericFunctions.Execute (outFuncName.StringVal, namedDict.Values.ToList ());
+                    }
+
+                }
+
             }
 
             throw new FEELException ("Function name is not a variable of string type");

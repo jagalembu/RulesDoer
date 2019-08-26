@@ -87,6 +87,7 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
         [InlineData ("decimal(1/3,2)", "0.33", null)]
         [InlineData ("decimal(1.5,0)", "2", null)]
         [InlineData ("decimal(2.5,0)", "2", null)]
+        [InlineData ("decimal(n:15/78*2,scale:3)", "0.385", null)]
         [InlineData ("floor(1.5)", "1", null)]
         [InlineData ("floor(-1.5)", "-2", null)]
         [InlineData ("ceiling(1.5)", "2", null)]

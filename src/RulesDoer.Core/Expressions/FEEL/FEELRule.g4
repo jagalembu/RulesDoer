@@ -171,13 +171,10 @@ arithmeticExpression
 	(MINUS) expr = arithmeticExpression {$ast = new ArithmeticNegation($expr.ast);}
 	| left = arithmeticExpression STAR_STAR right = arithmeticExpression {$ast = new Exponentiation($left.ast, $right.ast);
 			}
-	| left = arithmeticExpression STAR right = arithmeticExpression {$ast = new Multiplication($left.ast, $right.ast);
+	| left = arithmeticExpression op = (STAR | FORWARD_SLASH) right = arithmeticExpression {if ($op.text == "*") {$ast = new Multiplication($left.ast, $right.ast);}
+	else {$ast = new Division($left.ast, $right.ast);}
 			}
-	| left = arithmeticExpression FORWARD_SLASH right = arithmeticExpression {$ast = new Division($left.ast, $right.ast);
-			}
-	| left = arithmeticExpression PLUS right = arithmeticExpression {$ast = new Addition($left.ast, $right.ast);
-			}
-	| left = arithmeticExpression MINUS right = arithmeticExpression {$ast = new Subtraction($left.ast, $right.ast);
+	| left = arithmeticExpression op = (PLUS | MINUS) right = arithmeticExpression {if ($op.text == "+") {$ast = new Addition($left.ast, $right.ast);} else {$ast = new Subtraction($left.ast, $right.ast);}
 			}
 	| expr = arithmeticExpression INSTANCE_OF typeIs {$ast = new InstanceOf($expr.ast, $typeIs.ast);
 		}
