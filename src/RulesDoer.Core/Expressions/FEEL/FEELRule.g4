@@ -93,15 +93,17 @@ positiveUnaryTests
 
 unaryTests
 	returns[ITestExpression ast]:
-	 MINUS {$ast = new AnyTest();}
+	MINUS {$ast = new AnyTest();}
 	| NOT PAREN_OPEN positiveUnaryTests PAREN_CLOSE {$ast = new NotTest($positiveUnaryTests.ast);}
 	| positiveUnaryTests {$ast = $positiveUnaryTests.ast;};
-	
+
 //boxed expression
 boxedExpression
 	returns[IExpression ast]:
 	list {$ast = $list.ast;}
-	| context {$ast = $context.ast;};
+	| context {$ast = $context.ast;}
+	| parent = boxedExpression DOT child = NAME {$ast = new PathExpression($parent.ast, $child.text);
+		};
 
 list
 	returns[IExpression ast]:

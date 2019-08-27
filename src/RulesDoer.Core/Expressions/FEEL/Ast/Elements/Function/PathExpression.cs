@@ -23,7 +23,8 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function {
                 switch (parentVar.ValueType) {
 
                     case DataTypeEnum.Context:
-                        throw new NotImplementedException ("Need to add the context path expression");
+                        parentVar.ContextInputs.ContextDict.TryGetValue (Child, out Variable contextOut);
+                        return contextOut;
                     case DataTypeEnum.Date:
                     case DataTypeEnum.DateTime:
                     case DataTypeEnum.Time:
