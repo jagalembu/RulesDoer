@@ -7,18 +7,16 @@ using Xunit;
 namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
     public class EvaluationExpressionTests {
 
-
         [Theory]
         [InlineData ("not(true)", false)]
         [InlineData ("not(A)", false)]
         public void Evaluate_Not (string exprText, bool expected) {
             VariableContext context = new VariableContext ();
-            context.InputNameDict = new Dictionary<string, Variable> () { { "A", true }, { "B", false }, {"stringval", "blah"} };
+            context.InputNameDict = new Dictionary<string, Variable> () { { "A", true }, { "B", false }, { "stringval", "blah" } };
 
             var variable = ParseAndEval (exprText, context);
             Assert.Equal<bool> (expected, variable);
         }
-
 
         [Theory]
         [ClassData (typeof (BoxedListDataTests))]
@@ -178,26 +176,26 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
 
         [Theory]
         [ClassData (typeof (DateFunctionDataTests))]
-        public void EvaluateExpression_Date_Function (string exprText, DateTime expected) {
+        public void EvaluateExpression_Date_Function (string exprText, Variable expected) {
             Variable variable = ParseAndEval (exprText);
 
-            Assert.Equal<DateTime> (expected, variable);
+            Assert.Equal<Variable> (expected, variable);
         }
 
         [Theory]
         [ClassData (typeof (DurationFunctionDataTests))]
-        public void EvaluateExpression_Duration_Function (string exprText, TimeSpan expected) {
+        public void EvaluateExpression_Duration_Function (string exprText, Variable expected) {
             Variable variable = ParseAndEval (exprText);
 
-            Assert.Equal<TimeSpan> (expected, variable);
+            Assert.Equal<Variable> (expected, variable);
         }
 
         [Theory]
         [ClassData (typeof (DurationYearMonthDataTests))]
-        public void EvaluateExpression_Duration_YearMonth_Function (string exprText, Decimal expected) {
+        public void EvaluateExpression_Duration_YearMonth_Function (string exprText, Variable expected) {
             Variable variable = ParseAndEval (exprText);
 
-            Assert.Equal<Decimal> (expected, variable);
+            Assert.Equal<Variable> (expected, variable);
         }
 
         [Theory]

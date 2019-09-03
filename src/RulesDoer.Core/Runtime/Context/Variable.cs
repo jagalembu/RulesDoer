@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NodaTime;
 using RulesDoer.Core.Expressions.FEEL.Eval;
 using RulesDoer.Core.Types;
+using RulesDoer.Core.Utils;
 
 namespace RulesDoer.Core.Runtime.Context {
     public class Variable : IComparable<Variable> {
@@ -10,10 +12,14 @@ namespace RulesDoer.Core.Runtime.Context {
         public string InputName { get; set; }
         public decimal NumericVal { get; set; }
         public bool BoolVal { get; set; }
-        public DateTime DateTimeVal { get; set; }
-        public TimeSpan DurationVal { get; set; }
+        public OffsetDateTime? DateTimeVal { get; set; }
+        public ZonedDateTime? ZoneDateTimeVal { get; set; }
+        public LocalDateTime? LocalDateTimeVal { get; set; }
+        public LocalTime? LocalTimeVal { get; set; }
+        public OffsetTime? TimeVal { get; set; }
+        public LocalDate DateVal { get; set; }
+        public Period DurationVal { get; set; }
         public string StringVal { get; set; }
-        public TimeSpan TimeSpanVal { get; set; }
         public object ObjectVal { get; set; }
         public List<Variable> ListVal { get; set; }
         public (Variable a, Variable b) TwoTuple { get; set; }
@@ -39,14 +45,39 @@ namespace RulesDoer.Core.Runtime.Context {
             ValueType = DataTypeEnum.String;
         }
 
-        public Variable (DateTime dt) {
+        public Variable (OffsetDateTime dt) {
             DateTimeVal = dt;
             ValueType = DataTypeEnum.DateTime;
         }
 
-        public Variable (TimeSpan ts) {
-            TimeSpanVal = ts;
-            ValueType = DataTypeEnum.DayTimeDuration;
+        public Variable (LocalDateTime dt) {
+            LocalDateTimeVal = dt;
+            ValueType = DataTypeEnum.DateTime;
+        }
+
+        public Variable (ZonedDateTime dt) {
+            ZoneDateTimeVal = dt;
+            ValueType = DataTypeEnum.DateTime;
+        }
+
+        public Variable (LocalDate dt) {
+            DateVal = dt;
+            ValueType = DataTypeEnum.Date;
+        }
+
+        public Variable (LocalTime tm) {
+            LocalTimeVal = tm;
+            ValueType = DataTypeEnum.Time;
+        }
+
+        public Variable (OffsetTime tm) {
+            TimeVal = tm;
+            ValueType = DataTypeEnum.Time;
+        }
+
+        public Variable (Period period) {
+            DurationVal = period;
+            ValueType = DataTypeEnum.Duration;
         }
 
         public Variable (DataTypeEnum yrMnthDurationType, int months) {
@@ -54,9 +85,9 @@ namespace RulesDoer.Core.Runtime.Context {
             NumericVal = months;
         }
 
-        public Variable (DataTypeEnum timeType, DateTime inTime) {
+        public Variable (DataTypeEnum timeType, ZonedDateTime inTime) {
             ValueType = timeType;
-            DateTimeVal = inTime;
+            ZoneDateTimeVal = inTime;
         }
 
         public Variable (List<Variable> lst) {
@@ -87,12 +118,8 @@ namespace RulesDoer.Core.Runtime.Context {
             return new Variable (DataTypeEnum.YearMonthDuration, months);
         }
 
-        static public Variable Time (DateTime tm) {
+        static public Variable Time (ZonedDateTime tm) {
             return new Variable (DataTypeEnum.Time, tm);
-        }
-
-        static public Variable Date (DateTime tm) {
-            return new Variable (DataTypeEnum.Date, tm.Date);
         }
 
         public int CompareTo (Variable variable) {
@@ -102,14 +129,17 @@ namespace RulesDoer.Core.Runtime.Context {
                 case DataTypeEnum.String:
                     return this.StringVal.CompareTo (variable.StringVal);
                 case DataTypeEnum.DateTime:
+                    return DateAndTimeHelper.CompareDateTime (this, variable);
                 case DataTypeEnum.Time:
+                    return DateAndTimeHelper.CompareTime (this, variable);
                 case DataTypeEnum.Date:
-                    return this.DateTimeVal.CompareTo (variable.DateTimeVal);
+                    return DateAndTimeHelper.CompareDate (this, variable);
                 case DataTypeEnum.Decimal:
-
                     return this.NumericVal.CompareTo (variable.NumericVal);
+                case DataTypeEnum.Duration:
+                    return DateAndTimeHelper.CompareDuration (this, variable);
                 case DataTypeEnum.DayTimeDuration:
-                    return this.TimeSpanVal.CompareTo (variable.TimeSpanVal);
+                    return DateAndTimeHelper.CompareDuration (this, variable);
                 case DataTypeEnum.YearMonthDuration:
                     return this.NumericVal.CompareTo (variable.NumericVal);
                 case DataTypeEnum.List:
@@ -173,15 +203,19 @@ namespace RulesDoer.Core.Runtime.Context {
                     hashCode = this.StringVal.GetHashCode ();
                     break;
                 case DataTypeEnum.DateTime:
-                case DataTypeEnum.Time:
-                case DataTypeEnum.Date:
                     hashCode = this.DateTimeVal.GetHashCode ();
+                    break;
+                case DataTypeEnum.Time:
+                    hashCode = this.DateTimeVal.GetHashCode ();
+                    break;
+                case DataTypeEnum.Date:
+                    hashCode = this.DateVal.GetHashCode ();
                     break;
                 case DataTypeEnum.Decimal:
                     hashCode = this.NumericVal.GetHashCode ();
                     break;
                 case DataTypeEnum.DayTimeDuration:
-                    hashCode = this.TimeSpanVal.GetHashCode ();
+                    hashCode = this.DurationVal.GetHashCode ();
                     break;
                 case DataTypeEnum.YearMonthDuration:
                     hashCode = this.NumericVal.GetHashCode ();
@@ -218,11 +252,28 @@ namespace RulesDoer.Core.Runtime.Context {
             return new Variable (s);
         }
 
-        static public implicit operator Variable (DateTime dt) {
+        static public implicit operator Variable (OffsetDateTime dt) {
+            return new Variable (dt);
+        }
+        static public implicit operator Variable (LocalDateTime dt) {
+            return new Variable (dt);
+        }
+        static public implicit operator Variable (ZonedDateTime dt) {
             return new Variable (dt);
         }
 
-        static public implicit operator Variable (TimeSpan ts) {
+        static public implicit operator Variable (LocalDate dt) {
+            return new Variable (dt);
+        }
+
+        static public implicit operator Variable (LocalTime tm) {
+            return new Variable (tm);
+        }
+        static public implicit operator Variable (OffsetTime tm) {
+            return new Variable (tm);
+        }
+
+        static public implicit operator Variable (Period ts) {
             return new Variable (ts);
         }
 
@@ -256,16 +307,46 @@ namespace RulesDoer.Core.Runtime.Context {
             return ev.StringVal;
         }
 
-        static public implicit operator DateTime (Variable ev) {
-            if (ev.ValueType != DataTypeEnum.DateTime && ev.ValueType != DataTypeEnum.Date && ev.ValueType != DataTypeEnum.Time)
-                throw new NotSupportedException ("Expected DateTime value.");
-            return ev.DateTimeVal;
+        static public implicit operator OffsetDateTime (Variable ev) {
+            if (ev.ValueType != DataTypeEnum.DateTime && ev.ValueType != DataTypeEnum.Time)
+                throw new NotSupportedException ("Expected Offset DateTime value.");
+            return ev.DateTimeVal.Value;
         }
 
-        static public implicit operator TimeSpan (Variable ev) {
-            if (ev.ValueType != DataTypeEnum.DayTimeDuration)
+        static public implicit operator LocalDateTime (Variable ev) {
+            if (ev.ValueType != DataTypeEnum.DateTime)
+                throw new NotSupportedException ("Expected Local DateTime value.");
+            return ev.LocalDateTimeVal.Value;
+        }
+
+        static public implicit operator ZonedDateTime (Variable ev) {
+            if (ev.ValueType != DataTypeEnum.DateTime)
+                throw new NotSupportedException ("Expected Zone Datetime value.");
+            return ev.ZoneDateTimeVal.Value;
+        }
+
+        static public implicit operator Period (Variable ev) {
+            if (ev.ValueType != DataTypeEnum.Duration)
                 throw new NotSupportedException ("Expected Duration value.");
-            return ev.TimeSpanVal;
+            return ev.DurationVal;
+        }
+
+        static public implicit operator LocalDate (Variable ev) {
+            if (ev.ValueType != DataTypeEnum.Date)
+                throw new NotSupportedException ("Expected Local Date value.");
+            return ev.DateVal;
+        }
+
+        static public implicit operator LocalTime (Variable ev) {
+            if (ev.ValueType != DataTypeEnum.Time)
+                throw new NotSupportedException ("Expected Local Time value.");
+            return ev.LocalTimeVal.Value;
+        }
+
+        static public implicit operator OffsetTime (Variable ev) {
+            if (ev.ValueType != DataTypeEnum.Time)
+                throw new NotSupportedException ("Expected Offset Time value.");
+            return ev.TimeVal.Value;
         }
 
         static public implicit operator List<Variable> (Variable ev) {
@@ -286,7 +367,6 @@ namespace RulesDoer.Core.Runtime.Context {
             return ev.DecisionTableResult;
         }
 
-
         public override string ToString () {
             switch (this.ValueType) {
                 case DataTypeEnum.Boolean:
@@ -296,21 +376,28 @@ namespace RulesDoer.Core.Runtime.Context {
                     return this.StringVal;
 
                 case DataTypeEnum.DateTime:
+                    return DateAndTimeHelper.DateTimeString (this);
+
                 case DataTypeEnum.Time:
+                    return DateAndTimeHelper.TimeString (this);
+
                 case DataTypeEnum.Date:
-                    return this.DateTimeVal.ToString ();
+                    return DateAndTimeHelper.DateString (this);
 
                 case DataTypeEnum.Decimal:
                     return this.NumericVal.ToString ();
 
                 case DataTypeEnum.DayTimeDuration:
-                    return this.TimeSpanVal.ToString ();
+                    return this.DurationVal.ToString ();
 
                 case DataTypeEnum.YearMonthDuration:
                     return this.NumericVal.ToString ();
 
+                case DataTypeEnum.Duration:
+                    return DateAndTimeHelper.DurationString (this);
+
                 default:
-                    return null;
+                    return "No string value";
 
             }
 

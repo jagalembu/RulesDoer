@@ -41,6 +41,10 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function {
                         return NumericFunctions.Execute (outFuncName.StringVal, listVars);
                     }
 
+                    if (DateFunctions.DateFuncs.Contains (outFuncName)) {
+                        return DateFunctions.Execute (outFuncName.StringVal, listVars);
+                    }
+
                 }
 
                 if (Parameters is NamedParameters) {
@@ -56,6 +60,10 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function {
 
                     if (NumericFunctions.NumericFuncs.Contains (outFuncName)) {
                         return NumericFunctions.Execute (outFuncName.StringVal, namedDict.Values.ToList ());
+                    }
+
+                    if (DateFunctions.DateFuncs.Contains (outFuncName)) {
+                        return DateFunctions.Execute (outFuncName.StringVal, namedDict.Values.ToList ());
                     }
 
                 }

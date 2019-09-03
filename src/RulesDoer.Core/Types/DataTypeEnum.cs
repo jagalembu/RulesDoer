@@ -14,6 +14,7 @@ namespace RulesDoer.Core.Types {
         Function,
         Tuple,
         Any,
-        DecisionTableResult
+        DecisionTableResult,
+        Duration
     }
 }

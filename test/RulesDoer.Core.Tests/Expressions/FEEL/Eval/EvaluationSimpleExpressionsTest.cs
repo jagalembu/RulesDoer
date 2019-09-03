@@ -42,26 +42,26 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
 
         [Theory]
         [ClassData (typeof (DateFunctionDataTests))]
-        public void EvaluateExpression_Date_Function (string exprText, DateTime expected) {
+        public void EvaluateExpression_Date_Function (string exprText, Variable expected) {
             Variable variable = ParseAndEval (exprText);
 
-            Assert.Equal<DateTime> (expected, variable);
+           Assert.Equal<Variable> (expected, variable);
         }
 
         [Theory]
         [ClassData (typeof (DurationFunctionDataTests))]
-        public void EvaluateExpression_Duration_Function (string exprText, TimeSpan expected) {
+        public void EvaluateExpression_Duration_Function (string exprText, Variable expected) {
             Variable variable = ParseAndEval (exprText);
 
-            Assert.Equal<TimeSpan> (expected, variable);
+           Assert.Equal<Variable> (expected, variable);
         }
 
         [Theory]
         [ClassData (typeof (DurationYearMonthDataTests))]
-        public void EvaluateExpression_Duration_YearMonth_Function (string exprText, Decimal expected) {
+        public void EvaluateExpression_Duration_YearMonth_Function (string exprText, Variable expected) {
             Variable variable = ParseAndEval (exprText);
 
-            Assert.Equal<Decimal> (expected, variable);
+            Assert.Equal<Variable> (expected, variable);
         }
 
         [Theory]

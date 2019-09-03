@@ -12,7 +12,7 @@
         <allowedAnswers>["John", "Doe"] (list)</allowedAnswers>
         <variable typeRef="tStringList" name="decision001"/>
         <literalExpression>
-            <text>split("John Doe", "\s")</text>
+            <text>split("John Doe", "\\s")</text>
         </literalExpression>
     </decision>
 

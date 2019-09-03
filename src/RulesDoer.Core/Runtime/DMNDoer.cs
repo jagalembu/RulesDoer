@@ -55,6 +55,10 @@ namespace RulesDoer.Core.Runtime {
                             throw new DMNException ($"Decision expression {decision.Expression.Id} is not supported yet");
                     }
 
+                    if (decisionName != null && decision.Name != decisionName) {
+                        break;
+                    }
+
                 }
 
             }

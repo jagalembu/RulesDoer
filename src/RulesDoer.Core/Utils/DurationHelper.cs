@@ -30,9 +30,5 @@ namespace RulesDoer.Core.Utils {
 
         }
 
-        public static Variable MakeDayTime (string value) {
-            return new Variable (XmlConvert.ToTimeSpan (value));
-        }
-
     }
 }

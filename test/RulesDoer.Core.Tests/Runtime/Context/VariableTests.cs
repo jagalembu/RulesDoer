@@ -36,26 +36,6 @@ namespace RulesDoer.Core.Tests.Runtime.Context {
         }
 
         [Fact]
-        public void Create_DateTime () {
-
-            var variable = new Variable (new DateTime ());
-
-            Assert.Equal (new DateTime (), variable.DateTimeVal);
-            Assert.Equal (DataTypeEnum.DateTime, variable.ValueType);
-
-        }
-
-        [Fact]
-        public void Create_Timespan () {
-
-            var variable = new Variable (new TimeSpan ());
-
-            Assert.Equal (new TimeSpan (), variable.TimeSpanVal);
-            Assert.Equal (DataTypeEnum.DayTimeDuration, variable.ValueType);
-
-        }
-
-        [Fact]
         public void Create_Years () {
 
             var variable = Variable.Years (1);
@@ -118,34 +98,6 @@ namespace RulesDoer.Core.Tests.Runtime.Context {
         }
 
         [Fact]
-        public void ImplicitOp_DateTime () {
-
-            Variable variable = new DateTime ();
-
-            Assert.Equal (new DateTime (), variable.DateTimeVal);
-            Assert.Equal (DataTypeEnum.DateTime, variable.ValueType);
-
-            DateTime implicitX = variable;
-
-            Assert.Equal (new DateTime (), implicitX);
-
-        }
-
-        [Fact]
-        public void ImplicitOp_Timespan () {
-
-            Variable variable = new TimeSpan ();
-
-            Assert.Equal (new TimeSpan (), variable.TimeSpanVal);
-            Assert.Equal (DataTypeEnum.DayTimeDuration, variable.ValueType);
-
-            TimeSpan implicitX = variable;
-
-            Assert.Equal (new TimeSpan (), implicitX);
-
-        }
-
-        [Fact]
         public void ImplicitOp_NotSupported () {
 
             var variable = new Variable ();
@@ -153,8 +105,6 @@ namespace RulesDoer.Core.Tests.Runtime.Context {
             Assert.Throws<NotSupportedException> (() => { bool b = variable; });
             Assert.Throws<NotSupportedException> (() => { string s = variable; });
             Assert.Throws<NotSupportedException> (() => { decimal d = variable; });
-            Assert.Throws<NotSupportedException> (() => { DateTime dt = variable; });
-            Assert.Throws<NotSupportedException> (() => { TimeSpan ts = variable; });
 
         }
 
