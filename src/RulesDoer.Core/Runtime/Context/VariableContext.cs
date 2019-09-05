@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using RulesDoer.Core.Transformer.v1_2;
 
 namespace RulesDoer.Core.Runtime.Context {
     public class VariableContext {
@@ -8,6 +9,7 @@ namespace RulesDoer.Core.Runtime.Context {
         public Dictionary<string, InputDataMeta> InputDataMetaByName { get; set; }
         public Dictionary<string, InputDataMeta> InputDataMetaById { get; set; }
         public Dictionary<string, BkmMeta> BKMMetaByName { get; set; }
+        public Dictionary<string, TDecision> DecisionMetaByName { get; set; }
 
     }
 }

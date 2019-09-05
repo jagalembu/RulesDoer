@@ -2,6 +2,7 @@ using System;
 using RulesDoer.Core.Expressions.FEEL.Eval;
 using RulesDoer.Core.Runtime.Context;
 using RulesDoer.Core.Types;
+using RulesDoer.Core.Utils;
 
 namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Maths {
     public class Subtraction : IMathExpression {
@@ -24,6 +25,12 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Maths {
                 switch (l.ValueType) {
                     case DataTypeEnum.Decimal:
                         return new Variable (l.NumericVal - r.NumericVal);
+
+                    case DataTypeEnum.Date:
+                    case DataTypeEnum.DateTime:
+                    case DataTypeEnum.Time:
+                    case DataTypeEnum.Duration:
+                        return DateAndTimeHelper.Subtract (l, r);
 
                     default:
                         throw new FEELException ("Failed to perform subtraction to incorrect FEEL type");

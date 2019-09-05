@@ -8,6 +8,35 @@ using RulesDoer.Core.Types;
 namespace RulesDoer.Core.Runtime {
     public static class DMNDoerHelper {
 
+         public static Variable EvaluateDecisionByName (VariableContext runtimeContext, string decisionName) {
+
+            if (runtimeContext == null || runtimeContext.DecisionMetaByName == null)
+            {
+                return null;
+            }
+
+            runtimeContext.DecisionMetaByName.TryGetValue (decisionName, out var decision);
+
+            if (decision == null)
+            {
+                return null;
+            }
+
+            switch (decision.Expression) {
+                case TLiteralExpression litExpr:
+                    return DMNDoerHelper.EvalLiteralExpression (litExpr.Text, runtimeContext);
+
+                case TDecisionTable decisionTable:
+                    return DMNDoerHelper.EvalDecisionTable (decisionTable, runtimeContext);
+
+                case TContext contextDecision:
+                    return DMNDoerHelper.EvalContextDecision (contextDecision, runtimeContext);
+
+                default:
+                    throw new DMNException ($"Decision expression {decision.Expression.Id} is not supported yet");
+            }
+
+        }
         public static Variable EvalDecisionTable (TDecisionTable decisionTable, VariableContext runtimeContext) {
             var outputList = new List<Variable> ();
             var matchedList = new List<Dictionary<string, Variable>> ();

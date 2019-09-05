@@ -64,7 +64,7 @@
             <contextEntry>
                 <variable typeRef="date" name="fromDateTime"/>
                 <literalExpression>
-                    <text>date(Date-Time)</text>
+                    <text>date(Date_Time)</text>
                 </literalExpression>
             </contextEntry>
             <contextEntry>
@@ -75,8 +75,8 @@
             </contextEntry>
         </context>
     </decision>
-    <decision name="Date-Time" id="_dfbb843a-bd34-4099-b700-0d9ca5b38d6a">
-        <variable typeRef="dateTime" name="Date-Time"/>
+    <decision name="Date_Time" id="_dfbb843a-bd34-4099-b700-0d9ca5b38d6a">
+        <variable typeRef="dateTime" name="Date_Time"/>
         <informationRequirement id="_8d312d4f-6650-45f9-8739-00e07e993176">
             <requiredInput href="#_c796f29d-d800-4239-b9f6-d4d72f77b183"/>
         </informationRequirement>
@@ -102,8 +102,8 @@
     <inputData name="Day" id="_ec0d9542-257d-401b-ac6b-ce927014cf25">
         <variable typeRef="number" name="Day"/>
     </inputData>
-    <decision name="Date-Time2" id="_7df22028-4b5b-4594-89c7-a80b8aec526f">
-        <variable typeRef="dateTime" name="Date-Time2"/>
+    <decision name="Date_Time2" id="_7df22028-4b5b-4594-89c7-a80b8aec526f">
+        <variable typeRef="dateTime" name="Date_Time2"/>
         <informationRequirement id="f5fbf8c4-02f9-4dff-b0c8-a6e8321284b8">
             <requiredDecision href="#_bd547a08-c157-47ca-84d4-ac6f3d5bdeda"/>
         </informationRequirement>
@@ -120,7 +120,7 @@
             <requiredDecision href="#_7df22028-4b5b-4594-89c7-a80b8aec526f"/>
         </informationRequirement>
         <literalExpression>
-            <text>time(Date-Time2)</text>
+            <text>time(Date_Time2)</text>
         </literalExpression>
     </decision>
     <inputData name="dateTimeString" id="_c796f29d-d800-4239-b9f6-d4d72f77b183">
@@ -177,7 +177,7 @@
             <requiredDecision href="#_dfbb843a-bd34-4099-b700-0d9ca5b38d6a"/>
         </informationRequirement>
         <literalExpression>
-            <text>Date-Time - Date-Time2</text>
+            <text>Date_Time - Date_Time2</text>
         </literalExpression>
     </decision>
     <inputData name="oneHour" id="_d96a8f03-5cee-42ca-8646-4383ad5ecee2">
@@ -204,7 +204,7 @@
             <requiredDecision href="#_dfbb843a-bd34-4099-b700-0d9ca5b38d6a"/>
         </informationRequirement>
         <literalExpression>
-            <text>years and months duration(Date-Time2,Date-Time)</text>
+            <text>years and months duration(Date_Time2,Date_Time)</text>
         </literalExpression>
     </decision>
     <decision name="cDay" id="_04c6bedc-bc63-464f-8e61-c039d24a47bf">
@@ -240,7 +240,7 @@
             <requiredDecision href="#_7df22028-4b5b-4594-89c7-a80b8aec526f"/>
         </informationRequirement>
         <literalExpression>
-            <text>Date-Time2.hour</text>
+            <text>Date_Time2.hour</text>
         </literalExpression>
     </decision>
     <decision name="cMinute" id="_6836a944-7f7b-4c98-8a7a-a573494110fd">
@@ -249,7 +249,7 @@
             <requiredDecision href="#_7df22028-4b5b-4594-89c7-a80b8aec526f"/>
         </informationRequirement>
         <literalExpression>
-            <text>Date-Time2.minute</text>
+            <text>Date_Time2.minute</text>
         </literalExpression>
     </decision>
     <decision name="cSecond" id="_4af88a8f-92e4-4f2d-bde1-e8a36b27e5bf">
@@ -258,7 +258,7 @@
             <requiredDecision href="#_7df22028-4b5b-4594-89c7-a80b8aec526f"/>
         </informationRequirement>
         <literalExpression>
-            <text>Date-Time2.second</text>
+            <text>Date_Time2.second</text>
         </literalExpression>
     </decision>
     <decision name="cOffset" id="_81f97dd0-29ea-4bab-9540-b70a2fdf8ff3">
@@ -267,7 +267,7 @@
             <requiredDecision href="#_7df22028-4b5b-4594-89c7-a80b8aec526f"/>
         </informationRequirement>
         <literalExpression>
-            <text>Date-Time2.time offset</text>
+            <text>Date_Time2.time offset</text>
         </literalExpression>
     </decision>
     <decision name="years" id="_91fb395d-8173-4ed3-95f7-f790bd3967ab">

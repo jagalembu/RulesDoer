@@ -68,10 +68,10 @@ INSTANCE_OF: 'instance of';
 DATETIMELIT:
 	'date and time'
 	| 'days and time duration'
-	| 'years and months duration'
-	| 'date'
-	| 'time'
-	| 'duration';
+	| 'years and months duration';
+	// | 'date'
+	// | 'time'
+	// | 'duration';
 
 NAME:
 	 'substring'

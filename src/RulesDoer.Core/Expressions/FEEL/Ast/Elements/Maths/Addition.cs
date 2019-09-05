@@ -2,6 +2,7 @@ using System;
 using RulesDoer.Core.Expressions.FEEL.Eval;
 using RulesDoer.Core.Runtime.Context;
 using RulesDoer.Core.Types;
+using RulesDoer.Core.Utils;
 
 namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Maths {
     public class Addition : IMathExpression {
@@ -26,6 +27,12 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Maths {
 
                     case DataTypeEnum.String:
                         return new Variable ($"{l.StringVal}{r.StringVal}");
+
+                    case DataTypeEnum.Date:
+                    case DataTypeEnum.DateTime:
+                    case DataTypeEnum.Time:
+                    case DataTypeEnum.Duration:
+                        return DateAndTimeHelper.Addition(l, r);       
 
                     default:
                         throw new FEELException ("Failed to perform addition to incorrect FEEL type");

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using RulesDoer.Core.Expressions.FEEL.Eval;
 using RulesDoer.Core.Runtime.Context;
+using RulesDoer.Core.Utils;
 using Xunit;
 
 namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
@@ -16,6 +17,18 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
 
             var variable = ParseAndEval (exprText, context);
             Assert.Equal<bool> (expected, variable);
+        }
+
+        [Theory]
+        [InlineData ("years and months duration(from:date(\"2011-12-22\"),to:date(\"2013-08-24\"))", "P1Y8M")]
+        public void Evaluate_YearAndMonthDurationFunc(string exprText, string expected)
+        {
+            Variable variable = ParseAndEval (exprText);
+
+            var expectedVal = DateAndTimeHelper.DurationVal(expected);
+
+            Assert.Equal<Variable>(expectedVal, variable);
+
         }
 
         [Theory]
@@ -155,13 +168,12 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
         }
 
         [Theory]
-        [InlineData ("duration(\"P1Y3M\").years", 1, 3)]
-        [InlineData ("duration(\"P1Y3M\").months", 0, 15)]
-        public void EvaluateExpression_PathExpression_DurationYearsAndMonths (string exprText, Decimal expectedYear, Decimal expectedMonth) {
+        [InlineData ("duration(\"P1Y3M\").years", 1)]
+        [InlineData ("duration(\"P1Y3M\").months", 15 )]
+        public void EvaluateExpression_PathExpression_DurationYearsAndMonths (string exprText, Decimal expected) {
             Variable variable = ParseAndEval (exprText);
 
-            Assert.Equal<Decimal> (expectedYear, variable.TwoTuple.a);
-            Assert.Equal<Decimal> (expectedMonth, variable.TwoTuple.b);
+            Assert.Equal<Decimal> (expected, variable.NumericVal);
 
         }
 

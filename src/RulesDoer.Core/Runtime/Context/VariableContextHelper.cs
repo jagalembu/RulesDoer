@@ -4,6 +4,12 @@ namespace RulesDoer.Core.Runtime.Context {
     public static class VariableContextHelper {
 
         public static bool RetrieveBkm (string bkmName, VariableContext context, out BkmMeta outBkmMeta) {
+
+            if (context == null) {
+                outBkmMeta = null;
+                return false;
+            }
+
             if (context.BKMMetaByName == null) {
                 outBkmMeta = null;
                 return false;
@@ -24,6 +30,11 @@ namespace RulesDoer.Core.Runtime.Context {
         }
 
         public static Variable RetrieveInputVariable (VariableContext context = null, string inputName = null, bool doException = true) {
+
+            if (context == null) {
+                return null;
+            }
+
             if (context.InputNameDict == null) {
                 if (doException) {
                     throw new FEELException ($"Missing input data for input name {inputName}");
@@ -38,6 +49,11 @@ namespace RulesDoer.Core.Runtime.Context {
         }
 
         public static Variable RetrieveGlobalVariable (VariableContext context = null, string inputName = null, bool doException = true) {
+
+            if (context == null) {
+                return null;
+            }
+
             if (context.GlobalDict == null) {
                 if (doException) {
                     throw new FEELException ($"Missing global data for input name {inputName}");
@@ -51,5 +67,6 @@ namespace RulesDoer.Core.Runtime.Context {
             }
             return inputVariable;
         }
+
     }
 }

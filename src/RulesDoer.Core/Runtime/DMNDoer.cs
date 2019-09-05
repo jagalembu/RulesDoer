@@ -27,40 +27,26 @@ namespace RulesDoer.Core.Runtime {
             runtimeContext.InputDataMetaByName = metaDef.Item1.InputDataMetaByName;
             runtimeContext.ItemDefinitionMeta = metaDef.Item1.ItemDefinitionMeta;
             runtimeContext.BKMMetaByName = BuildBkmMeta (definitions);
+            runtimeContext.DecisionMetaByName = BuildDecisionMeta (definitions);
 
             //TODO: check inputs match input data
 
             var results = new Dictionary<string, Variable> ();
-            //evaluate decisions
-            //TODO: Needs to handle calls to individual decision by name
-            foreach (var item in definitions.DrgElement) {
-                if (item is TDecision decision) {
-                    if (decisionName != null && decision.Name != decisionName) {
-                        continue;
-                    }
-                    switch (decision.Expression) {
-                        case TLiteralExpression litExpr:
-                            results.Add (decision.Name, DMNDoerHelper.EvalLiteralExpression (litExpr.Text, runtimeContext));
-                            break;
 
-                        case TDecisionTable decisionTable:
-                            results.Add (decision.Name, DMNDoerHelper.EvalDecisionTable (decisionTable, runtimeContext));
-                            break;
+            if (decisionName != null) {
+                results.Add (decisionName, DMNDoerHelper.EvaluateDecisionByName (runtimeContext, decisionName));
+                return results;
+            }
 
-                        case TContext contextDecision:
-                            results.Add (decision.Name, DMNDoerHelper.EvalContextDecision (contextDecision, runtimeContext));
-                            break;
+            results = EvaluateDecisions (runtimeContext);
 
-                        default:
-                            throw new DMNException ($"Decision expression {decision.Expression.Id} is not supported yet");
-                    }
+            return results;
+        }
 
-                    if (decisionName != null && decision.Name != decisionName) {
-                        break;
-                    }
-
-                }
-
+        public Dictionary<string, Variable> EvaluateDecisions (VariableContext runtimeContext) {
+            var results = new Dictionary<string, Variable> ();
+            foreach (var item in runtimeContext.DecisionMetaByName.Keys) {
+                results.Add (item, DMNDoerHelper.EvaluateDecisionByName (runtimeContext, item));
             }
 
             return results;
@@ -77,6 +63,16 @@ namespace RulesDoer.Core.Runtime {
             }
 
             return bkmDict;
+        }
+
+        public Dictionary<string, TDecision> BuildDecisionMeta (TDefinitions definitions) {
+            var decisionDict = new Dictionary<string, TDecision> ();
+            foreach (var item in definitions.DrgElement) {
+                if (item is TDecision decision) {
+                    decisionDict.Add (decision.Name, decision);
+                }
+            }
+            return decisionDict;
         }
 
         public (VariableContext, TDefinitions) BuildInputMeta (string definitionName, int? versionNo = null) {

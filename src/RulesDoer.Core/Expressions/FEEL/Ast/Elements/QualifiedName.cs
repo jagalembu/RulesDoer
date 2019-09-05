@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using RulesDoer.Core.Expressions.FEEL.Eval;
+using RulesDoer.Core.Runtime;
 using RulesDoer.Core.Runtime.Context;
+using RulesDoer.Core.Types;
+using RulesDoer.Core.Utils;
 
 namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements {
     public class QualifiedName : IExpression {
@@ -22,6 +25,11 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements {
                     return outVar;
                 }
 
+                var decisionVar = DMNDoerHelper.EvaluateDecisionByName (context, Names[0]);
+                if (decisionVar != null) {
+                    return decisionVar;
+                }
+
                 return new Variable (Names[0]);
             }
 
@@ -32,8 +40,33 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements {
                 ctxVar = VariableContextHelper.RetrieveGlobalVariable (context, Names[0], false);
             }
 
+            if (ctxVar == null) {
+                ctxVar = DMNDoerHelper.EvaluateDecisionByName (context, Names[0]);
+            }
+
+            if (ctxVar == null && ctxVar.ValueType != DataTypeEnum.Context) {
+                throw new FEELException ("Failed finding a context variable");
+            }
+
             for (int i = 1; i < Names.Count; i++) {
-                ctxVar = FindContextVariable (Names[i], ctxVar);
+
+                switch (ctxVar.ValueType) {
+
+                    case DataTypeEnum.Context:
+                        ctxVar = FindContextVariable (Names[i], ctxVar);
+                        break;
+                    case DataTypeEnum.Date:
+                        return DateAndTimeHelper.DatePropEvals (ctxVar, Names[i]);
+                    case DataTypeEnum.DateTime:
+                        return DateAndTimeHelper.DateTimePropEvals (ctxVar, Names[i]);
+                    case DataTypeEnum.Time:
+                        return DateAndTimeHelper.TimePropEvals (ctxVar, Names[i]);
+                    case DataTypeEnum.Duration:
+                        return DateAndTimeHelper.DurationPropEvals (ctxVar, Names[i]);
+                    default:
+                        throw new FEELException ($"Path expression for {ctxVar.ValueType} is not supported");
+                }
+
             }
 
             return ctxVar;

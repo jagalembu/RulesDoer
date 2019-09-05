@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NodaTime;
 using NodaTime.Text;
@@ -6,7 +7,7 @@ using RulesDoer.Core.Runtime.Context;
 using RulesDoer.Core.Types;
 
 namespace RulesDoer.Core.Utils {
-    public static class DateAndTimeHelper {
+    public static partial class DateAndTimeHelper {
         public static ZonedDateTimePattern _zoneDtPattern = ZonedDateTimePattern.CreateWithInvariantCulture ("uuuu'-'MM'-'dd'T'HH':'mm':'ss;FFFFFFFFF@z", DateTimeZoneProviders.Tzdb);
         public static ZonedDateTimePattern _zoneTmPattern = ZonedDateTimePattern.CreateWithInvariantCulture ("HH':'mm':'ss;FFFFFFFFF@z", DateTimeZoneProviders.Tzdb);
 
@@ -74,7 +75,7 @@ namespace RulesDoer.Core.Utils {
                 durationVal = input.TrimStart ('-');
                 neg = true;
             }
-            var dur = PeriodPattern.Roundtrip.Parse (durationVal);
+            var dur = PeriodPattern.NormalizingIso.Parse (durationVal);
 
             if (dur.Success) {
                 var val = dur.Value;
@@ -137,7 +138,7 @@ namespace RulesDoer.Core.Utils {
         }
 
         public static string DurationString (Period input) {
-            return PeriodPattern.Roundtrip.Format (input);
+            return PeriodPattern.NormalizingIso.Format (input);
         }
 
         public static int CompareDateTime (Variable vA, Variable vB) {
@@ -168,7 +169,7 @@ namespace RulesDoer.Core.Utils {
         }
 
         public static int CompareDuration (Variable vA, Variable vB) {
-            var comparer = Period.CreateComparer (new LocalDateTime (1970, 1, 1, 0, 0));
+            var comparer = Period.CreateComparer (new LocalDateTime (0, 1, 1, 0, 0));
             return comparer.Compare (vA.DurationVal, vB.DurationVal);
         }
 
@@ -203,17 +204,17 @@ namespace RulesDoer.Core.Utils {
         public static Variable DurationPropEvals (Variable dt, string prop) {
             switch (prop) {
                 case "days":
-                    return new Variable (dt.DurationVal.Days);
+                    return dt.DurationVal.Days;
                 case "hours":
-                    return new Variable (dt.DurationVal.Hours);
+                    return dt.DurationVal.Hours;
                 case "minutes":
-                    return new Variable (dt.DurationVal.Minutes);
+                    return dt.DurationVal.Minutes;
                 case "seconds":
-                    return new Variable (dt.DurationVal.Seconds);
+                    return dt.DurationVal.Seconds;
                 case "months":
-                    return new Variable (new decimal (0), dt.DurationVal.Months + (dt.DurationVal.Years * 12));
+                    return dt.DurationVal.Months + (dt.DurationVal.Years * 12);
                 case "years":
-                    return new Variable (dt.DurationVal.Years, dt.DurationVal.Months);
+                    return dt.DurationVal.Years;
                 default:
                     throw new FEELException ($"The following property {prop} is not supported for day time duration type");
             }
@@ -437,7 +438,7 @@ namespace RulesDoer.Core.Utils {
                         throw new FEELException ($"Parameter variables all have to be numeric values for time function");
                     }
                 }
-                var ldt = new LocalTime ((int) parameters[0].NumericVal, (int) parameters[1].NumericVal, (int) parameters[2].NumericVal);
+                var ldt = CreateLocalTime (parameters[0].NumericVal, parameters[1].NumericVal, parameters[2].NumericVal);
                 return ldt;
             }
             if (parameters.Count == 4) {
@@ -446,7 +447,7 @@ namespace RulesDoer.Core.Utils {
                         throw new FEELException ($"Parameter variables all have to be numeric values for time function");
                     }
                 }
-                var ldt = new LocalTime ((int) parameters[0].NumericVal, (int) parameters[1].NumericVal, (int) parameters[2].NumericVal);
+                var ldt = CreateLocalTime (parameters[0].NumericVal, parameters[1].NumericVal, parameters[2].NumericVal);
 
                 if (parameters[3].ValueType == DataTypeEnum.Duration) {
                     var pr = parameters[3].DurationVal;
@@ -542,6 +543,22 @@ namespace RulesDoer.Core.Utils {
             }
 
             throw new FEELException ($"Failed appending date {inDt} to time {inTm}");
+
+        }
+
+        public static LocalTime CreateLocalTime (decimal hours, decimal mins, decimal secs) {
+
+            long nsecs = 0;
+            var xsecsfractions = secs - Math.Truncate (secs);
+            if (xsecsfractions > 0) {
+                nsecs = (long) (xsecsfractions * 1000000000);
+            }
+
+            if (nsecs > 0) {
+                return LocalTime.FromHourMinuteSecondNanosecond ((int) hours, (int) mins, (int) secs, nsecs);
+            }
+
+            return new LocalTime ((int) hours, (int) mins, (int) secs);
 
         }
 
