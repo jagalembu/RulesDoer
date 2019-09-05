@@ -2,28 +2,17 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build",
+            "label": "build-rules",
             "command": "dotnet",
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/test/RulesDoer.Core.Tests/RulesDoer.Core.Tests.csproj",
+                "${workspaceFolder}/RulesDoer.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
-            "problemMatcher": "$msCompile"
-        },
-        {
-            "label": "publish",
-            "command": "dotnet",
-            "type": "process",
-            "args": [
-                "publish",
-                "${workspaceFolder}/test/RulesDoer.Core.Tests/RulesDoer.Core.Tests.csproj",
-                "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
-            ],
-            "problemMatcher": "$msCompile"
+            "problemMatcher": "$msCompile",
+           
         },
         {
             "label": "watch",
@@ -37,6 +26,40 @@
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "test-rules",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "test",
+                "${workspaceFolder}/test/RulesDoer.Core.Tests/RulesDoer.Core.Tests.csproj",
+                "/property:GenerateFullPaths=true",
+            ],
+            "problemMatcher": "$msCompile",
+            "dependsOn": "build-rules",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "test-rules-coverage",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "test",
+                "${workspaceFolder}/test/RulesDoer.Core.Tests/RulesDoer.Core.Tests.csproj",
+                "/p:CollectCoverage=true",
+                "/p:CoverletOutputFormat=lcov",
+                "/p:CoverletOutput=./lcov.info"
+            ],
+            "problemMatcher": "$msCompile",
+            "dependsOn": "build-rules",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
         }
     ]
 }

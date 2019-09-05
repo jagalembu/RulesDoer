@@ -314,3 +314,6 @@ Temporary Items
 
 #Antlr folder due to extension
 .antlr
+
+#Coverlet output file
+lcov.info

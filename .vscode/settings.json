@@ -1,2 +1,8 @@
 {
+    "path-intellisense.showHiddenFiles": true,
+    "dotnet-test-explorer.runInParallel": false,
+    "dotnet-test-explorer.testProjectPath": "test/RulesDoer.Core.Tests",
+    "dotnet-test-explorer.pathForResultFile": ".",
+    "dotnet-test-explorer.enableTelemetry": false
+
 }
