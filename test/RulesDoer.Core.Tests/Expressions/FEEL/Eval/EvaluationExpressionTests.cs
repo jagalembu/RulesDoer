@@ -113,6 +113,7 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
         [InlineData ("odd( 2 )", null, false)]
         [InlineData ("even( 5 )", null, false)]
         [InlineData ("even ( 2 )", null, true)]
+        [InlineData ("number(from: \"1.000.000,01\", decimal separator:\",\", grouping separator:\".\")", "1000000.01", null)]
         public void EvaluateExpression_FunctionInvocation_NumericFuncs (string exprText, string expectedStr, Boolean? expectedBool) {
             Variable variable = ParseAndEval (exprText);
             if (!string.IsNullOrWhiteSpace (expectedStr)) {

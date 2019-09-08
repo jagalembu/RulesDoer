@@ -13,7 +13,7 @@
         <description>Assert on positive number</description>
         <resultNode name="decision001" type="decision">
             <expected>
-                <value xsi:type="xsd:decimal">54.59815003</value>
+                <value xsi:type="xsd:decimal">54.5981500331442</value>
             </expected>
         </resultNode>
     </testCase>
@@ -21,7 +21,7 @@
         <description>Assert on negative number</description>
         <resultNode name="decision002" type="decision">
             <expected>
-                <value xsi:type="xsd:decimal">0.36787944</value>
+                <value xsi:type="xsd:decimal">0.367879441171442</value>
             </expected>
         </resultNode>
     </testCase>
@@ -53,7 +53,7 @@
         <description>Assert with named param</description>
         <resultNode name="decision006" type="decision">
             <expected>
-                <value xsi:type="xsd:decimal">54.59815003</value>
+                <value xsi:type="xsd:decimal">54.5981500331442</value>
             </expected>
         </resultNode>
     </testCase>
