@@ -2944,8 +2944,10 @@ public partial class FEELRule : Parser {
 
 	public partial class ParameterNameContext : ParserRuleContext {
 		public string textVal;
-		public IToken token;
-		public ITerminalNode NAME() { return GetToken(FEELRule.NAME, 0); }
+		public IdentifierContext token;
+		public IdentifierContext identifier() {
+			return GetRuleContext<IdentifierContext>(0);
+		}
 		public ParameterNameContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -2968,8 +2970,8 @@ public partial class FEELRule : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 536; _localctx.token = Match(NAME);
-			_localctx.textVal =  (_localctx.token!=null?_localctx.token.Text:null);
+			State = 536; _localctx.token = identifier();
+			_localctx.textVal =  (_localctx.token!=null?TokenStream.GetText(_localctx.token.Start,_localctx.token.Stop):null);
 			}
 		}
 		catch (RecognitionException re) {
@@ -3542,8 +3544,8 @@ public partial class FEELRule : Parser {
 		'\x2', '\x217', '\x219', '\b', '&', '\x1', '\x2', '\x218', '\x212', '\x3', 
 		'\x2', '\x2', '\x2', '\x218', '\x214', '\x3', '\x2', '\x2', '\x2', '\x218', 
 		'\x216', '\x3', '\x2', '\x2', '\x2', '\x219', 'K', '\x3', '\x2', '\x2', 
-		'\x2', '\x21A', '\x21B', '\a', '\x31', '\x2', '\x2', '\x21B', '\x21C', 
-		'\b', '\'', '\x1', '\x2', '\x21C', 'M', '\x3', '\x2', '\x2', '\x2', '\x21D', 
+		'\x2', '\x21A', '\x21B', '\x5', '@', '!', '\x2', '\x21B', '\x21C', '\b', 
+		'\'', '\x1', '\x2', '\x21C', 'M', '\x3', '\x2', '\x2', '\x2', '\x21D', 
 		'\x21E', '\x5', '@', '!', '\x2', '\x21E', '\x21F', '\b', '(', '\x1', '\x2', 
 		'\x21F', '\x224', '\x3', '\x2', '\x2', '\x2', '\x220', '\x221', '\x5', 
 		'\x42', '\"', '\x2', '\x221', '\x222', '\b', '(', '\x1', '\x2', '\x222', 

@@ -291,7 +291,8 @@ intervalEndPar
 
 parameterName
 	returns[string textVal]:
-	token = NAME {$textVal = $token.text;};
+	token = identifier {$textVal = $token.text;};
+//	token = NAME {$textVal = $token.text;};
 
 key
 	returns[string textVal]:
