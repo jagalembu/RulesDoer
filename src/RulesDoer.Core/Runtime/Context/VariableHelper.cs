@@ -7,7 +7,7 @@ namespace RulesDoer.Core.Runtime.Context {
     public static class VariableHelper {
 
         public static Variable MakeList (List<Variable> lVars, string typeName) {
-            switch (typeName) {
+            switch (typeName.ToLower()) {
                 case "string":
                     return Variable.ListType (lVars, DataTypeEnum.ListString);
                 case "number":
@@ -17,8 +17,8 @@ namespace RulesDoer.Core.Runtime.Context {
                 case "date":
                 case "datetime":
                 case "time":
-                case "yearMonthDuration":
-                case "dayTimeDuration":
+                case "yearmonthduration":
+                case "daytimeduration":
                 default:
                     return Variable.ListType (lVars, DataTypeEnum.List);
             }
@@ -26,15 +26,15 @@ namespace RulesDoer.Core.Runtime.Context {
         }
 
         public static bool IsBaseTypes (string typeName) {
-            switch (typeName) {
+            switch (typeName.ToLower()) {
                 case "string":
                 case "number":
                 case "boolean":
                 case "date":
                 case "datetime":
                 case "time":
-                case "yearMonthDuration":
-                case "dayTimeDuration":
+                case "yearmonthduration":
+                case "daytimeduration":
                     return true;
                 default:
                     return false;
@@ -42,11 +42,11 @@ namespace RulesDoer.Core.Runtime.Context {
 
         }
 
-        public static Variable MakeVariable (object value, string typename) {
+        public static Variable MakeVariable (object value, string typeName) {
             if (value == null) {
                 return new Variable ();
             }
-            switch (typename) {
+            switch (typeName.ToLower()) {
                 case "string":
                     return value.ToString ();
                 case "number":
@@ -59,12 +59,12 @@ namespace RulesDoer.Core.Runtime.Context {
                     return DateAndTimeHelper.DateTimeVal (value.ToString ());
                 case "time":
                     return DateAndTimeHelper.TimeVal (value.ToString ());
-                case "yearMonthDuration":
+                case "yearmonthduration":
                     return DateAndTimeHelper.DurationVal (value.ToString ());
-                case "dayTimeDuration":
+                case "daytimeduration":
                     return DateAndTimeHelper.DurationVal (value.ToString ());
                 default:
-                    throw new NotImplementedException ($"The following type: {typename} is not supported for a variable");
+                    throw new NotImplementedException ($"The following type: {typeName} is not supported for a variable");
             }
         }
 
