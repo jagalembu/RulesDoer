@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function.BuiltIn.DateFuncs;
+using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function.BuiltIn.ListFuncs;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function.BuiltIn.NumericFuncs;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function.BuiltIn.StringFuncs;
 using RulesDoer.Core.Expressions.FEEL.Eval;
@@ -23,7 +24,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function.BuiltIn {
             { StringLengthFunc.FuncName, (new StringLengthFunc (), new string[] {"string"}) }, 
             { SubstringAfterFunc.FuncName, (new SubstringAfterFunc (), new string[] {"string","match"}) }, 
             { SubstringBeforeFunc.FuncName, (new SubstringBeforeFunc (), new string[] {"string","match"}) }, 
-            { SubstringFunc.FuncName, (new SubstringFunc (), new string[] {"string", "startposition", "length"}) }, 
+            { SubstringFunc.FuncName, (new SubstringFunc (), new string[] {"string", "start position", "length"}) }, 
             { UpperCaseFunc.FuncName, (new UpperCaseFunc (), new string[] {"string"}) }, 
             { AbsFunc.FuncName, (new AbsFunc (), new string[] {"number"}) }, 
             { CeilingFunc.FuncName, (new CeilingFunc (), new string[] {"n"}) }, 
@@ -41,6 +42,28 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function.BuiltIn {
             { DurationFunc.FuncName, (new DurationFunc (), new string[] {"from"}) },
             { TimeFunc.FuncName, (new TimeFunc (), new string[] {"from", "hour", "minute", "second", "offset"}) },
             { YearMonthDurationFunc.FuncName, (new YearMonthDurationFunc (), new string[] {"from", "to"}) },
+            { AllFunc.FuncName, (new AllFunc (), new string[] {"list"}) },
+            { AnyFunc.FuncName, (new AnyFunc (), new string[] {"list"}) },
+            { AppendFunc.FuncName, (new AppendFunc (), new string[] {"list","item"}) },
+            { ConcatenateFunc.FuncName, (new ConcatenateFunc (), new string[] {"list"}) },
+            { CountFunc.FuncName, (new CountFunc (), new string[] {"list"}) },
+            { DistinctValuesFunc.FuncName, (new DistinctValuesFunc (), new string[] {"list"}) },
+            { FlattenFunc.FuncName, (new FlattenFunc (), new string[] {"list"}) },
+            { IndexOfFunc.FuncName, (new IndexOfFunc (), new string[] {"list","match"}) },
+            { InsertBeforeFunc.FuncName, (new InsertBeforeFunc (), new string[] {"list","position","newItem"}) },
+            { ListContainsFunc.FuncName, (new ListContainsFunc (), new string[] {"list", "element"}) },
+            { MaxFunc.FuncName, (new MaxFunc (), new string[] {"list"}) },
+            { MeanFunc.FuncName, (new MeanFunc (), new string[] {"list"}) },
+            { MedianFunc.FuncName, (new MedianFunc(), new string[] {"list"})},
+            { MinFunc.FuncName, (new MinFunc (), new string[] {"list"}) },            
+            { ModeFunc.FuncName, (new ModeFunc(), new string[] {"list"})},
+            { ProductFunc.FuncName, (new ProductFunc(), new string[] {"list"})},
+            { RemoveFunc.FuncName, (new RemoveFunc(), new string[] {"list", "remove"})},
+            { ReverseFunc.FuncName, (new ReverseFunc(), new string[] {"list"})},
+            { StddevFunc.FuncName, (new StddevFunc(), new string[] {"list"})},
+            { SubListFunc.FuncName, (new SubListFunc(), new string[] {"list", "start position", "length"})},
+            { SumFunc.FuncName, (new SumFunc(), new string[] {"list"})},
+            { UnionFunc.FuncName, (new UnionFunc(), new string[] {"list"})},
 
         };
 

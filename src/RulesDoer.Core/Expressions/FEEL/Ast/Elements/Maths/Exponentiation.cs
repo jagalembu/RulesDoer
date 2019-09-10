@@ -2,6 +2,7 @@ using System;
 using RulesDoer.Core.Expressions.FEEL.Eval;
 using RulesDoer.Core.Runtime.Context;
 using RulesDoer.Core.Types;
+using RulesDoer.Core.Utils;
 
 namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Maths {
     public class Exponentiation : IMathExpression {
@@ -23,19 +24,23 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Maths {
                 switch (l.ValueType) {
                     case DataTypeEnum.Decimal:
 
-                        var x = Decimal.Parse (rightVal.NumericVal.ToString ());
-                        Decimal powV = 1;
-                        if (x < 0) {
-                            x = x * -1;
-                        }
+                        r.ExpectedDataType (DataTypeEnum.Decimal);
 
-                        for (; x > 0; x--) {
-                            powV *= leftVal.NumericVal;
-                        }
-                        if (rightVal.NumericVal < 0) {
-                            powV = 1 / powV;
-                        }
-                        return new Variable (powV);
+                        return MathHelper.Pow (l, r);
+
+                        // var x = Decimal.Parse (rightVal.NumericVal.ToString ());
+                        // Decimal powV = 1;
+                        // if (x < 0) {
+                        //     x = x * -1;
+                        // }
+
+                        // for (; x > 0; x--) {
+                        //     powV *= leftVal.NumericVal;
+                        // }
+                        // if (rightVal.NumericVal < 0) {
+                        //     powV = 1 / powV;
+                        // }
+                        // return new Variable (powV);
 
                     default:
                         throw new FEELException ("Failed to perform exponentiation to incorrect FEEL type");

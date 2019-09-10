@@ -32,6 +32,7 @@ namespace RulesDoer.Core.Tests.TCK.Run {
 
                     switch (rsltNode.Type) {
                         case "decision":
+                        case null:
                             AssertResult (rsltNode, rslt);
                             break;
                         default:
@@ -105,7 +106,15 @@ namespace RulesDoer.Core.Tests.TCK.Run {
                     }
 
                 } else {
-                    AssertResultValueType (expected[i], name, null, actualRslt);
+                    if (actualRslt.ListType())
+                    {
+                        AssertResultValueType (expected[i], name, null, actualRslt.ListVal[i]);
+                    }
+                    else
+                    {
+                        AssertResultValueType (expected[i], name, null, actualRslt);
+                    }
+                    
                 }
             }
 

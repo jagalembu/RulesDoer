@@ -1,9 +1,47 @@
 using System;
+using System.Collections.Generic;
 using RulesDoer.Core.Types;
 using RulesDoer.Core.Utils;
 
 namespace RulesDoer.Core.Runtime.Context {
     public static class VariableHelper {
+
+        public static Variable MakeList (List<Variable> lVars, string typeName) {
+            switch (typeName) {
+                case "string":
+                    return Variable.ListType (lVars, DataTypeEnum.ListString);
+                case "number":
+                    return Variable.ListType (lVars, DataTypeEnum.ListDecimal);
+                case "boolean":
+                    return Variable.ListType (lVars, DataTypeEnum.ListBoolean);
+                case "date":
+                case "datetime":
+                case "time":
+                case "yearMonthDuration":
+                case "dayTimeDuration":
+                default:
+                    return Variable.ListType (lVars, DataTypeEnum.List);
+            }
+
+        }
+
+        public static bool IsBaseTypes (string typeName) {
+            switch (typeName) {
+                case "string":
+                case "number":
+                case "boolean":
+                case "date":
+                case "datetime":
+                case "time":
+                case "yearMonthDuration":
+                case "dayTimeDuration":
+                    return true;
+                default:
+                    return false;
+            }
+
+        }
+
         public static Variable MakeVariable (object value, string typename) {
             if (value == null) {
                 return new Variable ();
@@ -50,12 +88,13 @@ namespace RulesDoer.Core.Runtime.Context {
                 case DataTypeEnum.YearMonthDuration:
                 case DataTypeEnum.DayTimeDuration:
                 case DataTypeEnum.Duration:
-                    return DateAndTimeHelper.DurationVal (value.ToString ());    
+                    return DateAndTimeHelper.DurationVal (value.ToString ());
                 case DataTypeEnum.Null:
                     return new Variable ();
                 default:
                     throw new NotImplementedException ($"The following type: {typeEnum} is not supported for a variable");
             }
         }
+
     }
 }

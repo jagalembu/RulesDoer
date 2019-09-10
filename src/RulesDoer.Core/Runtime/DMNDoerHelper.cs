@@ -8,17 +8,15 @@ using RulesDoer.Core.Types;
 namespace RulesDoer.Core.Runtime {
     public static class DMNDoerHelper {
 
-         public static Variable EvaluateDecisionByName (VariableContext runtimeContext, string decisionName) {
+        public static Variable EvaluateDecisionByName (VariableContext runtimeContext, string decisionName) {
 
-            if (runtimeContext == null || runtimeContext.DecisionMetaByName == null)
-            {
+            if (runtimeContext == null || runtimeContext.DecisionMetaByName == null) {
                 return null;
             }
 
             runtimeContext.DecisionMetaByName.TryGetValue (decisionName, out var decision);
 
-            if (decision == null)
-            {
+            if (decision == null) {
                 return null;
             }
 
@@ -100,6 +98,18 @@ namespace RulesDoer.Core.Runtime {
                 var dtr = new DecisionTableResult ();
                 dtr.MatchedList = matchedList;
                 dtr.OutputResult = HitPolicyHelper.Output (decisionTable.HitPolicy, matchedList, decisionTable.Aggregation);
+
+                //TODO: Output based on the variable output type reference in decision table meta
+
+                if (decisionTable.HitPolicy == THitPolicy.COLLECT && decisionTable.Aggregation == TBuiltinAggregator.NONE) {
+                    if (dtr.OutputResult[0].Keys.Count == 1) {
+                        var outL = new List<Variable> ();
+                        foreach (var item in dtr.OutputResult) {
+                            outL.Add (item.Values.Single ());
+                        }
+                        return outL;
+                    }
+                }
 
                 if (dtr.OutputResult.Count == 1 && dtr.OutputResult[0].Count == 1) {
                     foreach (var item in dtr.OutputResult[0]) {

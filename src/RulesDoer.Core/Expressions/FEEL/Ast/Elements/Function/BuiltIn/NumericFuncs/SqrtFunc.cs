@@ -11,7 +11,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function.BuiltIn.NumericF
         public Variable Execute (List<Variable> parameters) {
             parameters.ExpectedParamCount (1);
             parameters[0].ExpectedDataType (DataTypeEnum.Decimal);
-            return new Decimal (Math.Sqrt (Double.Parse (parameters[0].NumericVal.ToString ())));
+            return new decimal (Math.Sqrt (Double.Parse (parameters[0].NumericVal.ToString ())));
         }
     }
 }

@@ -8,5 +8,30 @@ namespace RulesDoer.Core.Runtime.Context {
                 throw new FEELException ($"Expected data type: {datatype} but is: {variable.ValueType}");
             }
         }
+
+        public static bool ListType (this Variable variable) {
+            switch (variable.ValueType) {
+                case DataTypeEnum.List:
+                case DataTypeEnum.ListBoolean:
+                case DataTypeEnum.ListDecimal:
+                case DataTypeEnum.ListString:
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
+
+        public static bool ListWithSingleTypedVariable (this Variable variable) {
+            switch (variable.ValueType) {
+                case DataTypeEnum.ListBoolean:
+                case DataTypeEnum.ListDecimal:
+                case DataTypeEnum.ListString:
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
     }
 }

@@ -146,7 +146,7 @@
 		</inputNode>
 		<resultNode name="mean1" type="decision">
 			<expected>
-				<value>5.66666666666667</value>
+				<value>5.6666666666666666666666666667</value>
 			</expected>
 		</resultNode>
 	</testCase>
@@ -162,7 +162,7 @@
 		</inputNode>
 		<resultNode name="mean2" type="decision">
 			<expected>
-				<value>7.66666666666667</value>
+				<value>7.6666666666666666666666666667</value>
 			</expected>
 		</resultNode>
 	</testCase>

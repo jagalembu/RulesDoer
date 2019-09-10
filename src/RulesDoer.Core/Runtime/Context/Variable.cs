@@ -122,6 +122,12 @@ namespace RulesDoer.Core.Runtime.Context {
             return new Variable (DataTypeEnum.Time, tm);
         }
 
+        static public Variable ListType (List<Variable> lVars, DataTypeEnum dType) {
+            var vList = new Variable (lVars);
+            vList.ValueType = dType;
+            return vList;
+        }
+
         public int CompareTo (Variable variable) {
             switch (variable.ValueType) {
                 case DataTypeEnum.Boolean:
@@ -144,6 +150,7 @@ namespace RulesDoer.Core.Runtime.Context {
                     return this.NumericVal.CompareTo (variable.NumericVal);
                 case DataTypeEnum.List:
                 case DataTypeEnum.Context:
+                    //TODO: need to throw error
                     return 0;
                 default:
                     throw new FEELException ($"The following type {variable.ValueType} is not supported");
@@ -153,14 +160,20 @@ namespace RulesDoer.Core.Runtime.Context {
 
         public override bool Equals (object obj) {
 
-            if (this.ValueType == DataTypeEnum.List) {
-                return this.ListVal.SequenceEqual (((Variable) obj).ListVal);
+            var rightVar = obj as Variable;
+
+            //Contains - List comparison
+            if (!this.ListType () && rightVar.ListType ()) {
+                return false;
             }
 
-            if (this.ValueType == DataTypeEnum.Context) {
+            if (this.ListType () && rightVar.ListType ()) {
+                return this.ListVal.SequenceEqual (rightVar.ListVal);
+            }
 
-                var compareVar = obj as Variable;
-                var match = this.ContextInputs.ContextDict.Keys.SequenceEqual (compareVar.ContextInputs.ContextDict.Keys);
+            if (this.ValueType == DataTypeEnum.Context && rightVar.ValueType == DataTypeEnum.Context) {
+
+                var match = this.ContextInputs.ContextDict.Keys.SequenceEqual (rightVar.ContextInputs.ContextDict.Keys);
 
                 if (match) {
                     foreach (var item in this.ContextInputs.ContextDict.Keys) {
@@ -170,7 +183,7 @@ namespace RulesDoer.Core.Runtime.Context {
                             return false;
                         }
 
-                        compareVar.ContextInputs.ContextDict.TryGetValue (item, out Variable compValVar);
+                        rightVar.ContextInputs.ContextDict.TryGetValue (item, out Variable compValVar);
 
                         if (compValVar is null) {
                             return false;
@@ -189,7 +202,7 @@ namespace RulesDoer.Core.Runtime.Context {
                 return false;
             }
 
-            return this.CompareTo (obj as Variable) == 0;
+            return this.CompareTo (rightVar) == 0;
         }
 
         public override int GetHashCode () {

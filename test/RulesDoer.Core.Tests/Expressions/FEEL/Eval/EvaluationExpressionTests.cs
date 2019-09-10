@@ -21,13 +21,12 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
 
         [Theory]
         [InlineData ("years and months duration(from:date(\"2011-12-22\"),to:date(\"2013-08-24\"))", "P1Y8M")]
-        public void Evaluate_YearAndMonthDurationFunc(string exprText, string expected)
-        {
+        public void Evaluate_YearAndMonthDurationFunc (string exprText, string expected) {
             Variable variable = ParseAndEval (exprText);
 
-            var expectedVal = DateAndTimeHelper.DurationVal(expected);
+            var expectedVal = DateAndTimeHelper.DurationVal (expected);
 
-            Assert.Equal<Variable>(expectedVal, variable);
+            Assert.Equal<Variable> (expectedVal, variable);
 
         }
 
@@ -119,8 +118,19 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
             if (!string.IsNullOrWhiteSpace (expectedStr)) {
                 Assert.Equal<Decimal> (Decimal.Parse (expectedStr), variable);
             } else if (expectedBool.HasValue) {
-                Assert.Equal<Boolean> (expectedBool.Value, variable);
+                Assert.Equal<bool> (expectedBool.Value, variable);
             }
+
+        }
+
+        [Theory]
+        [InlineData ("all([])", true)]
+        [InlineData ("all(true)", true)]
+        [InlineData ("any([])", false)]
+        [InlineData ("any(true)", true)]
+        public void EvaluateExpression_FunctionInvocation_All_Any (string exprText, bool expected) {
+            Variable variable = ParseAndEval (exprText);
+            Assert.Equal<bool> (expected, variable);
 
         }
 
@@ -170,7 +180,7 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
 
         [Theory]
         [InlineData ("duration(\"P1Y3M\").years", 1)]
-        [InlineData ("duration(\"P1Y3M\").months", 15 )]
+        [InlineData ("duration(\"P1Y3M\").months", 15)]
         public void EvaluateExpression_PathExpression_DurationYearsAndMonths (string exprText, Decimal expected) {
             Variable variable = ParseAndEval (exprText);
 

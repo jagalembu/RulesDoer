@@ -11,7 +11,7 @@
         <description>will return stddev</description>
         <resultNode name="decision001" type="decision">
             <expected>
-                <value xsi:type="xsd:decimal">2.0816659994661</value>
+                <value xsi:type="xsd:decimal">2.08166599946613</value>
             </expected>
         </resultNode>
     </testCase>
@@ -100,7 +100,7 @@
         <description>will return stddev for varargs list</description>
         <resultNode name="decision009" type="decision">
             <expected>
-                <value xsi:type="xsd:decimal">2.0816659994661</value>
+                <value xsi:type="xsd:decimal">2.08166599946613</value>
             </expected>
         </resultNode>
     </testCase>
@@ -120,7 +120,7 @@
         <description>will return stddev - named param</description>
         <resultNode name="decision011" type="decision">
             <expected>
-                <value xsi:type="xsd:decimal">2.0816659994661</value>
+                <value xsi:type="xsd:decimal">2.08166599946613</value>
             </expected>
         </resultNode>
     </testCase>
