@@ -9,6 +9,8 @@ namespace RulesDoer.Core.Runtime {
         public static List<Dictionary<string, Variable>> Output (THitPolicy hitpolicyenum, List<Dictionary<string, Variable>> matchedList, TBuiltinAggregator? agg = null) {
             var outputList = new List<Dictionary<string, Variable>> ();
 
+            //TODO: Smelly code need to refactor into a factory interface
+            
             switch (hitpolicyenum) {
                 case THitPolicy.UNIQUE:
                     if (matchedList.Count > 1) {
