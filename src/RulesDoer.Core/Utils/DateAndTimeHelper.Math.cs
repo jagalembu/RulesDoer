@@ -91,7 +91,8 @@ namespace RulesDoer.Core.Utils {
             // years and months duration
             if (left.ValueType == DataTypeEnum.YearMonthDuration && right.ValueType == DataTypeEnum.YearMonthDuration) {
 
-                return left.DurationVal + right.DurationVal;
+                var x = left.DurationVal + right.DurationVal;
+                return Variable.DurationType (x, DataTypeEnum.YearMonthDuration);
 
             }
 
@@ -101,7 +102,8 @@ namespace RulesDoer.Core.Utils {
             // 10.3.2.3.7
             // days and time duration
             if (left.ValueType == DataTypeEnum.DayTimeDuration && right.ValueType == DataTypeEnum.DayTimeDuration) {
-                return left.DurationVal + right.DurationVal;
+                var x = left.DurationVal + right.DurationVal;
+                return Variable.DurationType (x, DataTypeEnum.DayTimeDuration);
             }
 
             // date and time
@@ -213,12 +215,13 @@ namespace RulesDoer.Core.Utils {
 
                 var d = l.Item1.Minus (r.Item1);
 
-                return new PeriodBuilder () {
+                var x = new PeriodBuilder () {
                     Days = d.Days,
                         Hours = d.Hours,
                         Minutes = d.Minutes,
                         Seconds = d.Seconds
                 }.Build ();
+                return Variable.DurationType (x, DataTypeEnum.DayTimeDuration);
             }
 
             // years and months duration
@@ -227,7 +230,8 @@ namespace RulesDoer.Core.Utils {
             // 10.3.2.3.8.
             // years and months duration
             if (left.ValueType == DataTypeEnum.YearMonthDuration && right.ValueType == DataTypeEnum.YearMonthDuration) {
-                return left.DurationVal + right.DurationVal;
+                var x = left.DurationVal - right.DurationVal;
+                return Variable.DurationType (x, DataTypeEnum.YearMonthDuration);
 
             }
 
@@ -237,6 +241,8 @@ namespace RulesDoer.Core.Utils {
             // 10.3.2.3.7
             // days and time duration
             if (left.ValueType == DataTypeEnum.DayTimeDuration && right.ValueType == DataTypeEnum.DayTimeDuration) {
+                var x = left.DurationVal - right.DurationVal;
+                return Variable.DurationType (x, DataTypeEnum.DayTimeDuration);
 
             }
 

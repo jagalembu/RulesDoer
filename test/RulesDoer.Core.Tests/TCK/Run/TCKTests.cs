@@ -31,8 +31,22 @@ namespace RulesDoer.Core.Tests.TCK.Run {
 
         }
 
+//0006
+//0070
+//0068
+//0006
+//0017
+//0039
+//0081
+//0080
+//0007 - date stuff - done
+//0090 - feel path
+//0021
+//0005
+//0057 - context (self referential)
+//0072 - Feel in test
         [Theory]
-        [TCKFiles ("compliance_level_3._1121")]
+        [TCKFiles ("compliance_level_3._0007")]
         public void Compliance_Level_3 (string filename, string inputTckXml) {
 
             var mockLogTrans = new Mock<ILogger<TCKTransformer>> ();
