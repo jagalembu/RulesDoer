@@ -61,7 +61,8 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements {
                         return DateAndTimeHelper.DateTimePropEvals (ctxVar, Names[i]);
                     case DataTypeEnum.Time:
                         return DateAndTimeHelper.TimePropEvals (ctxVar, Names[i]);
-                    case DataTypeEnum.Duration:
+                    case DataTypeEnum.YearMonthDuration:
+                    case DataTypeEnum.DayTimeDuration:
                         return DateAndTimeHelper.DurationPropEvals (ctxVar, Names[i]);
                     default:
                         throw new FEELException ($"Path expression for {ctxVar.ValueType} is not supported");

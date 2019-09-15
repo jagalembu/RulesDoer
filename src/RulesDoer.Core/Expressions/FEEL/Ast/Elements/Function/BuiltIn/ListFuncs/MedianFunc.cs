@@ -9,7 +9,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function.BuiltIn.ListFunc
         public const string FuncName = "median";
 
         public Variable Execute (List<Variable> parameters) {
-            if (!parameters[0].ListType ()) {
+            if (!parameters[0].IsListType ()) {
                 parameters.ExpectedAllListItemType (new List<DataTypeEnum> () { DataTypeEnum.Decimal });
                 return MathHelper.Median (parameters);
             }

@@ -10,7 +10,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function.BuiltIn.ListFunc
         public const string FuncName = "max";
         public Variable Execute (List<Variable> parameters) {
 
-            if (!parameters[0].ListType()) {
+            if (!parameters[0].IsListType()) {
                 parameters.ExpectedAllListItemType (new List<DataTypeEnum>() {DataTypeEnum.Decimal});
                 return parameters.Max (x => x.NumericVal);
             }

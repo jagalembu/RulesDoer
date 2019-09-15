@@ -10,7 +10,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function.BuiltIn.ListFunc
         public Variable Execute (List<Variable> parameters) {
             var uL = new List<Variable> ();
             foreach (var item in parameters) {
-                if (item.ListType ()) {
+                if (item.IsListType ()) {
                     uL.AddRange (item.ListVal);
                 }
 

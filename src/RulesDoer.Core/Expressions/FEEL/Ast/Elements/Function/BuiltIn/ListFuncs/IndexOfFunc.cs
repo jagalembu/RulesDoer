@@ -10,7 +10,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function.BuiltIn.ListFunc
 
         public Variable Execute (List<Variable> parameters) {
             parameters.ExpectedParamCount (2);
-            if (!parameters[0].ListType ()) {
+            if (!parameters[0].IsListType ()) {
                 throw new FEELException ($"Expected first parameter to be a list: {parameters[0].ValueType}");
             }
 

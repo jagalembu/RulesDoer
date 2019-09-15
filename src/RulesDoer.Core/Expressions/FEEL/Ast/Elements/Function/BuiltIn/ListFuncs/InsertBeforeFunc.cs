@@ -10,7 +10,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function.BuiltIn.ListFunc
 
         public Variable Execute (List<Variable> parameters) {
             parameters.ExpectedParamCount (3);
-            if (parameters[0].ListType ()) {
+            if (parameters[0].IsListType ()) {
                 parameters[1].ExpectedDataType (DataTypeEnum.Decimal);
                 var i = parameters[1].NumericVal - 1;
                 var parentL = parameters[0].ListVal.GetRange(0, parameters[0].ListVal.Count);

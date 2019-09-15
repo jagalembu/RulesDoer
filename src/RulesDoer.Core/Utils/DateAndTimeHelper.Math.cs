@@ -12,7 +12,7 @@ namespace RulesDoer.Core.Utils {
             // date and time
             // Subtraction is undefined. Addition is commutative and is defined by the previous rule.
             // date and time
-            if (left.ValueType == DataTypeEnum.Duration && right.ValueType == DataTypeEnum.DateTime) {
+            if (left.ValueType == DataTypeEnum.YearMonthDuration && right.ValueType == DataTypeEnum.DateTime) {
 
                 if (right.DateTimeVal.HasValue) {
                     return right.DateTimeVal.Value + left.DurationVal.ToDuration ();
@@ -32,7 +32,18 @@ namespace RulesDoer.Core.Utils {
             // date and time
             // Subtraction is undefined. Addition is commutative and is defined by the previous rule.
             // date and time
-            if (left.ValueType == DataTypeEnum.Duration && right.ValueType == DataTypeEnum.DateTime) {
+            if (left.ValueType == DataTypeEnum.DayTimeDuration && right.ValueType == DataTypeEnum.DateTime) {
+                if (right.DateTimeVal.HasValue) {
+                    return right.DateTimeVal.Value + left.DurationVal.ToDuration ();
+                }
+
+                if (right.LocalDateTimeVal.HasValue) {
+                    return right.LocalDateTimeVal.Value + left.DurationVal;
+                }
+
+                if (right.ZoneDateTimeVal.HasValue) {
+                    return right.ZoneDateTimeVal.Value + left.DurationVal.ToDuration ();
+                }
 
             }
 
@@ -40,7 +51,7 @@ namespace RulesDoer.Core.Utils {
             // time
             // Subtraction is undefined. Addition is commutative and is defined by the previous rule.
             // time
-            if (left.ValueType == DataTypeEnum.Duration && right.ValueType == DataTypeEnum.Time) {
+            if (left.ValueType == DataTypeEnum.DayTimeDuration && right.ValueType == DataTypeEnum.Time) {
 
                 if (right.TimeVal.HasValue) {
                     right.TimeVal.Value.Deconstruct (out var lt, out var of );
@@ -61,7 +72,7 @@ namespace RulesDoer.Core.Utils {
             // date
             // Subtraction is undefined. Addition is commutative and is defined by the previous rule.
             // date
-            if (left.ValueType == DataTypeEnum.Duration && right.ValueType == DataTypeEnum.Date) {
+            if (left.ValueType == DataTypeEnum.YearMonthDuration && right.ValueType == DataTypeEnum.Date) {
                 return right.DateVal + left.DurationVal;
             }
 
@@ -69,7 +80,7 @@ namespace RulesDoer.Core.Utils {
             // date
             // Subtraction is undefined. Addition is commutative and is defined by the previous rule.
             // date
-            if (left.ValueType == DataTypeEnum.Duration && right.ValueType == DataTypeEnum.Date) {
+            if (left.ValueType == DataTypeEnum.DayTimeDuration && right.ValueType == DataTypeEnum.Date) {
                 return right.DateVal + left.DurationVal;
             }
 
@@ -78,7 +89,7 @@ namespace RulesDoer.Core.Utils {
             // valueymd-1(valueymd(e1) +/- valueymd(e2)) where valueymd and valueymd-1 is defined in
             // 10.3.2.3.8.
             // years and months duration
-            if (left.ValueType == DataTypeEnum.Duration && right.ValueType == DataTypeEnum.Duration) {
+            if (left.ValueType == DataTypeEnum.YearMonthDuration && right.ValueType == DataTypeEnum.YearMonthDuration) {
 
                 return left.DurationVal + right.DurationVal;
 
@@ -89,8 +100,8 @@ namespace RulesDoer.Core.Utils {
             // valuedtd-1(valuedtd(e1) +/- valuedtd(e2)) where valuedtd and valuedtd-1 is defined in 
             // 10.3.2.3.7
             // days and time duration
-            if (left.ValueType == DataTypeEnum.Duration && right.ValueType == DataTypeEnum.Duration) {
-
+            if (left.ValueType == DataTypeEnum.DayTimeDuration && right.ValueType == DataTypeEnum.DayTimeDuration) {
+                return left.DurationVal + right.DurationVal;
             }
 
             // date and time
@@ -101,7 +112,7 @@ namespace RulesDoer.Core.Utils {
             // time and floor functions are as defined in 10.3.4, 
             // valuedt and valuedt-1 is defined in 10.3.2.3.5 and valueymd is defined in 10.3.2.3.8.
             // date and time
-            if (left.ValueType == DataTypeEnum.DateTime && right.ValueType == DataTypeEnum.Duration) {
+            if (left.ValueType == DataTypeEnum.DateTime && right.ValueType == DataTypeEnum.YearMonthDuration) {
 
                 if (left.DateTimeVal.HasValue) {
                     left.DateTimeVal.Value.Deconstruct (out var ldt, out var of );
@@ -123,7 +134,7 @@ namespace RulesDoer.Core.Utils {
             // valuedt-1(valuedt(e1) +/- valuedtd(e2)) where valuedt and valuedt-1 is defined in 10.3.2.3.5 
             // and valuedtd is defined in 10.3.2.3.7.
             // date and time
-            if (left.ValueType == DataTypeEnum.DateTime && right.ValueType == DataTypeEnum.Duration) {
+            if (left.ValueType == DataTypeEnum.DateTime && right.ValueType == DataTypeEnum.DayTimeDuration) {
 
                 if (left.DateTimeVal.HasValue) {
                     left.DateTimeVal.Value.Deconstruct (out var ldt, out var of );
@@ -145,7 +156,7 @@ namespace RulesDoer.Core.Utils {
             // valuet-1(valuet(e1) +/- valuedtd(e2)) where valuet and valuet-1 are defined in 10.3.2.3.4 
             // and valuedtd is defined in 10.3.2.3.7.
             // time
-            if (left.ValueType == DataTypeEnum.Time && right.ValueType == DataTypeEnum.Duration) {
+            if (left.ValueType == DataTypeEnum.Time && right.ValueType == DataTypeEnum.DayTimeDuration) {
 
                 if (left.TimeVal.HasValue) {
                     left.TimeVal.Value.Deconstruct (out var lt, out var of );
@@ -168,7 +179,7 @@ namespace RulesDoer.Core.Utils {
             // where the named properties are as defined in Table 60 below, and the date and floor functions 
             // are as defined in 10.3.4
             // date
-            if (left.ValueType == DataTypeEnum.Date && right.ValueType == DataTypeEnum.Duration) {
+            if (left.ValueType == DataTypeEnum.Date && right.ValueType == DataTypeEnum.YearMonthDuration) {
                 return left.DateVal + right.DurationVal;
             }
 
@@ -177,7 +188,7 @@ namespace RulesDoer.Core.Utils {
             // date(valuedt-1 (valuedt(e1) +/- valuedtd(e2))) where valuedt and valuedt-1 is 
             // defined in 10.3.2.3.5 and valuedtd is defined in 10.3.2.3.7
             // date
-            if (left.ValueType == DataTypeEnum.Date && right.ValueType == DataTypeEnum.Duration) {
+            if (left.ValueType == DataTypeEnum.Date && right.ValueType == DataTypeEnum.DayTimeDuration) {
                 return left.DateVal + right.DurationVal;
             }
 
@@ -215,7 +226,7 @@ namespace RulesDoer.Core.Utils {
             // valueymd-1(valueymd(e1) +/- valueymd(e2)) where valueymd and valueymd-1 is defined in
             // 10.3.2.3.8.
             // years and months duration
-            if (left.ValueType == DataTypeEnum.Duration && right.ValueType == DataTypeEnum.Duration) {
+            if (left.ValueType == DataTypeEnum.YearMonthDuration && right.ValueType == DataTypeEnum.YearMonthDuration) {
                 return left.DurationVal + right.DurationVal;
 
             }
@@ -225,7 +236,7 @@ namespace RulesDoer.Core.Utils {
             // valuedtd-1(valuedtd(e1) +/- valuedtd(e2)) where valuedtd and valuedtd-1 is defined in 
             // 10.3.2.3.7
             // days and time duration
-            if (left.ValueType == DataTypeEnum.Duration && right.ValueType == DataTypeEnum.Duration) {
+            if (left.ValueType == DataTypeEnum.DayTimeDuration && right.ValueType == DataTypeEnum.DayTimeDuration) {
 
             }
 
@@ -237,7 +248,7 @@ namespace RulesDoer.Core.Utils {
             // time and floor functions are as defined in 10.3.4, 
             // valuedt and valuedt-1 is defined in 10.3.2.3.5 and valueymd is defined in 10.3.2.3.8.
             // date and time
-            if (left.ValueType == DataTypeEnum.DateTime && right.ValueType == DataTypeEnum.Duration) {
+            if (left.ValueType == DataTypeEnum.DateTime && right.ValueType == DataTypeEnum.YearMonthDuration) {
 
                 if (left.DateTimeVal.HasValue) {
                     left.DateTimeVal.Value.Deconstruct (out var ldt, out var of );
@@ -259,7 +270,7 @@ namespace RulesDoer.Core.Utils {
             // valuedt-1(valuedt(e1) +/- valuedtd(e2)) where valuedt and valuedt-1 is defined in 10.3.2.3.5 
             // and valuedtd is defined in 10.3.2.3.7.
             // date and time
-            if (left.ValueType == DataTypeEnum.DateTime && right.ValueType == DataTypeEnum.Duration) {
+            if (left.ValueType == DataTypeEnum.DateTime && right.ValueType == DataTypeEnum.DayTimeDuration) {
 
                 if (left.DateTimeVal.HasValue) {
                     left.DateTimeVal.Value.Deconstruct (out var ldt, out var of );
@@ -281,7 +292,7 @@ namespace RulesDoer.Core.Utils {
             // valuet-1(valuet(e1) +/- valuedtd(e2)) where valuet and valuet-1 are defined in 10.3.2.3.4 
             // and valuedtd is defined in 10.3.2.3.7.
             // time
-            if (left.ValueType == DataTypeEnum.Time && right.ValueType == DataTypeEnum.Duration) {
+            if (left.ValueType == DataTypeEnum.Time && right.ValueType == DataTypeEnum.DayTimeDuration) {
 
                 if (left.TimeVal.HasValue) {
                     left.TimeVal.Value.Deconstruct (out var lt, out var of );
@@ -304,7 +315,7 @@ namespace RulesDoer.Core.Utils {
             // where the named properties are as defined in Table 60 below, and the date and floor functions 
             // are as defined in 10.3.4
             // date
-            if (left.ValueType == DataTypeEnum.Date && right.ValueType == DataTypeEnum.Duration) {
+            if (left.ValueType == DataTypeEnum.Date && right.ValueType == DataTypeEnum.YearMonthDuration) {
                 return left.DateVal - right.DurationVal;
             }
 
@@ -313,7 +324,7 @@ namespace RulesDoer.Core.Utils {
             // date(valuedt-1 (valuedt(e1) +/- valuedtd(e2))) where valuedt and valuedt-1 is 
             // defined in 10.3.2.3.5 and valuedtd is defined in 10.3.2.3.7
             // date
-            if (left.ValueType == DataTypeEnum.Date && right.ValueType == DataTypeEnum.Duration) {
+            if (left.ValueType == DataTypeEnum.Date && right.ValueType == DataTypeEnum.DayTimeDuration) {
                 return left.DateVal - right.DurationVal;
             }
 

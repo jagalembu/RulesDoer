@@ -15,7 +15,6 @@ namespace RulesDoer.Core.Types {
         Tuple,
         Any,
         DecisionTableResult,
-        Duration,
         ListDecimal,
         ListString,
         ListBoolean

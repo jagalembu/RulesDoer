@@ -77,7 +77,6 @@ namespace RulesDoer.Core.Runtime.Context {
 
         public Variable (Period period) {
             DurationVal = period;
-            ValueType = DataTypeEnum.Duration;
         }
 
         public Variable (DataTypeEnum yrMnthDurationType, int months) {
@@ -128,6 +127,12 @@ namespace RulesDoer.Core.Runtime.Context {
             return vList;
         }
 
+        static public Variable DurationType (Period duration, DataTypeEnum dType) {
+            var dur = new Variable (duration);
+            dur.ValueType = dType;
+            return dur;
+        }
+
         public int CompareTo (Variable variable) {
             switch (variable.ValueType) {
                 case DataTypeEnum.Boolean:
@@ -142,12 +147,9 @@ namespace RulesDoer.Core.Runtime.Context {
                     return DateAndTimeHelper.CompareDate (this, variable);
                 case DataTypeEnum.Decimal:
                     return this.NumericVal.CompareTo (variable.NumericVal);
-                case DataTypeEnum.Duration:
-                    return DateAndTimeHelper.CompareDuration (this, variable);
                 case DataTypeEnum.DayTimeDuration:
-                    return DateAndTimeHelper.CompareDuration (this, variable);
                 case DataTypeEnum.YearMonthDuration:
-                    return this.NumericVal.CompareTo (variable.NumericVal);
+                    return DateAndTimeHelper.CompareDuration (this, variable);
                 case DataTypeEnum.List:
                 case DataTypeEnum.Context:
                     //TODO: need to throw error
@@ -163,11 +165,11 @@ namespace RulesDoer.Core.Runtime.Context {
             var rightVar = obj as Variable;
 
             //Contains - List comparison
-            if (!this.ListType () && rightVar.ListType ()) {
+            if (!this.IsListType () && rightVar.IsListType ()) {
                 return false;
             }
 
-            if (this.ListType () && rightVar.ListType ()) {
+            if (this.IsListType () && rightVar.IsListType ()) {
                 return this.ListVal.SequenceEqual (rightVar.ListVal);
             }
 
@@ -339,7 +341,7 @@ namespace RulesDoer.Core.Runtime.Context {
         }
 
         static public implicit operator Period (Variable ev) {
-            if (ev.ValueType != DataTypeEnum.Duration)
+            if (!ev.IsDurationType())
                 throw new NotSupportedException ("Expected Duration value.");
             return ev.DurationVal;
         }
@@ -401,12 +403,7 @@ namespace RulesDoer.Core.Runtime.Context {
                     return this.NumericVal.ToString ();
 
                 case DataTypeEnum.DayTimeDuration:
-                    return this.DurationVal.ToString ();
-
                 case DataTypeEnum.YearMonthDuration:
-                    return this.NumericVal.ToString ();
-
-                case DataTypeEnum.Duration:
                     return DateAndTimeHelper.DurationString (this);
 
                 default:

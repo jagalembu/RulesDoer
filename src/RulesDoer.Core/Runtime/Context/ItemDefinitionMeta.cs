@@ -8,7 +8,7 @@ namespace RulesDoer.Core.Runtime.Context {
         public string TypeLanguage { get; set; }
         public TUnaryTests AllowedValues { get; set; }
         public bool IsCollection { get; set; }
-        public Dictionary<string, ItemDefinitionMeta> ItemComponents { get; set; }
+        public Dictionary<string, ItemDefinitionMeta> ItemComponents { get; set; } = new Dictionary<string, ItemDefinitionMeta>();
         public bool CheckAllowedValues (VariableContext context) {
             //TODO: Need to execute unary test with context value and input name
             return true;

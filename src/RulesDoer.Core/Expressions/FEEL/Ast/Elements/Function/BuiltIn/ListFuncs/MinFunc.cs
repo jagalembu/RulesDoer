@@ -11,7 +11,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function.BuiltIn.ListFunc
 
         public Variable Execute (List<Variable> parameters) {
 
-            if (!parameters[0].ListType()) {
+            if (!parameters[0].IsListType()) {
                 parameters.ExpectedAllListItemType (new List<DataTypeEnum>() {DataTypeEnum.Decimal});
                 return parameters.Min (x => x.NumericVal);
             }

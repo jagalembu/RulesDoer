@@ -29,7 +29,8 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Maths {
                     case DataTypeEnum.Date:
                     case DataTypeEnum.DateTime:
                     case DataTypeEnum.Time:
-                    case DataTypeEnum.Duration:
+                    case DataTypeEnum.YearMonthDuration:
+                    case DataTypeEnum.DayTimeDuration:
                         return DateAndTimeHelper.Subtract (l, r);
 
                     default:

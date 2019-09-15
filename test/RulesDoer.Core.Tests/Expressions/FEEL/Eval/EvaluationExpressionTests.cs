@@ -43,6 +43,15 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
         }
 
         [Theory]
+        [ClassData (typeof (ListFilterTests))]
+        public void EvaluateExpression_List_Filter (string exprText, Variable expected) {
+            Variable variable = ParseAndEval (exprText);
+
+            Assert.True (variable.Equals (expected));
+
+        }
+
+        [Theory]
         [ClassData (typeof (ContextDataTests))]
         public void EvaluateExpression_Boxed_Context (string exprText, Variable expected, Boolean expectedEqual) {
             Variable variable = ParseAndEval (exprText);
@@ -180,7 +189,7 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
 
         [Theory]
         [InlineData ("duration(\"P1Y3M\").years", 1)]
-        [InlineData ("duration(\"P1Y3M\").months", 15)]
+        [InlineData ("duration(\"P1Y3M\").months", 3)]
         public void EvaluateExpression_PathExpression_DurationYearsAndMonths (string exprText, Decimal expected) {
             Variable variable = ParseAndEval (exprText);
 

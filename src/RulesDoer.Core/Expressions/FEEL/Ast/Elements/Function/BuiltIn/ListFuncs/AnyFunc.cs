@@ -8,7 +8,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function.BuiltIn.ListFunc
     public class AnyFunc : IFunc {
         public const string FuncName = "any";
         public Variable Execute (List<Variable> parameters) {
-             if (!parameters[0].ListType ()) {
+             if (!parameters[0].IsListType ()) {
                 parameters.ExpectedAllListItemType (new List<DataTypeEnum> () { DataTypeEnum.Boolean });
                 return Any (parameters);
             }

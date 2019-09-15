@@ -45,7 +45,11 @@ simpleUnaryTestsBase
 expression
 	returns[IExpression ast]:
 	boxedExpression {$ast = $boxedExpression.ast;}
-	| textualExpression {$ast = $textualExpression.ast;};
+	| textualExpression {$ast = $textualExpression.ast;}
+	| left = expression BRACKET_OPEN filter = expression BRACKET_CLOSE {$ast = new Filter($left.ast, $filter.ast);
+		}
+	| parent = expression DOT child = NAME {$ast = new PathExpression($parent.ast, $child.text);
+		};	
 
 //tests
 simpleUnaryTests
@@ -180,9 +184,7 @@ arithmeticExpression
 			}
 	| expr = arithmeticExpression INSTANCE_OF typeIs {$ast = new InstanceOf($expr.ast, $typeIs.ast);
 		}
-	| parent = arithmeticExpression DOT child = NAME {$ast = new PathExpression($parent.ast, $child.text);
-		}
-	| BRACKET_OPEN filter = expression BRACKET_CLOSE
+
 	| function = arithmeticExpression pm = parameters {$ast = new FunctionInvocation($function.ast, $pm.ast);
 		}
 	| lit = literal {$ast = $lit.ast;}

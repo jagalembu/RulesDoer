@@ -8,7 +8,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function.BuiltIn.ListFunc
         public const string FuncName = "sublist";
 
         public Variable Execute (List<Variable> parameters) {
-            if (parameters[0].ListType () && parameters.Count <= 3) {
+            if (parameters[0].IsListType () && parameters.Count <= 3) {
                 var c = decimal.Zero;
                 var i = decimal.Zero;
 

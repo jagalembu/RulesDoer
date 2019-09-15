@@ -9,7 +9,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function.BuiltIn.ListFunc
         public const string FuncName = "list contains";
         public Variable Execute (List<Variable> parameters) {
             parameters.ExpectedParamCount (2);
-            if (parameters[0].ListType())
+            if (parameters[0].IsListType())
             {
                 return parameters[0].ListVal.Contains (parameters[1]);
             }

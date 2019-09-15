@@ -12,7 +12,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function.BuiltIn.ListFunc
 
                 var cL = new List<Variable> ();
                 foreach (var item in parameters) {
-                    if (!item.ListType ()) {
+                    if (!item.IsListType ()) {
                         throw new FEELException ("Expects a list type for concatenate function");
                     }
                     cL.AddRange (item.ListVal);

@@ -106,15 +106,12 @@ namespace RulesDoer.Core.Tests.TCK.Run {
                     }
 
                 } else {
-                    if (actualRslt.ListType())
-                    {
+                    if (actualRslt.IsListType ()) {
                         AssertResultValueType (expected[i], name, null, actualRslt.ListVal[i]);
-                    }
-                    else
-                    {
+                    } else {
                         AssertResultValueType (expected[i], name, null, actualRslt);
                     }
-                    
+
                 }
             }
 
@@ -145,11 +142,14 @@ namespace RulesDoer.Core.Tests.TCK.Run {
 
         private void AssertResultByIndividualType (object expected, Variable actualrslt, string name = null) {
             if (expected == null) {
+                if (actualrslt.IsListType ()) {
+                    Assert.True (actualrslt.ListVal.Count == 0, name);
+                    return;
+                }
                 Assert.True (actualrslt.ValueType == DataTypeEnum.Null, name);
-                Assert.True (expected == null, name);
                 return;
             }
-            
+
             Assert.Equal<Variable> (VariableHelper.MakeVariable (expected, actualrslt.ValueType), actualrslt);
 
         }

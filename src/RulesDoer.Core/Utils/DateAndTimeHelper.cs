@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using NodaTime;
 using NodaTime.Text;
 using RulesDoer.Core.Expressions.FEEL.Eval;
@@ -12,6 +13,10 @@ namespace RulesDoer.Core.Utils {
         public static ZonedDateTimePattern _zoneTmPattern = ZonedDateTimePattern.CreateWithInvariantCulture ("HH':'mm':'ss;FFFFFFFFF@z", DateTimeZoneProviders.Tzdb);
 
         public static OffsetTimePattern _offsetTimePatternWithSecondsOffset = OffsetTimePattern.CreateWithInvariantCulture ("HH':'mm':'ss;FFFFFFFFFo<Z+HH:mm:ss>");
+
+        private static Regex _YM = new Regex (
+            @"^(?<sign>-)?P(?<Y>\d+Y)?(?<M>\d+M)?$",
+            RegexOptions.Compiled | RegexOptions.Singleline);
 
         public static Variable DateTimeVal (string input) {
 
@@ -69,6 +74,11 @@ namespace RulesDoer.Core.Utils {
 
         public static Variable DurationVal (string input) {
 
+            var durType = DataTypeEnum.DayTimeDuration;
+            var ym = _YM.Match (input);
+            if (ym.Success) {
+                durType = DataTypeEnum.YearMonthDuration;
+            }
             var durationVal = input;
             bool neg = false;
             if (input.StartsWith ('-')) {
@@ -91,9 +101,9 @@ namespace RulesDoer.Core.Utils {
                             Milliseconds = (val.Milliseconds > 0) ? val.Milliseconds * -1 : 0,
                             Ticks = (val.Ticks > 0) ? val.Ticks * -1 : 0
                     }.Build ();
-                    return negVal;
+                    return Variable.DurationType (negVal, durType);
                 }
-                return dur.Value;
+                return Variable.DurationType (dur.Value, durType);
             }
 
             return new Variable ();
@@ -195,6 +205,8 @@ namespace RulesDoer.Core.Utils {
                     return new Variable (dt.DateVal.Month);
                 case "day":
                     return new Variable (dt.DateVal.Day);
+                case "weekday":
+                    return new Variable ((int) dt.DateVal.DayOfWeek);
                 default:
                     throw new FEELException ($"The following property {prop} is not supported for date type");
 
@@ -202,22 +214,37 @@ namespace RulesDoer.Core.Utils {
         }
 
         public static Variable DurationPropEvals (Variable dt, string prop) {
-            switch (prop) {
-                case "days":
-                    return dt.DurationVal.Days;
-                case "hours":
-                    return dt.DurationVal.Hours;
-                case "minutes":
-                    return dt.DurationVal.Minutes;
-                case "seconds":
-                    return dt.DurationVal.Seconds;
-                case "months":
-                    return dt.DurationVal.Months + (dt.DurationVal.Years * 12);
-                case "years":
-                    return dt.DurationVal.Years;
-                default:
-                    throw new FEELException ($"The following property {prop} is not supported for day time duration type");
+            if (dt.ValueType == DataTypeEnum.DayTimeDuration) {
+                switch (prop) {
+                    case "days":
+                        return dt.DurationVal.Days;
+                    case "hours":
+                        return dt.DurationVal.Hours;
+                    case "minutes":
+                        return dt.DurationVal.Minutes;
+                    case "seconds":
+                        return dt.DurationVal.Seconds;
+
+                    default:
+                        throw new FEELException ($"The following property {prop} is not supported for day time duration type");
+                }
             }
+
+            if (dt.ValueType == DataTypeEnum.YearMonthDuration) {
+                switch (prop) {
+
+                    case "months":
+                        return dt.DurationVal.Months;
+                    case "years":
+                        return dt.DurationVal.Years;
+                    default:
+                        throw new FEELException ($"The following property {prop} is not supported for day time duration type");
+                }
+
+            }
+
+            throw new FEELException ($"The following type is not supported for duration properties: {dt.ValueType}");
+
         }
 
         public static Variable DateTimePropEvals (Variable dt, string prop) {
@@ -260,7 +287,7 @@ namespace RulesDoer.Core.Utils {
                         return new Variable (dt.DateTimeVal.Value.Second);
                     case "time offset":
                         var per = new PeriodBuilder { Seconds = dt.DateTimeVal.Value.Offset.Seconds }.Build ();
-                        return new Variable (per);
+                        return Variable.DurationType (per, DataTypeEnum.DayTimeDuration);
                 }
             }
 
@@ -311,7 +338,7 @@ namespace RulesDoer.Core.Utils {
                         return new Variable (dt.TimeVal.Value.Second);
                     case "time offset":
                         var per = new PeriodBuilder { Seconds = dt.TimeVal.Value.Offset.Seconds }.Build ();
-                        return new Variable (per);
+                        return Variable.DurationType (per, DataTypeEnum.DayTimeDuration);
                 }
             }
 
@@ -400,7 +427,8 @@ namespace RulesDoer.Core.Utils {
 
                 var per = (rightDt - leftDt);
 
-                return new PeriodBuilder { Years = per.Years, Months = per.Months }.Build ();
+                var ym = new PeriodBuilder { Years = per.Years, Months = per.Months }.Build ();
+                return Variable.DurationType(ym, DataTypeEnum.YearMonthDuration);
             }
 
             throw new FEELException ("Failed retrieving a year month duration value to incorrect number of parameters");
@@ -449,7 +477,7 @@ namespace RulesDoer.Core.Utils {
                 }
                 var ldt = CreateLocalTime (parameters[0].NumericVal, parameters[1].NumericVal, parameters[2].NumericVal);
 
-                if (parameters[3].ValueType == DataTypeEnum.Duration) {
+                if (parameters[3].IsDurationType ()) {
                     var pr = parameters[3].DurationVal;
                     var ofs = Offset.FromHoursAndMinutes ((int) pr.Hours, (int) pr.Minutes);
                     ofs = ofs.Plus (Offset.FromSeconds ((int) pr.Seconds));

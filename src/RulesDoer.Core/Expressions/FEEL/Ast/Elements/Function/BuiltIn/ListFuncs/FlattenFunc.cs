@@ -10,7 +10,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function.BuiltIn.ListFunc
 
         public Variable Execute (List<Variable> parameters) {
             parameters.ExpectedParamCount (1);
-            if (parameters[0].ListType ()) {
+            if (parameters[0].IsListType ()) {
                 var fL = new List<Variable> ();
 
                 Flatten (parameters[0], fL);
@@ -23,7 +23,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function.BuiltIn.ListFunc
 
         private void Flatten (Variable input, List<Variable> fL) {
 
-            if (!input.ListType ()) {
+            if (!input.IsListType ()) {
                 fL.Add (input);
                 return;
             }

@@ -7,7 +7,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function.BuiltIn.ListFunc
         public const string FuncName = "append";
 
         public Variable Execute (List<Variable> parameters) {
-            if (parameters[0].ListType () && parameters.Count > 1) {
+            if (parameters[0].IsListType () && parameters.Count > 1) {
                 var appendItems = parameters.GetRange (1, parameters.Count - 1);
 
                 var parentL = parameters[0].ListVal.GetRange(0, parameters[0].ListVal.Count);

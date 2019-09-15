@@ -87,7 +87,6 @@ namespace RulesDoer.Core.Runtime.Context {
                     return DateAndTimeHelper.TimeVal (value.ToString ());
                 case DataTypeEnum.YearMonthDuration:
                 case DataTypeEnum.DayTimeDuration:
-                case DataTypeEnum.Duration:
                     return DateAndTimeHelper.DurationVal (value.ToString ());
                 case DataTypeEnum.Null:
                     return new Variable ();
