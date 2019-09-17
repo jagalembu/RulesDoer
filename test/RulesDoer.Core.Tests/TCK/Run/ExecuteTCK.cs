@@ -15,7 +15,7 @@ namespace RulesDoer.Core.Tests.TCK.Run {
             _transformer = transformer;
         }
 
-        public void RunTest (string testInput, string testName = null) {
+        public void RunTest (string filename, string testInput, string testName = null) {
             var tckmodel = _transformer.Transform (testInput);
 
             var splitNames = tckmodel.ModelName.Split ('.');
@@ -28,7 +28,7 @@ namespace RulesDoer.Core.Tests.TCK.Run {
                 var context = new VariableContext () { InputNameDict = TCKHelper.MakeInputData (item, metaDef.Item1) };
 
                 foreach (var rsltNode in item.ResultNode) {
-                    if (testName == null || rsltNode.Name == testName) {
+                    if (testName == null || rsltNode.Name.Contains(testName)) {
 
                         var rslt = _doer.EvaluateDecisions (context, splitNames[0], null, rsltNode.Name);
 
@@ -153,13 +153,13 @@ namespace RulesDoer.Core.Tests.TCK.Run {
                 return;
             }
             //singleton list
-            if (actualrslt.IsListType() && actualrslt.ListVal.Count == 1)
-            {
+            if (actualrslt.IsListType () && actualrslt.ListVal.Count == 1) {
                 Assert.Equal<Variable> (VariableHelper.MakeVariable (expected, actualrslt.ListVal[0].ValueType), actualrslt.ListVal[0]);
                 return;
             }
 
-            Assert.Equal<Variable> (VariableHelper.MakeVariable (expected, actualrslt.ValueType), actualrslt);
+            Assert.True (VariableHelper.MakeVariable (expected, actualrslt.ValueType).Equals (actualrslt), $"Failed asserting equal for expected:{expected} and decision name:{name}");
+            //Assert.Equal<Variable> (VariableHelper.MakeVariable (expected, actualrslt.ValueType), actualrslt);
 
         }
 

@@ -27,7 +27,7 @@ namespace RulesDoer.Core.Tests.TCK.Run {
 
             var executeTCK = new ExecuteTCK (_fixture._dmnDoer, tckTransformer);
 
-            executeTCK.RunTest (inputTckXml);
+            executeTCK.RunTest (filename, inputTckXml);
 
         }
 
@@ -43,9 +43,9 @@ namespace RulesDoer.Core.Tests.TCK.Run {
 //0021 - singleton list - done
 //0005 - bigger number issue
 //0057 - context (self referential)
-//0072 - Feel in test
+//0072 - Feel in test - done
         [Theory]
-        [TCKFiles ("compliance_level_3._0071")]
+        [TCKFiles ("compliance_level_3._0072")]
         public void Compliance_Level_3 (string filename, string inputTckXml) {
 
             var mockLogTrans = new Mock<ILogger<TCKTransformer>> ();
@@ -54,7 +54,8 @@ namespace RulesDoer.Core.Tests.TCK.Run {
 
             var executeTCK = new ExecuteTCK (_fixture._dmnDoer, tckTransformer);
 
-            executeTCK.RunTest (inputTckXml);
+            //executeTCK.RunTest (filename, inputTckXml, "list_001");
+            executeTCK.RunTest (filename, inputTckXml);
 
         }
 
@@ -69,7 +70,7 @@ namespace RulesDoer.Core.Tests.TCK.Run {
 
             var executeTCK = new ExecuteTCK (_fixture._dmnDoer, tckTransformer);
 
-            executeTCK.RunTest (inputTckXml);
+            executeTCK.RunTest (filename, inputTckXml);
 
         }
 

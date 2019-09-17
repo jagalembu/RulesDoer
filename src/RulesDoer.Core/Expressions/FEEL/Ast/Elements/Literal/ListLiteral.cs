@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
+using RulesDoer.Core.Expressions.FEEL.Ast.Elements.EvalTest;
 using RulesDoer.Core.Runtime.Context;
 using RulesDoer.Core.Types;
 
 namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Literal {
     public class ListLiteral : IExpression {
 
-        private readonly List<IExpression> Expressions;
+        public List<IExpression> Expressions { get; set; }
 
         public ListLiteral (List<IExpression> expressions) {
             Expressions = expressions;

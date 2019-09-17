@@ -78,9 +78,9 @@ expression
 	) as2 = expression {$ast = new Relational(opEnum, $as1.ast, $as2.ast);}
 	| as1 = expression BETWEEN left = expression AND right = expression {$ast = new Between($as1.ast, $left.ast, $right.ast);
 		}
-	| as1 = expression IN pu = positiveUnaryTest { new In($as1.ast, $pu.ast);
+	| as1 = expression IN pu = positiveUnaryTest { $ast = new In($as1.ast, $pu.ast);
 		}
-	| as1 = expression IN PAREN_OPEN pus = positiveUnaryTests PAREN_CLOSE {new In($as1.ast, $pus.ast);
+	| as1 = expression IN PAREN_OPEN pus = positiveUnaryTests PAREN_CLOSE {$ast = new In($as1.ast, $pus.ast);
 		}
 	| left = expression AND right = expression {$ast = new Conjuction($left.ast, $right.ast);
 		}
@@ -91,10 +91,10 @@ expression
 //tests
 simpleUnaryTests
 	returns[ITestExpression ast]:
-	simplePositiveUnaryTests {$ast =  $simplePositiveUnaryTests.ast;}
-	| NOT PAREN_OPEN simplePositiveUnaryTests PAREN_CLOSE {$ast = new NotTest($simplePositiveUnaryTests.ast);
+	NOT PAREN_OPEN simplePositiveUnaryTests PAREN_CLOSE {$ast = new NotTest($simplePositiveUnaryTests.ast);
 		}
-	| MINUS {$ast = new AnyTest();};
+	| MINUS {$ast = new AnyTest();}
+	| simplePositiveUnaryTests {$ast =  $simplePositiveUnaryTests.ast;};
 
 simplePositiveUnaryTest
 	returns[ITestExpression ast]:
@@ -247,7 +247,7 @@ simpleLiteral
 
 dateTimeLiteral
 	returns[IExpression ast]:
-	(kind = DATETIMELIT) PAREN_OPEN dateString = stringLiteral {$ast = new DateTimeLiteral($kind.text, $dateString.ast);
+	(kind = identifier) PAREN_OPEN dateString = stringLiteral {$ast = new DateTimeLiteral($kind.text, $dateString.ast);
 		} PAREN_CLOSE;
 
 identifier

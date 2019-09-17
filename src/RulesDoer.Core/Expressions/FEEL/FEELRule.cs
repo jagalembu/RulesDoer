@@ -691,7 +691,7 @@ public partial class FEELRule : Parser {
 						if (!(Precpred(Context, 5))) throw new FailedPredicateException(this, "Precpred(Context, 5)");
 						State = 183; Match(IN);
 						State = 184; _localctx.pu = positiveUnaryTest();
-						 new In(_localctx.as1.ast, _localctx.pu.ast);
+						 _localctx.ast =  new In(_localctx.as1.ast, _localctx.pu.ast);
 						          		
 						}
 						break;
@@ -706,7 +706,7 @@ public partial class FEELRule : Parser {
 						State = 189; Match(PAREN_OPEN);
 						State = 190; _localctx.pus = positiveUnaryTests();
 						State = 191; Match(PAREN_CLOSE);
-						new In(_localctx.as1.ast, _localctx.pus.ast);
+						_localctx.ast =  new In(_localctx.as1.ast, _localctx.pus.ast);
 						          		
 						}
 						break;
@@ -733,11 +733,11 @@ public partial class FEELRule : Parser {
 	public partial class SimpleUnaryTestsContext : ParserRuleContext {
 		public ITestExpression ast;
 		public SimplePositiveUnaryTestsContext _simplePositiveUnaryTests;
+		public ITerminalNode NOT() { return GetToken(FEELRule.NOT, 0); }
+		public ITerminalNode PAREN_OPEN() { return GetToken(FEELRule.PAREN_OPEN, 0); }
 		public SimplePositiveUnaryTestsContext simplePositiveUnaryTests() {
 			return GetRuleContext<SimplePositiveUnaryTestsContext>(0);
 		}
-		public ITerminalNode NOT() { return GetToken(FEELRule.NOT, 0); }
-		public ITerminalNode PAREN_OPEN() { return GetToken(FEELRule.PAREN_OPEN, 0); }
 		public ITerminalNode PAREN_CLOSE() { return GetToken(FEELRule.PAREN_CLOSE, 0); }
 		public ITerminalNode MINUS() { return GetToken(FEELRule.MINUS, 0); }
 		public SimpleUnaryTestsContext(ParserRuleContext parent, int invokingState)
@@ -766,26 +766,26 @@ public partial class FEELRule : Parser {
 			case 1:
 				EnterOuterAlt(_localctx, 1);
 				{
-				State = 199; _localctx._simplePositiveUnaryTests = simplePositiveUnaryTests();
-				_localctx.ast =   _localctx._simplePositiveUnaryTests.ast;
+				State = 199; Match(NOT);
+				State = 200; Match(PAREN_OPEN);
+				State = 201; _localctx._simplePositiveUnaryTests = simplePositiveUnaryTests();
+				State = 202; Match(PAREN_CLOSE);
+				_localctx.ast =  new NotTest(_localctx._simplePositiveUnaryTests.ast);
+						
 				}
 				break;
 			case 2:
 				EnterOuterAlt(_localctx, 2);
 				{
-				State = 202; Match(NOT);
-				State = 203; Match(PAREN_OPEN);
-				State = 204; _localctx._simplePositiveUnaryTests = simplePositiveUnaryTests();
-				State = 205; Match(PAREN_CLOSE);
-				_localctx.ast =  new NotTest(_localctx._simplePositiveUnaryTests.ast);
-						
+				State = 205; Match(MINUS);
+				_localctx.ast =  new AnyTest();
 				}
 				break;
 			case 3:
 				EnterOuterAlt(_localctx, 3);
 				{
-				State = 208; Match(MINUS);
-				_localctx.ast =  new AnyTest();
+				State = 207; _localctx._simplePositiveUnaryTests = simplePositiveUnaryTests();
+				_localctx.ast =   _localctx._simplePositiveUnaryTests.ast;
 				}
 				break;
 			}
@@ -2257,9 +2257,11 @@ public partial class FEELRule : Parser {
 			switch (TokenStream.LA(1)) {
 			case STRING:
 			case NUMBER:
+			case NOT:
 			case TRUE:
 			case FALSE:
 			case DATETIMELIT:
+			case NAME:
 				EnterOuterAlt(_localctx, 1);
 				{
 				{
@@ -2361,7 +2363,9 @@ public partial class FEELRule : Parser {
 				}
 				}
 				break;
+			case NOT:
 			case DATETIMELIT:
+			case NAME:
 				EnterOuterAlt(_localctx, 4);
 				{
 				{
@@ -2387,14 +2391,16 @@ public partial class FEELRule : Parser {
 
 	public partial class DateTimeLiteralContext : ParserRuleContext {
 		public IExpression ast;
-		public IToken kind;
+		public IdentifierContext kind;
 		public StringLiteralContext dateString;
 		public ITerminalNode PAREN_OPEN() { return GetToken(FEELRule.PAREN_OPEN, 0); }
 		public ITerminalNode PAREN_CLOSE() { return GetToken(FEELRule.PAREN_CLOSE, 0); }
 		public StringLiteralContext stringLiteral() {
 			return GetRuleContext<StringLiteralContext>(0);
 		}
-		public ITerminalNode DATETIMELIT() { return GetToken(FEELRule.DATETIMELIT, 0); }
+		public IdentifierContext identifier() {
+			return GetRuleContext<IdentifierContext>(0);
+		}
 		public DateTimeLiteralContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -2418,11 +2424,11 @@ public partial class FEELRule : Parser {
 			EnterOuterAlt(_localctx, 1);
 			{
 			{
-			State = 478; _localctx.kind = Match(DATETIMELIT);
+			State = 478; _localctx.kind = identifier();
 			}
 			State = 479; Match(PAREN_OPEN);
 			State = 480; _localctx.dateString = stringLiteral();
-			_localctx.ast =  new DateTimeLiteral((_localctx.kind!=null?_localctx.kind.Text:null), _localctx.dateString.ast);
+			_localctx.ast =  new DateTimeLiteral((_localctx.kind!=null?TokenStream.GetText(_localctx.kind.Start,_localctx.kind.Stop):null), _localctx.dateString.ast);
 					
 			State = 482; Match(PAREN_CLOSE);
 			}
@@ -3172,15 +3178,15 @@ public partial class FEELRule : Parser {
 		'\xBD', '\x3', '\x2', '\x2', '\x2', '\xC5', '\xC8', '\x3', '\x2', '\x2', 
 		'\x2', '\xC6', '\xC4', '\x3', '\x2', '\x2', '\x2', '\xC6', '\xC7', '\x3', 
 		'\x2', '\x2', '\x2', '\xC7', '\v', '\x3', '\x2', '\x2', '\x2', '\xC8', 
-		'\xC6', '\x3', '\x2', '\x2', '\x2', '\xC9', '\xCA', '\x5', '\x12', '\n', 
-		'\x2', '\xCA', '\xCB', '\b', '\a', '\x1', '\x2', '\xCB', '\xD5', '\x3', 
-		'\x2', '\x2', '\x2', '\xCC', '\xCD', '\a', '\x1D', '\x2', '\x2', '\xCD', 
-		'\xCE', '\a', '\x16', '\x2', '\x2', '\xCE', '\xCF', '\x5', '\x12', '\n', 
-		'\x2', '\xCF', '\xD0', '\a', '\x17', '\x2', '\x2', '\xD0', '\xD1', '\b', 
-		'\a', '\x1', '\x2', '\xD1', '\xD5', '\x3', '\x2', '\x2', '\x2', '\xD2', 
-		'\xD3', '\a', '\xF', '\x2', '\x2', '\xD3', '\xD5', '\b', '\a', '\x1', 
-		'\x2', '\xD4', '\xC9', '\x3', '\x2', '\x2', '\x2', '\xD4', '\xCC', '\x3', 
-		'\x2', '\x2', '\x2', '\xD4', '\xD2', '\x3', '\x2', '\x2', '\x2', '\xD5', 
+		'\xC6', '\x3', '\x2', '\x2', '\x2', '\xC9', '\xCA', '\a', '\x1D', '\x2', 
+		'\x2', '\xCA', '\xCB', '\a', '\x16', '\x2', '\x2', '\xCB', '\xCC', '\x5', 
+		'\x12', '\n', '\x2', '\xCC', '\xCD', '\a', '\x17', '\x2', '\x2', '\xCD', 
+		'\xCE', '\b', '\a', '\x1', '\x2', '\xCE', '\xD5', '\x3', '\x2', '\x2', 
+		'\x2', '\xCF', '\xD0', '\a', '\xF', '\x2', '\x2', '\xD0', '\xD5', '\b', 
+		'\a', '\x1', '\x2', '\xD1', '\xD2', '\x5', '\x12', '\n', '\x2', '\xD2', 
+		'\xD3', '\b', '\a', '\x1', '\x2', '\xD3', '\xD5', '\x3', '\x2', '\x2', 
+		'\x2', '\xD4', '\xC9', '\x3', '\x2', '\x2', '\x2', '\xD4', '\xCF', '\x3', 
+		'\x2', '\x2', '\x2', '\xD4', '\xD1', '\x3', '\x2', '\x2', '\x2', '\xD5', 
 		'\r', '\x3', '\x2', '\x2', '\x2', '\xD6', '\xDF', '\b', '\b', '\x1', '\x2', 
 		'\xD7', '\xD8', '\a', '\n', '\x2', '\x2', '\xD8', '\xE0', '\b', '\b', 
 		'\x1', '\x2', '\xD9', '\xDA', '\a', '\v', '\x2', '\x2', '\xDA', '\xE0', 
@@ -3364,7 +3370,7 @@ public partial class FEELRule : Parser {
 		'\x1DE', '\x1D2', '\x3', '\x2', '\x2', '\x2', '\x1DE', '\x1D5', '\x3', 
 		'\x2', '\x2', '\x2', '\x1DE', '\x1D8', '\x3', '\x2', '\x2', '\x2', '\x1DE', 
 		'\x1DB', '\x3', '\x2', '\x2', '\x2', '\x1DF', '\x37', '\x3', '\x2', '\x2', 
-		'\x2', '\x1E0', '\x1E1', '\a', '\x30', '\x2', '\x2', '\x1E1', '\x1E2', 
+		'\x2', '\x1E0', '\x1E1', '\x5', ':', '\x1E', '\x2', '\x1E1', '\x1E2', 
 		'\a', '\x16', '\x2', '\x2', '\x1E2', '\x1E3', '\x5', '<', '\x1F', '\x2', 
 		'\x1E3', '\x1E4', '\b', '\x1D', '\x1', '\x2', '\x1E4', '\x1E5', '\a', 
 		'\x17', '\x2', '\x2', '\x1E5', '\x39', '\x3', '\x2', '\x2', '\x2', '\x1E6', 
