@@ -175,9 +175,10 @@ namespace RulesDoer.Core.Runtime.Context {
 
             if (this.ValueType == DataTypeEnum.Context && rightVar.ValueType == DataTypeEnum.Context) {
 
-                var match = this.ContextInputs.ContextDict.Keys.SequenceEqual (rightVar.ContextInputs.ContextDict.Keys);
+                //var match = this.ContextInputs.ContextDict.Keys.SequenceEqual (rightVar.ContextInputs.ContextDict.Keys);
+                var countMatch = this.ContextInputs.ContextDict.Keys.Count == rightVar.ContextInputs.ContextDict.Keys.Count;
 
-                if (match) {
+                if (countMatch) {
                     foreach (var item in this.ContextInputs.ContextDict.Keys) {
                         this.ContextInputs.ContextDict.TryGetValue (item, out Variable inValVar);
 
@@ -191,13 +192,14 @@ namespace RulesDoer.Core.Runtime.Context {
                             return false;
                         }
 
-                        match = inValVar.Equals (compValVar);
+                        var match = inValVar.Equals (compValVar);
 
                         if (!match) {
                             return false;
                         }
 
                     }
+
                     return true;
                 }
 
@@ -229,11 +231,9 @@ namespace RulesDoer.Core.Runtime.Context {
                 case DataTypeEnum.Decimal:
                     hashCode = this.NumericVal.GetHashCode ();
                     break;
+                case DataTypeEnum.YearMonthDuration:
                 case DataTypeEnum.DayTimeDuration:
                     hashCode = this.DurationVal.GetHashCode ();
-                    break;
-                case DataTypeEnum.YearMonthDuration:
-                    hashCode = this.NumericVal.GetHashCode ();
                     break;
             }
             return hashCode;
@@ -341,7 +341,7 @@ namespace RulesDoer.Core.Runtime.Context {
         }
 
         static public implicit operator Period (Variable ev) {
-            if (!ev.IsDurationType())
+            if (!ev.IsDurationType ())
                 throw new NotSupportedException ("Expected Duration value.");
             return ev.DurationVal;
         }

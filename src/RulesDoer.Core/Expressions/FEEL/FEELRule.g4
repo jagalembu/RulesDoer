@@ -42,14 +42,51 @@ simpleUnaryTestsBase
 	simpleUnaryTests {$ast = $simpleUnaryTests.ast;} EOF;
 
 //expression
+// a. for expression | if expression | quantified expression | b. disjunction | c. conjunction | d.
+// comparison | e. arithmetic expression | f. instance of | g. path expression | filter expression |
+// function invocation | h. literal | simple positive unary test | name | "(" , textual expression ,
+// ")" ;
 expression
 	returns[IExpression ast]:
-	boxedExpression {$ast = $boxedExpression.ast;}
-	| textualExpression {$ast = $textualExpression.ast;}
+	PAREN_OPEN expression {$ast = $expression.ast;} PAREN_CLOSE
+	| token = identifier {$ast = new Name($token.textVal);}
+	| simplePositiveUnaryTest {$ast = new TestWrapper($simplePositiveUnaryTest.ast);}
+	| lit = literal {$ast = $lit.ast;}
+	| function = expression pm = parameters {$ast = new FunctionInvocation($function.ast, $pm.ast);
+		}
 	| left = expression BRACKET_OPEN filter = expression BRACKET_CLOSE {$ast = new Filter($left.ast, $filter.ast);
 		}
 	| parent = expression DOT child = NAME {$ast = new PathExpression($parent.ast, $child.text);
-		};	
+		}
+	| expr = expression INSTANCE_OF typeIs {$ast = new InstanceOf($expr.ast, $typeIs.ast);
+		}
+	| (MINUS) expr = expression {$ast = new ArithmeticNegation($expr.ast);}
+	| left = expression STAR_STAR right = expression {$ast = new Exponentiation($left.ast, $right.ast);
+			}
+	| left = expression op = (STAR | FORWARD_SLASH) right = expression {if ($op.text == "*") {$ast = new Multiplication($left.ast, $right.ast);}
+	else {$ast = new Division($left.ast, $right.ast);}
+			}
+	| left = expression op = (PLUS | MINUS) right = expression {if ($op.text == "+") {$ast = new Addition($left.ast, $right.ast);} else {$ast = new Subtraction($left.ast, $right.ast);}
+			}
+	| as1 = expression {var opEnum = OperatorEnum.NF;} (
+		op = EQ { opEnum = OperatorEnum.EQ;}
+		| op = NE { opEnum = OperatorEnum.NE;}
+		| op = LT { opEnum = OperatorEnum.LT;}
+		| op = GT { opEnum = OperatorEnum.GT;}
+		| op = LE { opEnum = OperatorEnum.LE;}
+		| op = GE { opEnum = OperatorEnum.GE;}
+	) as2 = expression {$ast = new Relational(opEnum, $as1.ast, $as2.ast);}
+	| as1 = expression BETWEEN left = expression AND right = expression {$ast = new Between($as1.ast, $left.ast, $right.ast);
+		}
+	| as1 = expression IN pu = positiveUnaryTest { new In($as1.ast, $pu.ast);
+		}
+	| as1 = expression IN PAREN_OPEN pus = positiveUnaryTests PAREN_CLOSE {new In($as1.ast, $pus.ast);
+		}
+	| left = expression AND right = expression {$ast = new Conjuction($left.ast, $right.ast);
+		}
+	| left = expression OR right = expression {$ast = new Disjunction($left.ast, $right.ast);
+		}
+	| boxedExpression {$ast = $boxedExpression.ast;};
 
 //tests
 simpleUnaryTests
@@ -105,9 +142,7 @@ unaryTests
 boxedExpression
 	returns[IExpression ast]:
 	list {$ast = $list.ast;}
-	| context {$ast = $context.ast;}
-	| parent = boxedExpression DOT child = NAME {$ast = new PathExpression($parent.ast, $child.text);
-		};
+	| context {$ast = $context.ast;};
 
 list
 	returns[IExpression ast]:
@@ -115,7 +150,7 @@ list
 		exp = expression {expressions.Add($exp.ast);} (
 			COMMA exp = expression {expressions.Add($exp.ast);}
 		)*
-	) BRACKET_CLOSE {$ast = new ListLiteral(expressions);};
+	)? BRACKET_CLOSE {$ast = new ListLiteral(expressions);};
 
 context
 	returns[IExpression ast]:
@@ -129,16 +164,6 @@ contextEntry
 	returns[IExpression ast]:
 	key COLON expression {$ast = new ContextEntryBoxed($key.text, $expression.ast);};
 
-//textual expression
-textualExpression
-	returns[IExpression ast]:
-	| left = textualExpression OR right = textualExpression {$ast = new Disjunction($left.ast, $right.ast);
-		}
-	| left = textualExpression AND right = textualExpression {$ast = new Conjuction($left.ast, $right.ast);
-		}
-	| comparison {$ast = $comparison.ast;}
-	| PAREN_OPEN textualExpression {$ast = $textualExpression.ast;} PAREN_CLOSE;
-
 //simple expression
 simpleExpressions
 	returns[IExpression ast]:
@@ -147,50 +172,19 @@ simpleExpressions
 		};
 
 simpleExpression
-	returns[IExpression ast]: (
-		arithmeticExpression {$ast = $arithmeticExpression.ast;}
-	)
-	| (simpleValue {$ast = $simpleValue.ast; });
-
-//comparison
-comparison
 	returns[IExpression ast]:
-	as1 = comparison {var opEnum = OperatorEnum.NF;} (
-		op = EQ { opEnum = OperatorEnum.EQ;}
-		| op = NE { opEnum = OperatorEnum.NE;}
-		| op = LT { opEnum = OperatorEnum.LT;}
-		| op = GT { opEnum = OperatorEnum.GT;}
-		| op = LE { opEnum = OperatorEnum.LE;}
-		| op = GE { opEnum = OperatorEnum.GE;}
-	) as2 = comparison {$ast = new Relational(opEnum, $as1.ast, $as2.ast);}
-	| as1 = comparison BETWEEN left = comparison AND right = comparison {$ast = new Between($as1.ast, $left.ast, $right.ast);
-		}
-	| as1 = comparison IN pu = positiveUnaryTest { new In($as1.ast, $pu.ast);
-		}
-	| as1 = comparison IN PAREN_OPEN pus = positiveUnaryTests PAREN_CLOSE {new In($as1.ast, $pus.ast);
-		}
-	| arithmeticExpression {$ast = $arithmeticExpression.ast;};
-
-//arithmetic expression
-arithmeticExpression
-	returns[IExpression ast]:
-	(MINUS) expr = arithmeticExpression {$ast = new ArithmeticNegation($expr.ast);}
-	| left = arithmeticExpression STAR_STAR right = arithmeticExpression {$ast = new Exponentiation($left.ast, $right.ast);
+	PAREN_OPEN simpleExpression {$ast = $simpleExpression.ast;} PAREN_CLOSE
+	| simpleValue {$ast = $simpleValue.ast; }
+	| (MINUS) expr = simpleExpression {$ast = new ArithmeticNegation($expr.ast);}
+	| left = simpleExpression STAR_STAR right = simpleExpression {$ast = new Exponentiation($left.ast, $right.ast);
 			}
-	| left = arithmeticExpression op = (STAR | FORWARD_SLASH) right = arithmeticExpression {if ($op.text == "*") {$ast = new Multiplication($left.ast, $right.ast);}
+	| left = simpleExpression op = (STAR | FORWARD_SLASH) right = simpleExpression {if ($op.text == "*") {$ast = new Multiplication($left.ast, $right.ast);}
 	else {$ast = new Division($left.ast, $right.ast);}
 			}
-	| left = arithmeticExpression op = (PLUS | MINUS) right = arithmeticExpression {if ($op.text == "+") {$ast = new Addition($left.ast, $right.ast);} else {$ast = new Subtraction($left.ast, $right.ast);}
+	| left = simpleExpression op = (PLUS | MINUS) right = simpleExpression {if ($op.text == "+") {$ast = new Addition($left.ast, $right.ast);} else {$ast = new Subtraction($left.ast, $right.ast);}
 			}
-	| expr = arithmeticExpression INSTANCE_OF typeIs {$ast = new InstanceOf($expr.ast, $typeIs.ast);
-		}
-
-	| function = arithmeticExpression pm = parameters {$ast = new FunctionInvocation($function.ast, $pm.ast);
-		}
-	| lit = literal {$ast = $lit.ast;}
-	| simplePositiveUnaryTest {$ast = new TestWrapper($simplePositiveUnaryTest.ast);}
-	| token = identifier {$ast = new Name($token.textVal);}
-	| PAREN_OPEN arithmeticExpression {$ast = $arithmeticExpression.ast;} PAREN_CLOSE;
+	| function = simpleExpression pm = parameters {$ast = new FunctionInvocation($function.ast, $pm.ast);
+		};
 
 //Function Invocation
 parameters
@@ -216,7 +210,7 @@ positionalParameters
 		param = expression {parameters.Add($param.ast);} (
 			COMMA param = expression {parameters.Add($param.ast);}
 		)*
-	) {$ast = new PositionalParameters(parameters);};
+	)? {$ast = new PositionalParameters(parameters);};
 
 //Literals
 endpoint
@@ -294,10 +288,9 @@ intervalEndPar
 parameterName
 	returns[string textVal]:
 	token = identifier {$textVal = $token.text;};
-//	token = NAME {$textVal = $token.text;};
 
 key
 	returns[string textVal]:
-	identifier {$textVal = $identifier.textVal;}
-	| stringLiteral {var stringLitVar = $stringLiteral.ast.Execute(); $textVal = ((Variable)stringLitVar).StringVal;
-		}; 
+	stringLiteral {var stringLitVar = $stringLiteral.ast.Execute(); $textVal = ((Variable)stringLitVar).StringVal;
+		}
+	| identifier {$textVal = $identifier.textVal;}; 

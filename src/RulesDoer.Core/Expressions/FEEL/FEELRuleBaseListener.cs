@@ -241,18 +241,6 @@ public partial class FEELRuleBaseListener : IFEELRuleListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitContextEntry([NotNull] FEELRule.ContextEntryContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="FEELRule.textualExpression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterTextualExpression([NotNull] FEELRule.TextualExpressionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="FEELRule.textualExpression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitTextualExpression([NotNull] FEELRule.TextualExpressionContext context) { }
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="FEELRule.simpleExpressions"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -276,30 +264,6 @@ public partial class FEELRuleBaseListener : IFEELRuleListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitSimpleExpression([NotNull] FEELRule.SimpleExpressionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="FEELRule.comparison"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterComparison([NotNull] FEELRule.ComparisonContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="FEELRule.comparison"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitComparison([NotNull] FEELRule.ComparisonContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="FEELRule.arithmeticExpression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterArithmeticExpression([NotNull] FEELRule.ArithmeticExpressionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="FEELRule.arithmeticExpression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitArithmeticExpression([NotNull] FEELRule.ArithmeticExpressionContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="FEELRule.parameters"/>.
 	/// <para>The default implementation does nothing.</para>

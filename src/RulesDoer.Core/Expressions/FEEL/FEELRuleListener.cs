@@ -205,16 +205,6 @@ public interface IFEELRuleListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitContextEntry([NotNull] FEELRule.ContextEntryContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="FEELRule.textualExpression"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterTextualExpression([NotNull] FEELRule.TextualExpressionContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="FEELRule.textualExpression"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitTextualExpression([NotNull] FEELRule.TextualExpressionContext context);
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="FEELRule.simpleExpressions"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -234,26 +224,6 @@ public interface IFEELRuleListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitSimpleExpression([NotNull] FEELRule.SimpleExpressionContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="FEELRule.comparison"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterComparison([NotNull] FEELRule.ComparisonContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="FEELRule.comparison"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitComparison([NotNull] FEELRule.ComparisonContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="FEELRule.arithmeticExpression"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterArithmeticExpression([NotNull] FEELRule.ArithmeticExpressionContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="FEELRule.arithmeticExpression"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitArithmeticExpression([NotNull] FEELRule.ArithmeticExpressionContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="FEELRule.parameters"/>.
 	/// </summary>

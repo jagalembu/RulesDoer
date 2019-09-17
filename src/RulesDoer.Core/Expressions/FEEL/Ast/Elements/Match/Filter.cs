@@ -53,6 +53,9 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Match {
                     case DataTypeEnum.Decimal:
                     case DataTypeEnum.String:
                     case DataTypeEnum.Time:
+                    case DataTypeEnum.YearMonthDuration:
+                    case DataTypeEnum.DayTimeDuration:
+                    case DataTypeEnum.Context:
                         leftVal = new Variable (new List<Variable> () { leftVal });
                         break;
                     default:

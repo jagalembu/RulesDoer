@@ -15,12 +15,6 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Literal {
         public object Execute (VariableContext context = null) {
             List<Variable> varList = new List<Variable> ();
 
-            //this happens when nothing is between the brackets
-            if (Expressions[0] == null)
-            {
-                return new Variable(varList);
-            }
-
             if (Expressions.Any ()) {
                 var allSameType = true;
 

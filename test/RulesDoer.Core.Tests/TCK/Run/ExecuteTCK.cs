@@ -15,7 +15,7 @@ namespace RulesDoer.Core.Tests.TCK.Run {
             _transformer = transformer;
         }
 
-        public void RunTest (string testInput) {
+        public void RunTest (string testInput, string testName = null) {
             var tckmodel = _transformer.Transform (testInput);
 
             var splitNames = tckmodel.ModelName.Split ('.');
@@ -28,16 +28,19 @@ namespace RulesDoer.Core.Tests.TCK.Run {
                 var context = new VariableContext () { InputNameDict = TCKHelper.MakeInputData (item, metaDef.Item1) };
 
                 foreach (var rsltNode in item.ResultNode) {
-                    var rslt = _doer.EvaluateDecisions (context, splitNames[0], null, rsltNode.Name);
+                    if (testName == null || rsltNode.Name == testName) {
 
-                    switch (rsltNode.Type) {
-                        case "decision":
-                        case null:
-                            AssertResult (rsltNode, rslt);
-                            break;
-                        default:
-                            throw new TCKException ($"The following TCK test type: {rsltNode.Type} is not supported");
+                        var rslt = _doer.EvaluateDecisions (context, splitNames[0], null, rsltNode.Name);
 
+                        switch (rsltNode.Type) {
+                            case "decision":
+                            case null:
+                                AssertResult (rsltNode, rslt);
+                                break;
+                            default:
+                                throw new TCKException ($"The following TCK test type: {rsltNode.Type} is not supported");
+
+                        }
                     }
 
                 }

@@ -31,9 +31,9 @@ namespace RulesDoer.Core.Tests.TCK.Run {
 
         }
 
-//0006
-//0070
-//0068
+//0006 - filter with context
+//0070 - instance of - Need function type
+//0068 - feel equality test - done
 //0006
 //0017
 //0039
@@ -46,7 +46,7 @@ namespace RulesDoer.Core.Tests.TCK.Run {
 //0057 - context (self referential)
 //0072 - Feel in test
         [Theory]
-        [TCKFiles ("compliance_level_3._0007")]
+        [TCKFiles ("compliance_level_3._0068")]
         public void Compliance_Level_3 (string filename, string inputTckXml) {
 
             var mockLogTrans = new Mock<ILogger<TCKTransformer>> ();

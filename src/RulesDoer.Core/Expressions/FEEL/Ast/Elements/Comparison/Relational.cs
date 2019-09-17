@@ -1,6 +1,7 @@
 using System;
 using RulesDoer.Core.Expressions.FEEL.Eval;
 using RulesDoer.Core.Runtime.Context;
+using RulesDoer.Core.Types;
 
 namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Comparison {
     public class Relational : IComparisonExpression {
@@ -14,8 +15,35 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Comparison {
             Right = right;
         }
         public object Execute (VariableContext context = null) {
-            var leftVar = (Variable) Left.Execute ( context);
-            var rightVar = (Variable) Right.Execute ( context);
+            var leftVar = (Variable) Left.Execute (context);
+            var rightVar = (Variable) Right.Execute (context);
+
+
+            if (leftVar.ValueType == DataTypeEnum.Null && rightVar.ValueType == DataTypeEnum.Null) {
+                switch (Operator) {
+                    case OperatorEnum.EQ:
+                        return new Variable (true);
+
+                    case OperatorEnum.NE:
+                        return new Variable (false);
+
+                    default:
+                        throw new FEELException ($"Null value comparison does not support operators: {Operator}");
+                }
+            }
+            if (rightVar.ValueType == DataTypeEnum.Null) {
+                switch (Operator) {
+                    case OperatorEnum.EQ:
+                        return new Variable (false);
+
+                    case OperatorEnum.NE:
+                        return new Variable (false);
+
+                    default:
+                        throw new FEELException ($"Null value comparison does not support operators: {Operator}");
+                }
+
+            }
 
             if (leftVar.ValueType != rightVar.ValueType) {
                 throw new FEELException ($"Left value {leftVar.ValueType} and right {rightVar.ValueType} are not the same for comparison");
