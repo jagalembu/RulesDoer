@@ -152,6 +152,12 @@ namespace RulesDoer.Core.Tests.TCK.Run {
                 Assert.True (actualrslt.ValueType == DataTypeEnum.Null, name);
                 return;
             }
+            //singleton list
+            if (actualrslt.IsListType() && actualrslt.ListVal.Count == 1)
+            {
+                Assert.Equal<Variable> (VariableHelper.MakeVariable (expected, actualrslt.ListVal[0].ValueType), actualrslt.ListVal[0]);
+                return;
+            }
 
             Assert.Equal<Variable> (VariableHelper.MakeVariable (expected, actualrslt.ValueType), actualrslt);
 

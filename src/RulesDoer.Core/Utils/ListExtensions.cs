@@ -26,5 +26,19 @@ namespace RulesDoer.Core.Utils {
             }
         }
 
+        public static List<Variable> SingletonListToVariable (this List<Variable> lVars) {
+            List<Variable> singleItemVarList = new List<Variable> ();
+
+            foreach (var item in lVars) {
+                if (item.IsListType () && item.ListVal.Count == 1) {
+                    singleItemVarList.Add (item.ListVal[0]);
+                } else {
+                    singleItemVarList.Add (item);
+                }
+            }
+            return singleItemVarList;
+
+        }
+
     }
 }

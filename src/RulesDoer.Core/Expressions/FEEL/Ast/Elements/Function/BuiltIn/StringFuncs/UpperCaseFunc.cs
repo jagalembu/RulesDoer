@@ -7,7 +7,8 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function.BuiltIn.StringFu
         public const string FuncName = "upper case";
         public Variable Execute (List<Variable> parameters) {
             parameters.ExpectedParamCount (1);
-            return parameters[0].StringVal.ToUpper ();
+            var p = parameters.SingletonListToVariable();                        
+            return p[0].StringVal.ToUpper ();
         }
     }
 }

@@ -93,5 +93,6 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function.BuiltIn {
             throw new FEELException ("Failed coverting named parameters");
 
         }
+
     }
 }
