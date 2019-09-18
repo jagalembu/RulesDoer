@@ -43,8 +43,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.EvalTest {
                                 throw ex;
                             }
 
-                        }
-                        else if (listExpr is IExpression regExpr) {
+                        } else if (listExpr is IExpression regExpr) {
                             var regVar = (Variable) regExpr.Execute (context);
                             if (regVar.Equals (inputVariable)) {
                                 return new Variable (true);
@@ -55,6 +54,14 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.EvalTest {
                 }
 
                 var exprVar = (Variable) expr.Execute (context);
+
+                if (exprVar.IsListType ()) {
+                    foreach (var item in exprVar.ListVal) {
+                        if (inputVariable.Equals (item)) {
+                            return new Variable (true);
+                        }
+                    }
+                }
 
                 if (inputVariable.ValueType != exprVar.ValueType) {
                     throw new FEELException ($"Left value {inputVariable.ValueType} and right {exprVar.ValueType} are not the same for comparison");

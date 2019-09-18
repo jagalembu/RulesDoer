@@ -1,4 +1,5 @@
 using RulesDoer.Core.Expressions.FEEL.Eval;
+using RulesDoer.Core.Types;
 
 namespace RulesDoer.Core.Runtime.Context {
     public static class VariableContextHelper {
@@ -41,8 +42,25 @@ namespace RulesDoer.Core.Runtime.Context {
                 }
                 return null;
             }
+            if (inputName.Contains (".")) {
+                var x = inputName.Split ('.');
+
+                context.InputNameDict.TryGetValue (x[0], out var cntxt);
+                cntxt.ExpectedDataType (DataTypeEnum.Context);
+
+                Variable contextVal = null;
+
+                for (int i = 1; i < x.Length; i++) {
+                    cntxt.ContextInputs.ContextDict.TryGetValue (x[i], out var newVal);
+                    if (newVal.ValueType == DataTypeEnum.Context) {
+                        cntxt = newVal;
+                    }
+                    contextVal = newVal;
+                }
+                return contextVal;
+            }
             context.InputNameDict.TryGetValue (inputName, out var inputVariable);
-            if (inputName == null && doException) {
+            if (inputVariable == null && doException) {
                 throw new FEELException ($"Missing input value {inputName}");
             }
             return inputVariable;
@@ -62,7 +80,7 @@ namespace RulesDoer.Core.Runtime.Context {
             }
 
             context.GlobalDict.TryGetValue (inputName, out var inputVariable);
-            if (inputName == null && doException) {
+            if (inputVariable == null && doException) {
                 throw new FEELException ($"Missing input value {inputName}");
             }
             return inputVariable;
