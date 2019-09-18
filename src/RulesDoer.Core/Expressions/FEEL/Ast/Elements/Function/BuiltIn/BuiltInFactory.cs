@@ -64,6 +64,9 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function.BuiltIn {
             { SubListFunc.FuncName, (new SubListFunc(), new string[] {"list", "start position", "length"})},
             { SumFunc.FuncName, (new SumFunc(), new string[] {"list"})},
             { UnionFunc.FuncName, (new UnionFunc(), new string[] {"list"})},
+            { GetValueFunc.FuncName, (new GetValueFunc(), new string[] {"m","key"})},
+            { GetEntriesFunc.FuncName, (new GetEntriesFunc(), new string[] {"m"})},
+            
 
         };
 

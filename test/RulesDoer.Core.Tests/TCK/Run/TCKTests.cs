@@ -36,8 +36,8 @@ namespace RulesDoer.Core.Tests.TCK.Run {
 //0068 - feel equality test - done
 //0017
 //0039
-//0081
-//0080
+//0081 - Done
+//0080 - Done
 //0007 - date stuff - done
 //0090 - feel path - done
 //0021 - singleton list - done
@@ -45,7 +45,7 @@ namespace RulesDoer.Core.Tests.TCK.Run {
 //0057 - context (self referential)
 //0072 - Feel in test - done
         [Theory]
-        [TCKFiles ("compliance_level_3._0072")]
+        [TCKFiles ("compliance_level_3._0081")]
         public void Compliance_Level_3 (string filename, string inputTckXml) {
 
             var mockLogTrans = new Mock<ILogger<TCKTransformer>> ();
