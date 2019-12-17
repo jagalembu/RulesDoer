@@ -24,11 +24,14 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Literal {
 
                 var firstType = firstVar.ValueType;
 
-                for (int i = 1; i < Expressions.Count; i++) {
+                for (int i = 1; i < Expressions.Count; i++) {                  
                     var listVar = (Variable) Expressions[i].Execute (context);
                     varList.Add (listVar);
                     if (listVar.ValueType != firstType) {
                         allSameType = false;
+                    }
+                    if (context != null && context.LocalContext != null) {
+                        context.LocalContext = null;
                     }
                 }
 

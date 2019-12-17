@@ -29,9 +29,12 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Boxed {
                 var itemVal = (Variable) item.Execute (context);
                 contextInput.Add (itemVal.TwoTuple.a, itemVal.TwoTuple.b);
             }
-            
-            context.LocalContext.ContextDict.Remove("__currentContextX__");
 
+            if (context.LocalContext != null)
+            {                     
+                 context.LocalContext.ContextDict.Remove("__currentContextX__");
+            }
+       
             return new Variable (contextInput);
         }
     }

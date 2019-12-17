@@ -51,7 +51,7 @@ namespace RulesDoer.Core.Tests.TCK.Run {
         //0087 - chapter 11 test - bug cannot recognize semantic stuff - missing xml mapping
         //0088 - no decision logic - bug with named append adds extra space part of the rule
         [Theory]
-        [TCKFiles ("compliance_level_3._0057")]
+        [TCKFiles ("compliance_level_3._0010")]
         public void Compliance_Level_3 (string filename, string inputTckXml) {
 
             var mockLogTrans = new Mock<ILogger<TCKTransformer>> ();
