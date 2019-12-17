@@ -18,16 +18,38 @@ namespace RulesDoer.Core.Runtime {
             _repository = repository;
         }
 
-        public Dictionary<string, Variable> EvaluateDecisions (VariableContext runtimeContext, string definitionName, int? versionNo = null, string decisionName = null) {
+        public VariableContext BuildContext (string definitionName, int? versionNo = null) {
+            VariableContext context = new VariableContext ();
 
             var metaDef = BuildInputMeta (definitionName, versionNo);
             var definitions = metaDef.Item2;
 
-            runtimeContext.InputDataMetaById = metaDef.Item1.InputDataMetaById;
-            runtimeContext.InputDataMetaByName = metaDef.Item1.InputDataMetaByName;
-            runtimeContext.ItemDefinitionMeta = metaDef.Item1.ItemDefinitionMeta;
-            runtimeContext.BKMMetaByName = BuildBkmMeta (definitions);
-            runtimeContext.DecisionMetaByName = BuildDecisionMeta (definitions);
+            BuildDRGMeta (definitions, metaDef.Item1);
+
+            metaDef.Item1.Done = true;
+
+            return metaDef.Item1;
+        }
+
+        public Dictionary<string, Variable> EvaluateDecisions (VariableContext inRuntimeContext, string definitionName, int? versionNo = null, string decisionName = null) {
+
+            var runtimeContext = BuildContext (definitionName, versionNo);
+
+            if (inRuntimeContext != null) {
+                //Copy the values from from input context
+                runtimeContext.InputNameDict = inRuntimeContext.InputNameDict;
+
+            }
+
+            // var metaDef = BuildInputMeta (definitionName, versionNo);
+            // var definitions = metaDef.Item2;
+
+            // runtimeContext.InputDataMetaById = metaDef.Item1.InputDataMetaById;
+            // runtimeContext.InputDataMetaByName = metaDef.Item1.InputDataMetaByName;
+            // runtimeContext.ItemDefinitionMeta = metaDef.Item1.ItemDefinitionMeta;
+            // BuildDRGMeta (definitions, runtimeContext);
+            //runtimeContext.BKMMetaByName = BuildBkmMeta (definitions);
+            //runtimeContext.DecisionMetaByName = BuildDecisionMeta (definitions);
 
             //TODO: check inputs match input data
 
@@ -65,14 +87,58 @@ namespace RulesDoer.Core.Runtime {
             return bkmDict;
         }
 
-        public Dictionary<string, TDecision> BuildDecisionMeta (TDefinitions definitions) {
+        private void BuildDRGMeta (TDefinitions definitions, VariableContext context) {
+            foreach (var item in definitions.DrgElement) {
+                if (item is TDecisionService decisionService) {
+                    context.DecisionServiceMetaByName.Add (decisionService.Name, decisionService);
+                    foreach (var inputDecision in decisionService.InputDecision) {
+                        var cleanHref = inputDecision.Href.TrimStart ('#');
+                        if (!context.HrefInputDecisionToDecisionServices.TryAdd (cleanHref, new List<string> () { decisionService.Name })) {
+                            context.HrefInputDecisionToDecisionServices.TryGetValue (cleanHref, out var decServices);
+                            decServices.Add (decisionService.Name);
+                        }
+                    }
+                }
+
+                if (item is TDecision decision) {
+                    context.DecisionMetaByName.Add (decision.Name, decision);
+                    if (decision.Id != null) {
+                        context.DecisionMetaById.Add (decision.Id, decision);
+                    }
+                }
+
+                if (item is TBusinessKnowledgeModel bkmModel) {
+                    context.BKMMetaByName.Add (bkmModel.Name, new BkmMeta () { BKMModel = bkmModel });
+                }
+            }
+        }
+
+        public (Dictionary<string, TDecision>, Dictionary<string, TDecision>) BuildDecisionMeta (TDefinitions definitions) {
             var decisionDict = new Dictionary<string, TDecision> ();
+            var decisionDictById = new Dictionary<string, TDecision> ();
             foreach (var item in definitions.DrgElement) {
                 if (item is TDecision decision) {
                     decisionDict.Add (decision.Name, decision);
+                    if (decision.Id != null) {
+                        decisionDict.Add (decision.Id, decision);
+                    }
                 }
             }
-            return decisionDict;
+            return (decisionDict, decisionDictById);
+        }
+
+        public (Dictionary<string, TDecisionService>, Dictionary<string, TDecisionService>) BuildDecisionServiceMeta (TDefinitions definitions) {
+            var decisionDict = new Dictionary<string, TDecisionService> ();
+            var decisionDictById = new Dictionary<string, TDecisionService> ();
+            foreach (var item in definitions.DrgElement) {
+                if (item is TDecisionService decision) {
+                    decisionDict.Add (decision.Name, decision);
+                    if (decision.Id != null) {
+                        decisionDict.Add (decision.Id, decision);
+                    }
+                }
+            }
+            return (decisionDict, decisionDictById);
         }
 
         public (VariableContext, TDefinitions) BuildInputMeta (string definitionName, int? versionNo = null) {

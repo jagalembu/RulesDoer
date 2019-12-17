@@ -60,7 +60,7 @@
     <testCase id="008_ddeffdc93e">
         <resultNode name="feel-substring-function_008_ddeffdc93e" type="decision">
             <expected>
-                <value xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string"> </value>
+                <value xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:string"><![CDATA[ ]]></value>
             </expected>
         </resultNode>
     </testCase>

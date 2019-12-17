@@ -42,5 +42,6 @@ namespace RulesDoer.Core.Runtime.Context {
                     return false;
             }
         }
+
     }
 }

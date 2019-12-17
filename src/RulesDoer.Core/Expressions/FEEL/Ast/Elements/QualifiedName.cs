@@ -27,6 +27,11 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements {
 
                 var decisionVar = DMNDoerHelper.EvaluateDecisionByName (context, Names[0]);
                 if (decisionVar != null) {
+                    //all the values that override is always string variable
+                    var overrideVar = VariableContextHelper.RetrieveInputVariable (context, Names[0], false);
+                    if (overrideVar != null) {
+                        return VariableHelper.MakeVariable (overrideVar.StringVal, decisionVar.ValueType);
+                    }
                     return decisionVar;
                 }
 
@@ -42,6 +47,13 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements {
 
             if (ctxVar == null) {
                 ctxVar = DMNDoerHelper.EvaluateDecisionByName (context, Names[0]);
+                //all the values that override is always string variable
+                var overrideVar = VariableContextHelper.RetrieveInputVariable (context, Names[0], false);
+                if (overrideVar != null) {
+                    var overrideTyped = VariableHelper.MakeVariable (overrideVar.StringVal, ctxVar.ValueType);
+                    ctxVar = overrideTyped;
+                }
+
             }
 
             if (ctxVar == null && ctxVar.ValueType != DataTypeEnum.Context) {

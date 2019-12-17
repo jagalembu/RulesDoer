@@ -20,15 +20,17 @@ namespace RulesDoer.Core.Tests.TCK.Run {
 
             var splitNames = tckmodel.ModelName.Split ('.');
 
-            var metaDef = _doer.BuildInputMeta (splitNames[0]);
+            var context = _doer.BuildContext (splitNames[0]);
 
             foreach (var item in tckmodel.TestCase) {
                 var inputdict = new Dictionary<string, Variable> ();
 
-                var context = new VariableContext () { InputNameDict = TCKHelper.MakeInputData (item, metaDef.Item1) };
+                var inputNameDict = TCKHelper.MakeInputData (item, context);
+                
+                context.InputNameDict = inputNameDict;
 
                 foreach (var rsltNode in item.ResultNode) {
-                    if (testName == null || rsltNode.Name.Contains(testName)) {
+                    if (testName == null || rsltNode.Name.Contains (testName)) {
 
                         var rslt = _doer.EvaluateDecisions (context, splitNames[0], null, rsltNode.Name);
 
@@ -42,9 +44,7 @@ namespace RulesDoer.Core.Tests.TCK.Run {
 
                         }
                     }
-
                 }
-
             }
 
         }
@@ -78,7 +78,7 @@ namespace RulesDoer.Core.Tests.TCK.Run {
                 return;
             }
 
-            AssertResultByIndividualType (expected.Value, actualrslt, name);
+            AssertResultByIndividualType (TCKHelper.GetValueType (expected.Value), actualrslt, name);
 
         }
 
@@ -158,7 +158,7 @@ namespace RulesDoer.Core.Tests.TCK.Run {
                 return;
             }
 
-            Assert.True (VariableHelper.MakeVariable (expected, actualrslt.ValueType).Equals (actualrslt), $"Failed asserting equal for expected:{expected} and decision name:{name}");
+            Assert.True (VariableHelper.MakeVariable (expected, actualrslt.ValueType).Equals (actualrslt), $"Failed asserting equal for expected:{expected} for decision name:{name}");
             //Assert.Equal<Variable> (VariableHelper.MakeVariable (expected, actualrslt.ValueType), actualrslt);
 
         }

@@ -1,5 +1,7 @@
-namespace RulesDoer.Core.Tests.TCK.Transformer
-{
+using System.Xml;
+using System.Xml.Serialization;
+
+namespace RulesDoer.Core.Tests.TCK.Transformer {
     [System.CodeDom.Compiler.GeneratedCodeAttribute ("XmlSchemaClassGenerator", "2.0.0.0")]
     [System.SerializableAttribute ()]
     [System.Xml.Serialization.XmlTypeAttribute ("valueType", Namespace = "http://www.omg.org/spec/DMN/20160719/testcase")]
@@ -9,8 +11,8 @@ namespace RulesDoer.Core.Tests.TCK.Transformer
     [System.Xml.Serialization.XmlIncludeAttribute (typeof (ValueTypeComponent))]
     public partial class ValueType {
 
-        [System.Xml.Serialization.XmlElementAttribute ("value", Namespace = "http://www.omg.org/spec/DMN/20160719/testcase", IsNullable = true)]
-        public string Value { get; set; }
+        [System.Xml.Serialization.XmlElementAttribute ("value",  Namespace = "http://www.omg.org/spec/DMN/20160719/testcase", IsNullable=true)]
+        public Value Value { get; set; }
 
         [System.Xml.Serialization.XmlIgnoreAttribute ()]
         private System.Collections.ObjectModel.Collection<ValueTypeComponent> _component;

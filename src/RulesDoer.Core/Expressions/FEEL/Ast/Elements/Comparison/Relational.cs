@@ -18,7 +18,6 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Comparison {
             var leftVar = (Variable) Left.Execute (context);
             var rightVar = (Variable) Right.Execute (context);
 
-
             if (leftVar.ValueType == DataTypeEnum.Null && rightVar.ValueType == DataTypeEnum.Null) {
                 switch (Operator) {
                     case OperatorEnum.EQ:
@@ -31,18 +30,9 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Comparison {
                         throw new FEELException ($"Null value comparison does not support operators: {Operator}");
                 }
             }
-            if (rightVar.ValueType == DataTypeEnum.Null) {
-                switch (Operator) {
-                    case OperatorEnum.EQ:
-                        return new Variable (false);
-
-                    case OperatorEnum.NE:
-                        return new Variable (false);
-
-                    default:
-                        throw new FEELException ($"Null value comparison does not support operators: {Operator}");
-                }
-
+            
+            if (leftVar.ValueType == DataTypeEnum.Null || rightVar.ValueType == DataTypeEnum.Null) {
+                return new Variable (false);
             }
 
             if (leftVar.ValueType != rightVar.ValueType) {

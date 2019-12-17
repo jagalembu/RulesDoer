@@ -87,7 +87,7 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
         [InlineData ("matches(\"helloworld\", \"hello world\", \"x\")", "", null, true)]
         [InlineData ("matches(\"Helloworld\", \"hello world\", \"ix\")", "", null, true)]
         [InlineData ("replace(\"abcd\", \"(ab)|(a)\", \"[1=$1][2=$2]\") ", "[1=ab][2=]cd", null, null)]
-        public void EvaluateExpression_FunctionInvocation_StringFuncs (string exprText, string expectedStr, int? expectedInt, Boolean? expectedBool) {
+        public void EvaluateExpression_FunctionInvocation_StringFuncs (string exprText, string expectedStr, int? expectedInt, bool? expectedBool) {
             VariableContext context = new VariableContext ();
             context.InputNameDict = new Dictionary<string, Variable> () { { "stringval", "blah" } };
 
@@ -95,7 +95,7 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
             if (!string.IsNullOrWhiteSpace (expectedStr)) {
                 Assert.Equal<string> (expectedStr, variable);
             } else if (expectedBool.HasValue) {
-                Assert.Equal<Boolean> (expectedBool.Value, variable);
+                Assert.Equal<bool> (expectedBool.Value, variable);
             } else if (expectedInt.HasValue) {
                 Assert.Equal<int> (expectedInt.Value, (int) variable.NumericVal);
             }
@@ -303,8 +303,10 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
         [Theory]
         [InlineData ("\"x1.234\" + item1", "x1.234somevalue")]
         [InlineData ("\"x1.234\" + input Name", "x1.234somevalue2")]
+        //TODO: bug with "sing;e quotes for named text
+        //[InlineData ("input's Name + \"x\" + input's Name", "somevalue2xsomevalue2")]
         public void EvaluateExpression_String_Plus (string exprText, string expected) {
-            var inputDict = new Dictionary<string, Variable> () { { "item1", "somevalue" }, { "input Name", "somevalue2" } };
+            var inputDict = new Dictionary<string, Variable> () { { "item1", "somevalue" }, { "input Name", "somevalue2" }, { "input's Name", "somevalue3" } };
             Variable variable = ParseAndEval (exprText, new VariableContext () { InputNameDict = inputDict });
             Assert.Equal<string> (expected, variable);
 

@@ -31,6 +31,7 @@ using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Match;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Boxed;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements.EvalTest;
+using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Statement;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements;
 
 

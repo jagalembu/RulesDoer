@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Xml;
 using RulesDoer.Core.Runtime.Context;
 using RulesDoer.Core.Tests.TCK.Transformer;
 using RulesDoer.Core.Types;
@@ -14,6 +15,12 @@ namespace RulesDoer.Core.Tests.TCK.Run {
 
             foreach (var inputnode in testCase.InputNode) {
                 context.InputDataMetaByName.TryGetValue (inputnode.Name, out InputDataMeta inputMeta);
+                //an overwrite input data for a decision invocation
+                if (inputMeta == null) {
+
+                    inputDicts.Add (inputnode.Name, MakeVariableFromType (inputnode.Value));
+                    continue;
+                }
                 var itemMeta = FindDefMeta (context.ItemDefinitionMeta, null, inputMeta.TypeName);
 
                 if (inputnode.ComponentSpecified) {
@@ -27,9 +34,9 @@ namespace RulesDoer.Core.Tests.TCK.Run {
 
                 } else {
                     if (itemMeta != null) {
-                        inputDicts.Add (inputnode.Name, VariableHelper.MakeVariable (inputnode.Value, itemMeta.TypeName));
+                        inputDicts.Add (inputnode.Name, VariableHelper.MakeVariable (GetValueType (inputnode.Value), itemMeta.TypeName));
                     } else {
-                        inputDicts.Add (inputnode.Name, VariableHelper.MakeVariable (inputnode.Value, inputMeta.TypeName));
+                        inputDicts.Add (inputnode.Name, VariableHelper.MakeVariable (GetValueType (inputnode.Value), inputMeta.TypeName));
                     }
 
                 }
@@ -91,11 +98,101 @@ namespace RulesDoer.Core.Tests.TCK.Run {
                     throw new TCKException ($"Missing type name for for component:{item.Name}");
                 }
 
-                ctx.Add (item.Name, VariableHelper.MakeVariable (item.Value, itemComponent.TypeName));
+                ctx.Add (item.Name, VariableHelper.MakeVariable (GetValueType (item.Value), itemComponent.TypeName));
 
             }
 
             return ctx;
+
+        }
+
+        public static string GetValueType (string value) {
+            if (value == null) {
+                return null;
+            }
+            return value;
+        }
+
+        public static string GetValueType (Value value) {
+            if (value == null) {
+                return null;
+            }
+            //where string and null is actually an empty string
+            if (value.Type != null && value.Type.Contains ("string") && value.Val == null) {
+                return "";
+            }
+            return value.Val;
+        }
+
+        public static string GetValueType (XmlNode value) {
+            if (value == null) {
+                return null;
+            }
+            // where string and null is actually an empty string
+            // if (value.Type != null && value.Type.Contains ("string") && value.Val == null) {
+            //     return "";
+            // }
+            return value.Value;
+        }
+
+        public static Variable MakeVariableFromType (string value) {
+            if (value == null) {
+                return new Variable ();
+            }
+
+            var val = GetValueType (value);
+
+            if (val == null) {
+                return null;
+            }
+
+            return VariableHelper.MakeVariable (val, "string");
+
+        }
+
+        public static Variable MakeVariableFromType (XmlNode value) {
+            if (value == null) {
+                return new Variable ();
+            }
+
+            var val = GetValueType (value);
+
+            if (val == null) {
+                return null;
+            }
+
+            return VariableHelper.MakeVariable (val, "string");
+
+        }
+
+        public static Variable MakeVariableFromType (Value value) {
+            if (value == null) {
+                return new Variable ();
+            }
+
+            var val = GetValueType (value);
+
+            if (val == null) {
+                return null;
+            }
+
+            if (value.Type != null) {
+                //clean type name
+                var typeName = value.Type;
+                if (value.Type.Contains (":")) {
+
+                    var typeNames = typeName.Split (':');
+
+                    typeName = typeNames[1];
+                }
+
+                //call make variable
+                return VariableHelper.MakeVariable (val, typeName);
+
+            }
+
+            //default to string variable
+            return val;
 
         }
 
@@ -125,7 +222,7 @@ namespace RulesDoer.Core.Tests.TCK.Run {
                     throw new TCKException ($"Missing type name for for item definition:{item.Value}");
                 }
 
-                iL.Add (VariableHelper.MakeVariable (item.Value, curItemDefMeta.TypeName));
+                iL.Add (VariableHelper.MakeVariable (GetValueType (item.Value), curItemDefMeta.TypeName));
 
             }
 

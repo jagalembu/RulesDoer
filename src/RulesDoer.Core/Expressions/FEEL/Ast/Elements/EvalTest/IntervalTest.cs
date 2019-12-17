@@ -1,5 +1,8 @@
+using System.Linq;
 using RulesDoer.Core.Expressions.FEEL.Eval;
 using RulesDoer.Core.Runtime.Context;
+using RulesDoer.Core.Types;
+using RulesDoer.Core.Utils;
 
 namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.EvalTest {
     public class IntervalTest : ITestExpression {
@@ -16,10 +19,20 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.EvalTest {
         }
 
         public object Execute (VariableContext context = null, string inputName = null) {
-            var inputVariable = VariableContextHelper.RetrieveInputVariable (context, inputName);
-
+            
             var leftVar = (Variable) LeftExpression.Execute (context);
             var rightVar = (Variable) RightExpression.Execute (context);
+
+            // this is not a test due to missing input therefore return a list
+            if (inputName == null) {
+                leftVar.ExpectedDataType (DataTypeEnum.Decimal);
+                rightVar.ExpectedDataType (DataTypeEnum.Decimal);
+
+                var range = RangeHelper.Decimal (leftVar, rightVar).ToList ();
+                return Variable.ListType (range, DataTypeEnum.ListDecimal);
+            }
+
+            var inputVariable = VariableContextHelper.RetrieveInputVariable (context, inputName);
 
             if (inputVariable.ValueType != rightVar.ValueType) {
                 throw new FEELException ($"Right value {inputVariable.ValueType} and right {rightVar.ValueType} are not the same for comparison");
@@ -35,10 +48,10 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.EvalTest {
             var leftBool = false;
             var rightBool = false;
 
-            //             is in the interval (e1..e2), also notated ]e1..e2[, if and only if o > e1 and o < e1
-            //  is in the interval (e1..e2], also notated ]e1..e2], if and only if o > e1 and o ≤ e2
-            //  is in the interval [e1..e2] if and only if o ≥ e1 and o ≤ e2
-            //  is in the interval [e1..e2), also notated [e1..e2[, if and only if o ≥ e1 and o < e2 
+            // is in the interval (e1..e2), also notated ]e1..e2[, if and only if o > e1 and o < e1
+            // is in the interval (e1..e2], also notated ]e1..e2], if and only if o > e1 and o ≤ e2
+            // is in the interval [e1..e2] if and only if o ≥ e1 and o ≤ e2
+            // is in the interval [e1..e2), also notated [e1..e2[, if and only if o ≥ e1 and o < e2 
 
             switch (Start) {
                 case "(":
@@ -64,7 +77,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.EvalTest {
                     throw new FEELException ($"Incorrect end {End} interval character");
             }
 
-            return new Variable(leftBool && rightBool);
+            return new Variable (leftBool && rightBool);
         }
 
     }

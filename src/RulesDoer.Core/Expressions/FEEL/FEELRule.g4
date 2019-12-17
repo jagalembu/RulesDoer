@@ -15,6 +15,7 @@ using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Match;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Boxed;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements.EvalTest;
+using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Statement;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements;
 }
 
@@ -86,6 +87,25 @@ expression
 		}
 	| left = expression OR right = expression {$ast = new Disjunction($left.ast, $right.ast);
 		}
+	| IF cond = expression THEN thenexpr = expression ELSE elseexpr = expression {$ast = new IfStatement($cond.ast, $thenexpr.ast, $elseexpr.ast);
+		}
+	| {List<IExpression> iterExpr = new List<IExpression>();} (
+		op = SOME
+		| op = EVERY
+	) var = identifier IN items = expression {iterExpr.Add(new IteratorExpression($var.text, $items.ast ));
+		} (
+		COMMA var = identifier IN items = expression {iterExpr.Add(new IteratorExpression($var.text, $items.ast ));
+			}
+	)* SATISFIES pred = expression {$ast = new QuantifiedStatement($op.text, iterExpr, $pred.ast);
+		}
+	| {List<IExpression> iterExpr = new List<IExpression>();} FOR var = identifier IN {IExpression end = null;
+		} startexp = expression (
+		DOT_DOT endexp = expression {end = $endexp.ast;}
+	)? {iterExpr.Add(new RangeIterator($var.text, $startexp.ast, end));} (
+		COMMA var = identifier IN {end = null;} startexp = expression (
+			DOT_DOT endexp = expression {end = $endexp.ast;}
+		)? {iterExpr.Add(new RangeIterator($var.text, $startexp.ast, end));}
+	)* RETURN rtn = expression {$ast = new ForStatement(iterExpr, $rtn.ast);}
 	| boxedExpression {$ast = $boxedExpression.ast;};
 
 //tests

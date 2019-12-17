@@ -27,6 +27,7 @@ namespace RulesDoer.Core.Runtime.Context {
                     InputDataMetaById = context.InputDataMetaById,
                     InputDataMetaByName = context.InputDataMetaByName,
                     ItemDefinitionMeta = context.ItemDefinitionMeta
+
             };
         }
 
@@ -84,6 +85,47 @@ namespace RulesDoer.Core.Runtime.Context {
                 throw new FEELException ($"Missing input value {inputName}");
             }
             return inputVariable;
+        }
+
+        public static Variable RetrieveLocaContext (VariableContext context = null, string inputName = null, bool doException = true) {
+            if (context == null) {
+                return null;
+            }
+
+            if (context.LocalContext == null) {
+                return null;
+            }
+
+            context.LocalContext.ContextDict.TryGetValue ("__currentContextX__", out var currCtxt);
+
+            if (inputName.Contains (".")) {
+                var x = inputName.Split ('.');
+
+                Variable contextVal = null;
+                Variable cntxt = context.LocalContext;
+
+                for (int i = 0; i < x.Length; i++) {
+                    cntxt.ContextInputs.ContextDict.TryGetValue (x[i], out var newVal);
+                    if (newVal == null && currCtxt != null) {
+                        currCtxt.ContextInputs.ContextDict.TryGetValue (x[i], out newVal);
+                    }
+
+                    if (newVal.ValueType == DataTypeEnum.Context) {
+                        cntxt = newVal;
+                    }
+                    contextVal = newVal;
+                }
+                return contextVal;
+            }
+            context.LocalContext.ContextDict.TryGetValue (inputName, out var ctxVar);
+            if (ctxVar == null && currCtxt != null) {
+                currCtxt.ContextInputs.ContextDict.TryGetValue (inputName, out ctxVar);
+            }
+            if (ctxVar == null && doException) {
+                throw new FEELException ($"Missing local context value {inputName}");
+            }
+            return ctxVar;
+
         }
 
     }

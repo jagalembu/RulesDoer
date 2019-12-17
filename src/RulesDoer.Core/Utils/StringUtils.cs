@@ -13,6 +13,10 @@ namespace RulesDoer.Core.Utils {
             return Regex.Unescape (input);
         }
 
+        public static string XmlString (string input) {
+            return input;
+        }
+
         public static RegexOptions MatchesOptions (Variable flagExpr) {
 
             if (flagExpr.ValueType == DataTypeEnum.String) {

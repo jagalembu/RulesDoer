@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Comparison;
 using RulesDoer.Core.Expressions.FEEL.Eval;
@@ -23,26 +24,50 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Match {
 
                 var filteredList = new List<Variable> ();
                 if (leftVal.IsListType ()) {
-                    var ctxt = new VariableContext ();
+                    if (context == null) {
+                        context = new VariableContext ();
+                    }
+
+                    var nwDict = new Dictionary<string, Variable> ();
 
                     foreach (var x in leftVal.ListVal) {
 
+                        //"item" is a keyword for filtering list or context
+
                         if (x.ValueType == DataTypeEnum.Context) {
-                            ctxt.InputNameDict = new Dictionary<string, Variable>(x.ContextInputs.ContextDict);
-                            ctxt.InputNameDict.TryAdd ("item", x);
+                            context.AddToInputDict (x.ContextInputs.ContextDict);
+                            if (!x.ContextInputs.ContextDict.ContainsKey ("item")) {
+                                context.AddToInputDict ("item", x);
+                            }
                         } else {
-                            ctxt.InputNameDict = new Dictionary<string, Variable>() { {"item", x}};
+                            context.AddToInputDict ("item", x);
                         }
 
-                        //ctxt.InputNameDict.Add ("item", x);
-
-                        var boolFiltered = (Variable) FilterExpression.Execute (ctxt);
+                        var boolFiltered = (Variable) FilterExpression.Execute (context);
                         if (boolFiltered.ValueType == DataTypeEnum.Boolean && boolFiltered.BoolVal == true) {
                             filteredList.Add (x);
                         }
                     }
                 }
                 return new Variable (filteredList);
+            }
+
+            //for partial processing of cartesean product from For or Quantified statements
+            if (leftVal.ValueType == DataTypeEnum.String && leftVal.StringVal == "partial") {
+                context.InputNameDict.TryGetValue ("__CpL__", out var cpList);
+
+                var numericVal = (Variable) FilterExpression.Execute (context);
+                numericVal.ExpectedDataType (DataTypeEnum.Decimal);
+
+                if (numericVal.NumericVal > -1) {
+                    throw new FEELException ("for loop partial[] construct only allows negative values");
+                }
+                var curIndex = cpList.ListVal.Count + Decimal.ToInt32 (numericVal.NumericVal);
+                if (curIndex < 0) {
+                    throw new FEELException ($"Current index value cannot be a negative value: {curIndex}");
+                }
+                return cpList.ListVal[curIndex];
+
             }
 
             if (!leftVal.IsListType ()) {

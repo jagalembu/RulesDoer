@@ -13,12 +13,24 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Boxed {
 
             var contextInput = new ContextInputs ();
 
-            //TODO: Get item values from the context variables if any
+            if (context == null) {
+                context = new VariableContext ();
+            }
+
+            if (context.LocalContext == null) {
+                context.LocalContext = contextInput;
+            } else if (context.LocalContext.ContextDict.ContainsKey ("__currentContextX__")) {
+                context.LocalContext.ContextDict["__currentContextX__"] = contextInput;
+            } else {
+                context.LocalContext.Add ("__currentContextX__", contextInput);
+            }
 
             foreach (var item in ContextEntries) {
                 var itemVal = (Variable) item.Execute (context);
                 contextInput.Add (itemVal.TwoTuple.a, itemVal.TwoTuple.b);
             }
+            
+            context.LocalContext.ContextDict.Remove("__currentContextX__");
 
             return new Variable (contextInput);
         }

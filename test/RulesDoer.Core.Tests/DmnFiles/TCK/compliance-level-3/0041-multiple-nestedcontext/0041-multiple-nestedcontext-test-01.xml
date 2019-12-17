@@ -15,7 +15,7 @@
 		</inputNode>
 		<resultNode name="Boxed Context" type="decision">
 			<expected>
-					<value xsi:type="xsd:double">2778.6935494327668</value>
+					<value xsi:type="xsd:double">2778.6935494327667680885203832</value>
 			</expected>
 		</resultNode>
 	</testCase>
@@ -28,7 +28,7 @@
 		</inputNode>
 		<resultNode name="Boxed Context" type="decision">
 			<expected>
-					<value xsi:type="xsd:double">549.1175498364003</value>
+					<value xsi:type="xsd:double">549.11754983640029349270001464</value>
 			</expected>
 		</resultNode>
 	</testCase>
@@ -41,7 +41,7 @@
 		</inputNode>
 		<resultNode name="Boxed Context" type="decision">
 			<expected>
-					<value xsi:type="xsd:double">2758.1160998965915</value>
+					<value xsi:type="xsd:double">2758.1160998965914008714188932</value>
 			</expected>
 		</resultNode>
 	</testCase>

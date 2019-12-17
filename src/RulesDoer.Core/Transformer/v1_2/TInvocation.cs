@@ -13,6 +13,12 @@ namespace RulesDoer.Core.Transformer.v1_2
         /// <summary>
         /// </summary>
         [System.Xml.Serialization.XmlElementAttribute ("expression", Namespace = "http://www.omg.org/spec/DMN/20180521/MODEL/")]
+        [System.Xml.Serialization.XmlElementAttribute ("literalExpression", typeof (TLiteralExpression), Namespace = "http://www.omg.org/spec/DMN/20180521/MODEL/")]
+        [System.Xml.Serialization.XmlElementAttribute ("context", typeof (TContext), Namespace = "http://www.omg.org/spec/DMN/20180521/MODEL/")]
+        [System.Xml.Serialization.XmlElementAttribute ("decisionTable", typeof (TDecisionTable), Namespace = "http://www.omg.org/spec/DMN/20180521/MODEL/")]
+        [System.Xml.Serialization.XmlElementAttribute ("functionDefinition", typeof (TFunctionDefinition), Namespace = "http://www.omg.org/spec/DMN/20180521/MODEL/")]
+        [System.Xml.Serialization.XmlElementAttribute ("invocation", typeof (TInvocation), Namespace = "http://www.omg.org/spec/DMN/20180521/MODEL/")]
+        [System.Xml.Serialization.XmlElementAttribute ("relation", typeof (TRelation), Namespace = "http://www.omg.org/spec/DMN/20180521/MODEL/")]
         public TExpression Expression { get; set; }
 
         [System.Xml.Serialization.XmlIgnoreAttribute ()]
