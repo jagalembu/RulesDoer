@@ -1,12 +1,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using RulesDoer.Core.Expressions.FEEL.Eval;
 using RulesDoer.Core.Repo;
 using RulesDoer.Core.Runtime.Context;
-using RulesDoer.Core.Serialization;
 using RulesDoer.Core.Transformer.v1_2;
-using RulesDoer.Core.Types;
 
 namespace RulesDoer.Core.Runtime {
     public class DMNDoer {
@@ -19,7 +15,6 @@ namespace RulesDoer.Core.Runtime {
         }
 
         public VariableContext BuildContext (string definitionName, int? versionNo = null) {
-            VariableContext context = new VariableContext ();
 
             var metaDef = BuildInputMeta (definitionName, versionNo);
             var definitions = metaDef.Item2;
@@ -40,16 +35,6 @@ namespace RulesDoer.Core.Runtime {
                 runtimeContext.InputNameDict = inRuntimeContext.InputNameDict;
 
             }
-
-            // var metaDef = BuildInputMeta (definitionName, versionNo);
-            // var definitions = metaDef.Item2;
-
-            // runtimeContext.InputDataMetaById = metaDef.Item1.InputDataMetaById;
-            // runtimeContext.InputDataMetaByName = metaDef.Item1.InputDataMetaByName;
-            // runtimeContext.ItemDefinitionMeta = metaDef.Item1.ItemDefinitionMeta;
-            // BuildDRGMeta (definitions, runtimeContext);
-            //runtimeContext.BKMMetaByName = BuildBkmMeta (definitions);
-            //runtimeContext.DecisionMetaByName = BuildDecisionMeta (definitions);
 
             //TODO: check inputs match input data
 
@@ -165,10 +150,11 @@ namespace RulesDoer.Core.Runtime {
 
             foreach (var item in definitions.DrgElement) {
                 if (item is TInputData inputDataItem) {
-                    var inputMeta = new InputDataMeta ();
-                    inputMeta.Id = inputDataItem.Id;
-                    inputMeta.Name = inputDataItem.Name;
-                    inputMeta.TypeName = inputDataItem.Variable.TypeRef;
+                    var inputMeta = new InputDataMeta {
+                        Id = inputDataItem.Id,
+                        Name = inputDataItem.Name,
+                        TypeName = inputDataItem.Variable.TypeRef
+                    };
                     inputById.Add (inputMeta.Id, inputMeta);
                     inputByName.Add (inputMeta.Name, inputMeta);
 
@@ -182,12 +168,13 @@ namespace RulesDoer.Core.Runtime {
         private Dictionary<string, ItemDefinitionMeta> BuildItemDefinitionsMeta (TDefinitions definitions) {
             var itemDefMetaDict = new Dictionary<string, ItemDefinitionMeta> ();
             foreach (var item in definitions.ItemDefinition) {
-                var itemDefMeta = new ItemDefinitionMeta ();
-                itemDefMeta.AllowedValues = item.AllowedValues;
-                itemDefMeta.Name = item.Name;
-                itemDefMeta.TypeName = item.TypeRef;
-                itemDefMeta.TypeLanguage = item.TypeLanguage;
-                itemDefMeta.IsCollection = item.IsCollection;
+                var itemDefMeta = new ItemDefinitionMeta {
+                    AllowedValues = item.AllowedValues,
+                    Name = item.Name,
+                    TypeName = item.TypeRef,
+                    TypeLanguage = item.TypeLanguage,
+                    IsCollection = item.IsCollection
+                };
                 CreateItemDefinitionMeta (item.ItemComponent, ref itemDefMeta);
                 itemDefMetaDict.Add (item.Name, itemDefMeta);
 
@@ -198,12 +185,13 @@ namespace RulesDoer.Core.Runtime {
         private void CreateItemDefinitionMeta (Collection<TItemDefinition> itemDefs, ref ItemDefinitionMeta itemMeta) {
             var dict = new Dictionary<string, ItemDefinitionMeta> ();
             foreach (var item in itemDefs) {
-                var itemDefMeta = new ItemDefinitionMeta ();
-                itemDefMeta.AllowedValues = item.AllowedValues;
-                itemDefMeta.Name = item.Name;
-                itemDefMeta.TypeName = item.TypeRef;
-                itemDefMeta.TypeLanguage = item.TypeLanguage;
-                itemDefMeta.IsCollection = item.IsCollection;
+                var itemDefMeta = new ItemDefinitionMeta {
+                    AllowedValues = item.AllowedValues,
+                    Name = item.Name,
+                    TypeName = item.TypeRef,
+                    TypeLanguage = item.TypeLanguage,
+                    IsCollection = item.IsCollection
+                };
                 CreateItemDefinitionMeta (item.ItemComponent, ref itemDefMeta);
                 dict.Add (item.Name, itemDefMeta);
             }

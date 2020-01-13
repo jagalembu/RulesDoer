@@ -65,16 +65,22 @@ OR: 'or';
 BETWEEN: 'between';
 INSTANCE_OF: 'instance of';
 
-DATETIMELIT:
-	'date and time'
-	| 'days and time duration'
-	| 'years and months duration';
-	// | 'date'
-	// | 'time'
-	// | 'duration';
+// 27. name = name start , { name part | additional name symbols } ;
+
+// 28. name start = name start char, { name part char } ;
+
+// 29. name part = name part char , { name part char } ;
+
+// 30. name start char = "?" | [A-Z] | "_" | [a-z] | [\uC0-\uD6] | [\uD8-\uF6] | [\uF8-\u2FF] | [\u370-\u37D] | [\u37F-\u1FFF] | [\u200C-\u200D] | [\u2070-\u218F] | [\u2C00-\u2FEF] | [\u3001-\uD7FF] | [\uF900-\uFDCF] | [\uFDF0-\uFFFD] | [\ u10000-\uEFFFF] ;
+
+// 31. name part char = name start char | digit | \uB7 | [\u0300-\u036F] | [\u203F-\u2040] ;
+
+// 32. additional name symbols = "." | "/" | "-" | "’" | "+" | "*" ;
 
 NAME:
-	 'substring'
+	'date and time'
+	| 'days and time duration'
+	| 'years and months duration'
 	| 'string length'
 	| 'upper case'
 	| 'lower case'
@@ -88,7 +94,9 @@ NAME:
 	| 'index of'
 	| 'distinct values'
 	| 'time offset'
-	| NameStartChar ( NamePartChar)*
+	| 'get entries'
+	| 'get value'
+	| NameStartChar (NamePartChar | AdditionalNameSymbols)*
 	| ('\'' ( ~(['] | [\u000A-\u000D]))* '\'');
 
 fragment EscSeq:
@@ -134,6 +142,9 @@ fragment Digit: [0-9];
 fragment HexDigit: [0-9a-fA-F];
 
 fragment Digits: Digit (Digit)*;
+
+fragment AdditionalNameSymbols:
+	 '\'';
 
 fragment WhiteSpace:
 	VerticalSpace

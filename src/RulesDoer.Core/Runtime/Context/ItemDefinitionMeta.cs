@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using RulesDoer.Core.Transformer.v1_2;
 
 namespace RulesDoer.Core.Runtime.Context {
+    //TODO: need to move to types namespace
     public class ItemDefinitionMeta {
         public string Name { get; set; }
         public string TypeName { get; set; }

@@ -218,6 +218,30 @@ public partial class FEELRuleBaseListener : IFEELRuleListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitList([NotNull] FEELRule.ListContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="FEELRule.functionDefinition"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterFunctionDefinition([NotNull] FEELRule.FunctionDefinitionContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="FEELRule.functionDefinition"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitFunctionDefinition([NotNull] FEELRule.FunctionDefinitionContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="FEELRule.formalParameter"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterFormalParameter([NotNull] FEELRule.FormalParameterContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="FEELRule.formalParameter"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitFormalParameter([NotNull] FEELRule.FormalParameterContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="FEELRule.context"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>

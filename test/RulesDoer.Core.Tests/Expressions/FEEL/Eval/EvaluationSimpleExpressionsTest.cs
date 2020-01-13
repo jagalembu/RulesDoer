@@ -1,11 +1,9 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using RulesDoer.Core.Expressions.FEEL.Eval;
 using RulesDoer.Core.Runtime.Context;
 using Xunit;
 
-namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
+namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval
+{
 
     public class EvaluationSimpleExpressionsTest {
 
@@ -36,7 +34,7 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
         public void EvaluateExpression_String (string exprText, string expected) {
             Variable variable = ParseAndEval (exprText);
 
-            Assert.Equal<string> (expected, variable);
+            Assert.Equal(expected, variable);
 
         }
 

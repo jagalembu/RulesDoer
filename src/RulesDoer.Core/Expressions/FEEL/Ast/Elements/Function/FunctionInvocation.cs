@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function.BuiltIn;
 using RulesDoer.Core.Expressions.FEEL.Eval;
 using RulesDoer.Core.Runtime;
@@ -9,22 +8,32 @@ using RulesDoer.Core.Types;
 
 namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function {
     public class FunctionInvocation : IExpression {
-        IExpression Function;
-        IExpression Parameters;
+        private readonly IExpression _function;
+        private readonly IExpression _parameters;
 
         public FunctionInvocation (IExpression function, IExpression parameters) {
-            Function = function;
-            Parameters = parameters;
+            _function = function;
+            _parameters = parameters;
         }
 
         public object Execute (VariableContext context = null) {
 
-            var funcName = Function.Execute (context);
+            var funcName = _function.Execute (context);
+
+            if (funcName is Variable outFuncVar && outFuncVar.ValueType == DataTypeEnum.Function) {
+                if (_parameters is PositionalParameters) {
+                    var lVars = RetrieveListOfParameters (context);
+                    return outFuncVar.UserFunction.Execute (lVars, context);
+                }
+                if (_parameters is NamedParameters nParams) {
+                    return outFuncVar.UserFunction.Execute (null, context, nParams);
+                }
+            }
 
             if (funcName is Variable outFuncName && outFuncName.ValueType == DataTypeEnum.String) {
                 List<Variable> lVars = new List<Variable> ();
 
-                if (Parameters is PositionalParameters) {
+                if (_parameters is PositionalParameters) {
                     lVars = RetrieveListOfParameters (context);
                     if (VariableContextHelper.RetrieveBkm (outFuncName, context, out var bkmMeta)) {
                         return DMNDoerHelper.EvalBkm (bkmMeta.BKMModel, context, lVars);
@@ -34,7 +43,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function {
                     }
                 }
 
-                if (Parameters is NamedParameters namedParam) {
+                if (_parameters is NamedParameters namedParam) {
 
                     if (VariableContextHelper.RetrieveBkm (outFuncName, context, out var bkmMeta)) {
                         lVars = BKMConvertNamedParameter (namedParam, bkmMeta.BKMModel, context);
@@ -48,7 +57,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function {
 
                 var funcMeta = BuiltInFactory.GetFunc (outFuncName);
 
-                if (Parameters is NamedParameters nParam) {
+                if (_parameters is NamedParameters nParam) {
                     lVars = BuiltInFactory.ConvertNamedParameter (nParam, funcMeta.Item2, context);
                 }
 
@@ -102,7 +111,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function {
         }
 
         private List<Variable> RetrieveListOfParameters (VariableContext context) {
-            var expressions = Parameters.Execute (context);
+            var expressions = _parameters.Execute (context);
 
             var outList = new List<Variable> ();
 

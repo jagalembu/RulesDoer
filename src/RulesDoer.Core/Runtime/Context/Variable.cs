@@ -7,6 +7,7 @@ using RulesDoer.Core.Types;
 using RulesDoer.Core.Utils;
 
 namespace RulesDoer.Core.Runtime.Context {
+    //TODO: move this to type namespace
     public class Variable : IComparable<Variable> {
         public DataTypeEnum ValueType { get; set; }
         public string InputName { get; set; }
@@ -25,6 +26,7 @@ namespace RulesDoer.Core.Runtime.Context {
         public (Variable a, Variable b) TwoTuple { get; set; }
         public ContextInputs ContextInputs { get; set; }
         public DecisionTableResult DecisionTableResult { get; set; }
+        public UserFunction UserFunction { get; set; }
 
         public Variable () {
             ValueType = DataTypeEnum.Null;
@@ -109,6 +111,11 @@ namespace RulesDoer.Core.Runtime.Context {
             ValueType = DataTypeEnum.DecisionTableResult;
         }
 
+        public Variable (UserFunction func) {
+            UserFunction = func;
+            ValueType = DataTypeEnum.Function;
+        }
+
         static public Variable Years (int years, int months = 0) {
             return Months (years * 12 + months);
         }
@@ -122,23 +129,25 @@ namespace RulesDoer.Core.Runtime.Context {
         }
 
         static public Variable ListType (List<Variable> lVars, DataTypeEnum dType) {
-            var vList = new Variable (lVars);
-            vList.ValueType = dType;
+            var vList = new Variable (lVars) {
+                ValueType = dType
+            };
             return vList;
         }
 
         static public Variable DurationType (Period duration, DataTypeEnum dType) {
-            var dur = new Variable (duration);
-            dur.ValueType = dType;
+            var dur = new Variable (duration) {
+                ValueType = dType
+            };
             return dur;
         }
 
         public int CompareTo (Variable variable) {
             switch (variable.ValueType) {
                 case DataTypeEnum.Boolean:
-                    return this.BoolVal.CompareTo (variable.BoolVal);
+                    return BoolVal.CompareTo (variable.BoolVal);
                 case DataTypeEnum.String:
-                    return this.StringVal.CompareTo (variable.StringVal);
+                    return StringVal.CompareTo (variable.StringVal);
                 case DataTypeEnum.DateTime:
                     return DateAndTimeHelper.CompareDateTime (this, variable);
                 case DataTypeEnum.Time:
@@ -146,13 +155,14 @@ namespace RulesDoer.Core.Runtime.Context {
                 case DataTypeEnum.Date:
                     return DateAndTimeHelper.CompareDate (this, variable);
                 case DataTypeEnum.Decimal:
-                    return this.NumericVal.CompareTo (variable.NumericVal);
+                    return NumericVal.CompareTo (variable.NumericVal);
                 case DataTypeEnum.DayTimeDuration:
                 case DataTypeEnum.YearMonthDuration:
                     return DateAndTimeHelper.CompareDuration (this, variable);
                 case DataTypeEnum.List:
                 case DataTypeEnum.Context:
-                    //TODO: need to throw error
+                case DataTypeEnum.Function:
+                    //TODO: comparer needs to support equal operator only.
                     return 0;
                 default:
                     throw new FEELException ($"The following type {variable.ValueType} is not supported");
@@ -164,23 +174,22 @@ namespace RulesDoer.Core.Runtime.Context {
 
             var rightVar = obj as Variable;
 
-            //Contains - List comparison
             if (!this.IsListType () && rightVar.IsListType ()) {
                 return false;
             }
 
             if (this.IsListType () && rightVar.IsListType ()) {
-                return this.ListVal.SequenceEqual (rightVar.ListVal);
+                return ListVal.SequenceEqual (rightVar.ListVal);
             }
 
-            if (this.ValueType == DataTypeEnum.Context && rightVar.ValueType == DataTypeEnum.Context) {
+            //TODO: need to add this as a method in override equals in ContextInputs
+            if (ValueType == DataTypeEnum.Context && rightVar.ValueType == DataTypeEnum.Context) {
 
-                //var match = this.ContextInputs.ContextDict.Keys.SequenceEqual (rightVar.ContextInputs.ContextDict.Keys);
-                var countMatch = this.ContextInputs.ContextDict.Keys.Count == rightVar.ContextInputs.ContextDict.Keys.Count;
+                var countMatch = ContextInputs.ContextDict.Keys.Count == rightVar.ContextInputs.ContextDict.Keys.Count;
 
                 if (countMatch) {
-                    foreach (var item in this.ContextInputs.ContextDict.Keys) {
-                        this.ContextInputs.ContextDict.TryGetValue (item, out Variable inValVar);
+                    foreach (var item in ContextInputs.ContextDict.Keys) {
+                        ContextInputs.ContextDict.TryGetValue (item, out Variable inValVar);
 
                         if (inValVar is null) {
                             return false;
@@ -206,34 +215,34 @@ namespace RulesDoer.Core.Runtime.Context {
                 return false;
             }
 
-            return this.CompareTo (rightVar) == 0;
+            return CompareTo (rightVar) == 0;
         }
 
         public override int GetHashCode () {
 
             int hashCode = 0;
-            switch (this.ValueType) {
+            switch (ValueType) {
                 case DataTypeEnum.Boolean:
-                    hashCode = this.BoolVal.GetHashCode ();
+                    hashCode = BoolVal.GetHashCode ();
                     break;
                 case DataTypeEnum.String:
-                    hashCode = this.StringVal.GetHashCode ();
+                    hashCode = StringVal.GetHashCode ();
                     break;
                 case DataTypeEnum.DateTime:
-                    hashCode = this.DateTimeVal.GetHashCode ();
+                    hashCode = DateTimeVal.GetHashCode ();
                     break;
                 case DataTypeEnum.Time:
-                    hashCode = this.DateTimeVal.GetHashCode ();
+                    hashCode = DateTimeVal.GetHashCode ();
                     break;
                 case DataTypeEnum.Date:
-                    hashCode = this.DateVal.GetHashCode ();
+                    hashCode = DateVal.GetHashCode ();
                     break;
                 case DataTypeEnum.Decimal:
-                    hashCode = this.NumericVal.GetHashCode ();
+                    hashCode = NumericVal.GetHashCode ();
                     break;
                 case DataTypeEnum.YearMonthDuration:
                 case DataTypeEnum.DayTimeDuration:
-                    hashCode = this.DurationVal.GetHashCode ();
+                    hashCode = DurationVal.GetHashCode ();
                     break;
             }
             return hashCode;
@@ -302,6 +311,10 @@ namespace RulesDoer.Core.Runtime.Context {
 
         static public implicit operator Variable (DecisionTableResult dtr) {
             return new Variable (dtr);
+        }
+
+        static public implicit operator Variable (UserFunction func) {
+            return new Variable (func);
         }
 
         static public implicit operator bool (Variable ev) {
@@ -382,13 +395,19 @@ namespace RulesDoer.Core.Runtime.Context {
             return ev.DecisionTableResult;
         }
 
+        static public implicit operator UserFunction (Variable ev) {
+            if (ev.ValueType != DataTypeEnum.Function)
+                throw new NotSupportedException ("Expected User Function value.");
+            return ev.UserFunction;
+        }
+
         public override string ToString () {
-            switch (this.ValueType) {
+            switch (ValueType) {
                 case DataTypeEnum.Boolean:
-                    return this.BoolVal.ToString ();
+                    return BoolVal.ToString ();
 
                 case DataTypeEnum.String:
-                    return this.StringVal;
+                    return StringVal;
 
                 case DataTypeEnum.DateTime:
                     return DateAndTimeHelper.DateTimeString (this);
@@ -400,7 +419,7 @@ namespace RulesDoer.Core.Runtime.Context {
                     return DateAndTimeHelper.DateString (this);
 
                 case DataTypeEnum.Decimal:
-                    return this.NumericVal.ToString ();
+                    return NumericVal.ToString ();
 
                 case DataTypeEnum.DayTimeDuration:
                 case DataTypeEnum.YearMonthDuration:

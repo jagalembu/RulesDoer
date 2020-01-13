@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function.BuiltIn.DateFuncs;
 using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function.BuiltIn.ListFuncs;
@@ -8,7 +7,8 @@ using RulesDoer.Core.Expressions.FEEL.Eval;
 using RulesDoer.Core.Runtime.Context;
 using RulesDoer.Core.Types;
 
-namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function.BuiltIn {
+namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function.BuiltIn
+{
     public static class BuiltInFactory {
         private static readonly Dictionary < string, (IFunc, string[]) > _builtFunction = new Dictionary < string, (IFunc, string[]) > () {
 

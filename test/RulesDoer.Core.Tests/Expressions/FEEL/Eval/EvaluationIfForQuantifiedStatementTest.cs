@@ -14,7 +14,7 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
 
             Variable variable = ParseAndEval (exprText, context);
             if (!string.IsNullOrWhiteSpace (expectedStr)) {
-                Assert.Equal<string> (expectedStr, variable);
+                Assert.Equal(expectedStr, variable);
             } else if (expectedBool.HasValue) {
                 Assert.Equal<bool> (expectedBool.Value, variable);
             } else if (expectedInt.HasValue) {

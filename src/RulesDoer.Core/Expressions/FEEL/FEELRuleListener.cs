@@ -186,6 +186,26 @@ public interface IFEELRuleListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitList([NotNull] FEELRule.ListContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="FEELRule.functionDefinition"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterFunctionDefinition([NotNull] FEELRule.FunctionDefinitionContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="FEELRule.functionDefinition"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitFunctionDefinition([NotNull] FEELRule.FunctionDefinitionContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="FEELRule.formalParameter"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterFormalParameter([NotNull] FEELRule.FormalParameterContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="FEELRule.formalParameter"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitFormalParameter([NotNull] FEELRule.FormalParameterContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="FEELRule.context"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

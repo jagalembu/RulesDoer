@@ -8,7 +8,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Boxed {
 
         public ContextEntryBoxed (string keyLit, IExpression expression) {
             Expression = expression;            
-            KeyLiteral = keyLit.Trim (new Char[] { '"' });;
+            KeyLiteral = keyLit.Trim (new char[] { '"' });;
         }
 
         public object Execute (VariableContext context = null) {

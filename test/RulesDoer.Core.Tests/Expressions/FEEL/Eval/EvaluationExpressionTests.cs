@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using RulesDoer.Core.Expressions.FEEL.Eval;
 using RulesDoer.Core.Runtime.Context;
@@ -12,8 +11,9 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
         [InlineData ("not(true)", false)]
         [InlineData ("not(A)", false)]
         public void Evaluate_Not (string exprText, bool expected) {
-            VariableContext context = new VariableContext ();
-            context.InputNameDict = new Dictionary<string, Variable> () { { "A", true }, { "B", false }, { "stringval", "blah" } };
+            VariableContext context = new VariableContext {
+                InputNameDict = new Dictionary<string, Variable> () { { "A", true }, { "B", false }, { "stringval", "blah" } }
+            };
 
             var variable = ParseAndEval (exprText, context);
             Assert.Equal<bool> (expected, variable);
@@ -26,13 +26,13 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
 
             var expectedVal = DateAndTimeHelper.DurationVal (expected);
 
-            Assert.Equal<Variable> (expectedVal, variable);
+            Assert.Equal (expectedVal, variable);
 
         }
 
         [Theory]
         [ClassData (typeof (BoxedListDataTests))]
-        public void EvaluateExpression_Boxed_List (string exprText, Variable expected, Boolean expectedEqual) {
+        public void EvaluateExpression_Boxed_List (string exprText, Variable expected, bool expectedEqual) {
             Variable variable = ParseAndEval (exprText);
             if (expectedEqual) {
                 Assert.True (variable.Equals (expected));
@@ -53,7 +53,7 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
 
         [Theory]
         [ClassData (typeof (ContextDataTests))]
-        public void EvaluateExpression_Boxed_Context (string exprText, Variable expected, Boolean expectedEqual) {
+        public void EvaluateExpression_Boxed_Context (string exprText, Variable expected, bool expectedEqual) {
             Variable variable = ParseAndEval (exprText);
             if (expectedEqual) {
                 Assert.True (variable.Equals (expected));
@@ -88,16 +88,17 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
         [InlineData ("matches(\"Helloworld\", \"hello world\", \"ix\")", "", null, true)]
         [InlineData ("replace(\"abcd\", \"(ab)|(a)\", \"[1=$1][2=$2]\") ", "[1=ab][2=]cd", null, null)]
         public void EvaluateExpression_FunctionInvocation_StringFuncs (string exprText, string expectedStr, int? expectedInt, bool? expectedBool) {
-            VariableContext context = new VariableContext ();
-            context.InputNameDict = new Dictionary<string, Variable> () { { "stringval", "blah" } };
+            VariableContext context = new VariableContext {
+                InputNameDict = new Dictionary<string, Variable> () { { "stringval", "blah" } }
+            };
 
             Variable variable = ParseAndEval (exprText, context);
             if (!string.IsNullOrWhiteSpace (expectedStr)) {
-                Assert.Equal<string> (expectedStr, variable);
+                Assert.Equal (expectedStr, variable);
             } else if (expectedBool.HasValue) {
                 Assert.Equal<bool> (expectedBool.Value, variable);
             } else if (expectedInt.HasValue) {
-                Assert.Equal<int> (expectedInt.Value, (int) variable.NumericVal);
+                Assert.Equal (expectedInt.Value, (int) variable.NumericVal);
             }
 
         }
@@ -122,10 +123,10 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
         [InlineData ("even( 5 )", null, false)]
         [InlineData ("even ( 2 )", null, true)]
         [InlineData ("number(from: \"1.000.000,01\", decimal separator:\",\", grouping separator:\".\")", "1000000.01", null)]
-        public void EvaluateExpression_FunctionInvocation_NumericFuncs (string exprText, string expectedStr, Boolean? expectedBool) {
+        public void EvaluateExpression_FunctionInvocation_NumericFuncs (string exprText, string expectedStr, bool? expectedBool) {
             Variable variable = ParseAndEval (exprText);
             if (!string.IsNullOrWhiteSpace (expectedStr)) {
-                Assert.Equal<Decimal> (Decimal.Parse (expectedStr), variable);
+                Assert.Equal<decimal> (decimal.Parse (expectedStr), variable);
             } else if (expectedBool.HasValue) {
                 Assert.Equal<bool> (expectedBool.Value, variable);
             }
@@ -147,10 +148,10 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
         [InlineData ("date(\"2015-12-24\").year", 2015)]
         [InlineData ("date(\"2015-12-24\").month", 12)]
         [InlineData ("date(\"2015-12-24\").day", 24)]
-        public void EvaluateExpression_PathExpression_Date (string exprText, Decimal expected) {
+        public void EvaluateExpression_PathExpression_Date (string exprText, decimal expected) {
             Variable variable = ParseAndEval (exprText);
 
-            Assert.Equal<Decimal> (expected, variable);
+            Assert.Equal<decimal> (expected, variable);
         }
 
         [Theory]
@@ -160,20 +161,20 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
         [InlineData ("date and time(\"2016-12-24T23:59:00-08:00\").hour", 23)]
         [InlineData ("date and time(\"2016-12-24T23:59:00-08:00\").minute", 59)]
         [InlineData ("date and time(\"2016-12-24T23:59:00-08:00\").second", 0)]
-        public void EvaluateExpression_PathExpression_DateTime (string exprText, Decimal expected) {
+        public void EvaluateExpression_PathExpression_DateTime (string exprText, decimal expected) {
             Variable variable = ParseAndEval (exprText);
 
-            Assert.Equal<Decimal> (expected, variable);
+            Assert.Equal<decimal> (expected, variable);
         }
 
         [Theory]
         [InlineData ("time(\"23:59:01\").hour", 23)]
         [InlineData ("time(\"23:59:01\").minute", 59)]
         [InlineData ("time(\"23:59:01\").second", 1)]
-        public void EvaluateExpression_PathExpression_Time (string exprText, Decimal expected) {
+        public void EvaluateExpression_PathExpression_Time (string exprText, decimal expected) {
             Variable variable = ParseAndEval (exprText);
 
-            Assert.Equal<Decimal> (expected, variable);
+            Assert.Equal<decimal> (expected, variable);
         }
 
         [Theory]
@@ -181,29 +182,31 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
         [InlineData ("duration(\"P13DT2H14S\").hours", 2)]
         [InlineData ("duration(\"P13DT2H14S\").minutes", 0)]
         [InlineData ("duration(\"P13DT2H14S\").seconds", 14)]
-        public void EvaluateExpression_PathExpression_DurationDayAndTime (string exprText, Decimal expected) {
+        public void EvaluateExpression_PathExpression_DurationDayAndTime (string exprText, decimal expected) {
             Variable variable = ParseAndEval (exprText);
 
-            Assert.Equal<Decimal> (expected, variable);
+            Assert.Equal<decimal> (expected, variable);
         }
 
         [Theory]
         [InlineData ("duration(\"P1Y3M\").years", 1)]
         [InlineData ("duration(\"P1Y3M\").months", 3)]
-        public void EvaluateExpression_PathExpression_DurationYearsAndMonths (string exprText, Decimal expected) {
+        public void EvaluateExpression_PathExpression_DurationYearsAndMonths (string exprText, decimal expected) {
             Variable variable = ParseAndEval (exprText);
 
-            Assert.Equal<Decimal> (expected, variable.NumericVal);
+            Assert.Equal (expected, variable.NumericVal);
 
         }
 
         [Theory]
         [InlineData ("true instance of boolean", true)]
         [InlineData ("true instance of number", false)]
-        public void EvaluateExpression_InstanceOf (string exprText, Boolean expected) {
+        [InlineData ("null instance of number", false)]
+        [InlineData ("null instance of Any", false)]
+        public void EvaluateExpression_InstanceOf (string exprText, bool expected) {
             Variable variable = ParseAndEval (exprText);
 
-            Assert.Equal<Boolean> (expected, variable);
+            Assert.Equal<bool> (expected, variable);
         }
 
         [Theory]
@@ -211,7 +214,7 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
         public void EvaluateExpression_Date_Function (string exprText, Variable expected) {
             Variable variable = ParseAndEval (exprText);
 
-            Assert.Equal<Variable> (expected, variable);
+            Assert.Equal (expected, variable);
         }
 
         [Theory]
@@ -219,7 +222,7 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
         public void EvaluateExpression_Duration_Function (string exprText, Variable expected) {
             Variable variable = ParseAndEval (exprText);
 
-            Assert.Equal<Variable> (expected, variable);
+            Assert.Equal (expected, variable);
         }
 
         [Theory]
@@ -227,7 +230,7 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
         public void EvaluateExpression_Duration_YearMonth_Function (string exprText, Variable expected) {
             Variable variable = ParseAndEval (exprText);
 
-            Assert.Equal<Variable> (expected, variable);
+            Assert.Equal (expected, variable);
         }
 
         [Theory]
@@ -296,19 +299,24 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
         public void EvaluateExpression_String (string exprText, string expected) {
             Variable variable = ParseAndEval (exprText);
 
-            Assert.Equal<string> (expected, variable);
+            Assert.Equal (expected, variable);
 
         }
 
         [Theory]
         [InlineData ("\"x1.234\" + item1", "x1.234somevalue")]
         [InlineData ("\"x1.234\" + input Name", "x1.234somevalue2")]
-        //TODO: bug with "sing;e quotes for named text
-        //[InlineData ("input's Name + \"x\" + input's Name", "somevalue2xsomevalue2")]
+        //TODO: future support of operator as part of the name tokens. For now no operators in names
+        //[InlineData ("Income+Expense + Income+Expense", "123123")]
+        [InlineData ("input's Name + input's Name", "somevalue3somevalue3")]
         public void EvaluateExpression_String_Plus (string exprText, string expected) {
-            var inputDict = new Dictionary<string, Variable> () { { "item1", "somevalue" }, { "input Name", "somevalue2" }, { "input's Name", "somevalue3" } };
+            var inputDict = new Dictionary<string, Variable> () { { "item1", "somevalue" }, {
+                        "input Name",
+                        "somevalue2"
+                        }, { "input's Name", "somevalue3" }, { "Income+Expense", "123" }
+                };
             Variable variable = ParseAndEval (exprText, new VariableContext () { InputNameDict = inputDict });
-            Assert.Equal<string> (expected, variable);
+            Assert.Equal (expected, variable);
 
         }
 

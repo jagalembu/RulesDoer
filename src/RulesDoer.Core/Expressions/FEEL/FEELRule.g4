@@ -162,6 +162,7 @@ unaryTests
 boxedExpression
 	returns[IExpression ast]:
 	list {$ast = $list.ast;}
+	| functionDefinition {$ast = $functionDefinition.ast;}
 	| context {$ast = $context.ast;};
 
 list
@@ -171,6 +172,22 @@ list
 			COMMA exp = expression {expressions.Add($exp.ast);}
 		)*
 	)? BRACKET_CLOSE {$ast = new ListLiteral(expressions);};
+
+functionDefinition
+	returns[IExpression ast]:
+	{List<IExpression> parameters = new List<IExpression>();} {bool external = false;} FUNCTION
+		PAREN_OPEN (
+		param = formalParameter {parameters.Add($param.ast);} (
+			COMMA param = formalParameter {parameters.Add($param.ast);}
+		)*
+	)? PAREN_CLOSE (EXTERNAL {external = true;})? body = expression {$ast = new UserDefinedFunction(parameters, $body.ast, external);
+		};
+
+formalParameter
+	returns[IExpression ast]:
+	{IExpression typeIsName = null; } name = parameterName (
+		COLON type = typeIs {typeIsName = $type.ast;}
+	)? {$ast = new FormalParameter($name.text, typeIsName);};
 
 context
 	returns[IExpression ast]:
@@ -182,7 +199,7 @@ context
 
 contextEntry
 	returns[IExpression ast]:
-	key COLON expression {$ast = new ContextEntryBoxed($key.text, $expression.ast);};
+	key COLON expression {$ast = new ContextEntryBoxed($key.textVal, $expression.ast);};
 
 //simple expression
 simpleExpressions
@@ -271,12 +288,12 @@ dateTimeLiteral
 		} PAREN_CLOSE;
 
 identifier
-	returns[string textVal]: (
-		token = NAME {$textVal += $token.text;} (
-			token2 = NAME {$textVal += " " + $token2.text;}
+	returns[string textVal]:
+	{var nameList = new List<string>();} (
+		token = NAME {nameList.Add($token.text);} (
+			token2 = NAME {nameList.Add($token2.text);}
 		)*
-	)
-	| token = DATETIMELIT {$textVal = $token.text;}
+	) {$textVal = NameTokenHelper.BuildNameToken(nameList);}
 	| token = NOT {$textVal = $token.text;};
 
 stringLiteral
@@ -313,4 +330,4 @@ key
 	returns[string textVal]:
 	stringLiteral {var stringLitVar = $stringLiteral.ast.Execute(); $textVal = ((Variable)stringLitVar).StringVal;
 		}
-	| identifier {$textVal = $identifier.textVal;}; 
+	| identifier {$textVal = $identifier.textVal;};

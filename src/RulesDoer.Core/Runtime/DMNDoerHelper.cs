@@ -1,11 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using RulesDoer.Core.Expressions.FEEL.Ast.Elements;
+using RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function;
 using RulesDoer.Core.Expressions.FEEL.Eval;
 using RulesDoer.Core.Runtime.Context;
 using RulesDoer.Core.Transformer.v1_2;
 using RulesDoer.Core.Types;
-using RulesDoer.Core.Utils;
 
 namespace RulesDoer.Core.Runtime {
     public static class DMNDoerHelper {
@@ -31,26 +31,18 @@ namespace RulesDoer.Core.Runtime {
                 }
             }
 
-            switch (decision.Expression) {
-                case TLiteralExpression litExpr:
-                    return DMNDoerHelper.EvalLiteralExpression (litExpr.Text, runtimeContext);
-
-                case TDecisionTable decisionTable:
-                    return DMNDoerHelper.EvalDecisionTable (decisionTable, runtimeContext);
-
-                case TContext contextDecision:
-                    return DMNDoerHelper.EvalContext (contextDecision, runtimeContext);
-
-                case TRelation relation:
-                    return DMNDoerHelper.EvalRelation (relation, runtimeContext);
-
-                default:
-                    throw new DMNException ($"Decision expression {decision.Expression.Id} is not supported yet");
-            }
-
+            return decision.Expression
+            switch {
+                TLiteralExpression litExpr => EvalLiteralExpression (litExpr.Text, runtimeContext),
+                    TDecisionTable decisionTable => EvalDecisionTable (decisionTable, runtimeContext),
+                    TContext contextDecision => EvalContext (contextDecision, runtimeContext),
+                    TRelation relation => EvalRelation (relation, runtimeContext),
+                    _ =>
+                    throw new DMNException ($"Decision expression {decision.Expression.Id} is not supported yet"),
+            };
         }
         public static Variable EvalDecisionTable (TDecisionTable decisionTable, VariableContext runtimeContext) {
-            var outputList = new List<Variable> ();
+
             var matchedList = new List<Dictionary<string, Variable>> ();
             Evaluation evalExpression = new Evaluation ();
             if (decisionTable.HitPolicy == THitPolicy.PRIORITY || decisionTable.HitPolicy == THitPolicy.OUTPUT_ORDER) {
@@ -89,7 +81,7 @@ namespace RulesDoer.Core.Runtime {
                     var outputDict = new Dictionary<string, Variable> ();
                     int prioritySum = 0;
                     for (int i = 0; i < decisionTable.Output.Count; i++) {
-                        var outName = (decisionTable.Output[i].Name != null) ? decisionTable.Output[i].Name : i.ToString ();
+                        var outName = decisionTable.Output[i].Name ?? i.ToString ();
                         var outVar = evalExpression.EvaluateExpressionsBase (rule.OutputEntry[i].Text, runtimeContext);
                         outputDict.Add (outName, outVar);
                         if (decisionTable.HitPolicy == THitPolicy.PRIORITY || decisionTable.HitPolicy == THitPolicy.OUTPUT_ORDER) {
@@ -110,9 +102,10 @@ namespace RulesDoer.Core.Runtime {
             }
 
             if (matchedList.Any ()) {
-                var dtr = new DecisionTableResult ();
-                dtr.MatchedList = matchedList;
-                dtr.OutputResult = HitPolicyHelper.Output (decisionTable.HitPolicy, matchedList, decisionTable.Aggregation);
+                var dtr = new DecisionTableResult {
+                    MatchedList = matchedList,
+                    OutputResult = HitPolicyHelper.Output (decisionTable.HitPolicy, matchedList, decisionTable.Aggregation)
+                };
 
                 //TODO: Output based on the variable output type reference in decision table meta
 
@@ -147,115 +140,6 @@ namespace RulesDoer.Core.Runtime {
 
         }
 
-        // public Control FindControlSansRecursion (Control root, string id) {
-        //     //seed it.
-        //     Stack<Control> stack = new Stack<Control> ();
-        //     stack.Push (root);
-
-        //     while (stack.Count > 0) {
-        //         Control current = stack.Pop ();
-        //         if (current.ID == id)
-        //             return current;
-
-        //         foreach (Control control in current.Controls) {
-        //             stack.Push (control);
-        //         }
-        //     }
-
-        //     //didn’t find it.
-        //     return null;
-        // }
-
-        // public static Variable EvalContextDecision (TContext decisionContext, VariableContext runtimeContext) {
-        //     var stack = new Stack < (TContext, TContextEntry) > ();
-        //     stack.Push ((decisionContext, null));
-
-        //     var parentContext = new ContextInputs ();
-
-        //     while (stack.Count > 0) {
-        //         var currContext = stack.Pop ();
-
-        //         if (currContext.Item2 != null) {
-
-        //         }
-
-        //         var contextout = new ContextInputs ();
-
-        //         foreach (var item in currContext.Item1.ContextEntry) {
-
-        //             Variable outVar;
-        //             switch (item.Expression) {
-        //                 case TLiteralExpression litExpr:
-        //                     outVar = DMNDoerHelper.EvalLiteralExpression (litExpr.Text, runtimeContext);
-        //                     break;
-
-        //                 case TDecisionTable decisionTable:
-        //                     outVar = DMNDoerHelper.EvalDecisionTable (decisionTable, runtimeContext);
-        //                     break;
-
-        //                 case TContext contextType:
-        //                     stack.Push ((contextType, item));
-        //                     outVar = null;
-        //                     break;
-
-        //                 default:
-        //                     throw new DMNException ($"Expression {item.Expression.GetType()} is not supported yet");
-        //             }
-
-        //             if (outVar != null && item.Variable != null) {
-        //                 contextout.Add (item.Variable.Name, outVar);
-        //                 runtimeContext.AddToInputDict (item.Variable.Name, outVar);
-        //             }
-
-        //         }
-
-        //     }
-        // }
-
-        // public static Variable EvalContextDecision (TContext decisionContext, VariableContext runtimeContext) {
-        //     var contextout = new ContextInputs ();
-
-        //     //missing information item - variable.name is a context result - returns a variable
-
-        //     foreach (var item in decisionContext.ContextEntry) {
-        //         Variable outVar;
-        //         switch (item.Expression) {
-        //             case TLiteralExpression litExpr:
-        //                 outVar = DMNDoerHelper.EvalLiteralExpression (litExpr.Text, runtimeContext);
-        //                 break;
-
-        //             case TDecisionTable decisionTable:
-        //                 outVar = DMNDoerHelper.EvalDecisionTable (decisionTable, runtimeContext);
-        //                 break;
-
-        //             case TContext contextType:
-        //                 outVar = DMNDoerHelper.EvalContextDecision (contextType, runtimeContext);
-        //                 if (outVar.ValueType != DataTypeEnum.Context)
-        //                 {
-        //                     return outVar;
-        //                 }
-        //                 if (outVar.ValueType == DataTypeEnum.Context && item.Variable == null)
-        //                 {
-        //                     return outVar;
-        //                 }
-        //                 break;
-
-        //             default:
-        //                 throw new DMNException ($"Expression {item.Expression.GetType()} is not supported yet");
-        //         }
-
-        //         if (item.Variable == null) {
-        //             return outVar;
-        //         }
-
-        //         contextout.Add (item.Variable.Name, outVar);
-        //         runtimeContext.AddToInputDict (item.Variable.Name, outVar);
-
-        //     }
-
-        //     return contextout;
-        // }
-
         public static Variable EvalContext (TContext context, VariableContext runtimeContext) {
             var stack = new Stack < (TContext, ContextInputs, ContextInputs, string, int) > ();
 
@@ -289,11 +173,15 @@ namespace RulesDoer.Core.Runtime {
 
                 switch (currContextEntry.Expression) {
                     case TLiteralExpression litExpr:
-                        outVar = DMNDoerHelper.EvalLiteralExpression (litExpr.Text, runtimeContext);
+                        outVar = EvalLiteralExpression (litExpr.Text, runtimeContext);
                         break;
 
                     case TDecisionTable decisionTable:
-                        outVar = DMNDoerHelper.EvalDecisionTable (decisionTable, runtimeContext);
+                        outVar = EvalDecisionTable (decisionTable, runtimeContext);
+                        break;
+
+                    case TFunctionDefinition functionDefinition:
+                        outVar = EvalUserDefinedFunction (functionDefinition);
                         break;
 
                     case TContext contextType:
@@ -354,7 +242,7 @@ namespace RulesDoer.Core.Runtime {
                 for (int i = 0; i < item.Expression.Count; i++) {
                     switch (item.Expression[i]) {
                         case TLiteralExpression litExpr:
-                            contextout.Add (columnNames[i], DMNDoerHelper.EvalLiteralExpression (litExpr.Text, runtimeContext));
+                            contextout.Add (columnNames[i], EvalLiteralExpression (litExpr.Text, runtimeContext));
                             break;
 
                         default:
@@ -411,23 +299,42 @@ namespace RulesDoer.Core.Runtime {
                 bkmContext.InputNameDict = inputBkmDict;
             }
 
-            switch (bkmModel.EncapsulatedLogic.Expression) {
-                case TLiteralExpression litExpr:
-                    return DMNDoerHelper.EvalLiteralExpression (litExpr.Text, bkmContext);
+            return bkmModel.EncapsulatedLogic.Expression
+            switch {
+                TLiteralExpression litExpr => EvalLiteralExpression (litExpr.Text, bkmContext),
+                    TFunctionDefinition functionDefinition => EvalUserDefinedFunction (functionDefinition),
+                    TDecisionTable decisionTable => EvalDecisionTable (decisionTable, bkmContext),
+                    TContext contextDecision => EvalContext (contextDecision, bkmContext),
+                    TRelation relation => EvalRelation (relation, bkmContext),
+                    _ =>
+                    throw new DMNException ($"Expression {bkmModel.EncapsulatedLogic.Expression.GetType()} is not supported yet"),
+            };
+        }
 
-                case TDecisionTable decisionTable:
-                    return DMNDoerHelper.EvalDecisionTable (decisionTable, bkmContext);
+        public static Variable EvalUserDefinedFunction (TFunctionDefinition funcDef) {
 
-                case TContext contextDecision:
-                    return DMNDoerHelper.EvalContext (contextDecision, bkmContext);
-
-                case TRelation relation:
-                    return DMNDoerHelper.EvalRelation (relation, bkmContext);
-
-                default:
-                    throw new DMNException ($"Expression {bkmModel.EncapsulatedLogic.Expression.GetType()} is not supported yet");
+            IExpression expr;
+            if (funcDef.Expression != null && funcDef.Expression is TLiteralExpression outExpr) {
+                var eval = new Evaluation ();
+                expr = eval.ReturnExpressionsBase (outExpr.Text);
+            } else {
+                throw new DMNException ("Expected a literal expression as the function body");
             }
 
+            var paramList = new List<Variable> ();
+            foreach (var item in funcDef.FormalParameter) {
+                paramList.Add (new Variable (item.Name, item.TypeRef));
+            }
+
+            switch (funcDef.Kind) {
+                case TFunctionKind.FEEL:
+                    break;
+
+                default:
+                    throw new DMNException ($"Only FEEL expresssion function definitions are supported");
+            }
+
+            return new UserFunction (paramList, expr, false);
         }
 
     }

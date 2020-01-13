@@ -14,7 +14,8 @@ namespace RulesDoer.Core.Runtime.Context {
         public Dictionary<string, TDecision> DecisionMetaById { get; set; } = new Dictionary<string, TDecision> ();
         public Dictionary<string, TDecisionService> DecisionServiceMetaByName { get; set; } = new Dictionary<string, TDecisionService> ();
         public Dictionary<string, List<string>> HrefInputDecisionToDecisionServices { get; set; } = new Dictionary<string, List<string>> ();
-        public ContextInputs LocalContext {get; set;}
+        public Dictionary<string, Variable> FunctionInputs { get; set; } = new Dictionary<string, Variable> ();
+        public ContextInputs LocalContext { get; set; }
 
     }
 }

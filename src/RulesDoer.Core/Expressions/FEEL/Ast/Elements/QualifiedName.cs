@@ -16,6 +16,12 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements {
         public object Execute (VariableContext context = null) {
 
             if (Names.Count == 1) {
+
+                var funcVar = VariableContextHelper.RetrieveFunctionInput (context, Names[0], false);
+                if (funcVar != null) {
+                    return funcVar;
+                }
+                
                 var outVar = VariableContextHelper.RetrieveInputVariable (context, Names[0], false);
                 if (outVar != null) {
                     return outVar;

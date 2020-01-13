@@ -1,10 +1,11 @@
-using System.IO;
 using System.Linq;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
+using RulesDoer.Core.Expressions.FEEL.Ast.Elements;
 using RulesDoer.Core.Runtime.Context;
 
 namespace RulesDoer.Core.Expressions.FEEL.Eval {
+    //TODO: should convert this class to a static class
     public class Evaluation {
 
         public bool EvaluateSimpleUnaryTestsBase (string expressionText, VariableContext context, string inputName = null) {
@@ -31,7 +32,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Eval {
             return listerner.Value;
         }
 
-        public Variable EvaluateSimpleExpressionsBase (string expressionText, VariableContext context, string inputName = null) {
+        public Variable EvaluateSimpleExpressionsBase (string expressionText, VariableContext context) {
             var parser = RetrieveParser (expressionText);
             var tree = parser.simpleExpressionsBase ();
             ThrowParserErrors (expressionText, "SimpleExpressionsBase", parser);
@@ -53,9 +54,16 @@ namespace RulesDoer.Core.Expressions.FEEL.Eval {
             return listerner.Value;
         }
 
+        public IExpression ReturnExpressionsBase (string expressionText) {
+            var parser = RetrieveParser (expressionText);
+            var tree = parser.expressionBase ();
+            ThrowParserErrors (expressionText, "ExpressionBase", parser);
+
+            return tree.ast;
+        }
+
         private FEELRule RetrieveParser (string exprText) {
-            var inputStream = CharStreams.fromstring(exprText);
-            //var inputStream = new AntlrInputStream (new StringReader (exprText));
+            var inputStream = CharStreams.fromstring (exprText);
             var lexer = new FEELLexer (inputStream);
             lexer.RemoveErrorListeners ();
             lexer.AddErrorListener (new LexerErrors ());
@@ -70,7 +78,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Eval {
         private void ThrowParserErrors (string exprTxt, string whichFeel, FEELRule parser) {
             var parserErrs = parser.ErrorListeners[0] as ParserErrors;
 
-            if (parserErrs.ErrorList.Any()) {
+            if (parserErrs.ErrorList.Any ()) {
                 var errTxt = "";
 
                 foreach (var item in parserErrs.ErrorList) {

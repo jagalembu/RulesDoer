@@ -67,6 +67,42 @@ namespace RulesDoer.Core.Runtime.Context {
             return inputVariable;
         }
 
+        public static Variable RetrieveFunctionInput (VariableContext context = null, string inputName = null, bool doException = true) {
+
+            if (context == null) {
+                return null;
+            }
+
+            if (context.FunctionInputs == null) {
+                if (doException) {
+                    throw new FEELException ($"Missing function input data for input name {inputName}");
+                }
+                return null;
+            }
+            if (inputName.Contains (".")) {
+                var x = inputName.Split ('.');
+
+                context.FunctionInputs.TryGetValue (x[0], out var cntxt);
+                cntxt.ExpectedDataType (DataTypeEnum.Context);
+
+                Variable contextVal = null;
+
+                for (int i = 1; i < x.Length; i++) {
+                    cntxt.ContextInputs.ContextDict.TryGetValue (x[i], out var newVal);
+                    if (newVal.ValueType == DataTypeEnum.Context) {
+                        cntxt = newVal;
+                    }
+                    contextVal = newVal;
+                }
+                return contextVal;
+            }
+            context.FunctionInputs.TryGetValue (inputName, out var inputVariable);
+            if (inputVariable == null && doException) {
+                throw new FEELException ($"Missing input value {inputName}");
+            }
+            return inputVariable;
+        }
+
         public static Variable RetrieveGlobalVariable (VariableContext context = null, string inputName = null, bool doException = true) {
 
             if (context == null) {
