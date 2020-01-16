@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using RulesDoer.Core.Expressions.FEEL.Eval;
 using RulesDoer.Core.Runtime.Context;
@@ -60,6 +61,20 @@ namespace RulesDoer.Core.Tests.Expressions.FEEL.Eval {
             } else {
                 Assert.False (variable.Equals (expected));
             }
+
+        }
+
+        [Theory]
+        [InlineData ("sort([2,3,1],function(x,y) x < y)", "[1,2,3]")]
+        [InlineData ("sort([2,3,1],function(x,y) x > y)", "[3,2,1]")]
+        [InlineData ("sort([\"2\",\"10\",\"a\",\"A\"],function(x,y) x < y)", "[\"10\",\"2\",\"A\",\"a\"]")]
+        public void Evaluate_Sort_Function (string exprText, string expectedText) {
+
+            var actual = ParseAndEval (exprText);
+
+            var expected = ParseAndEval (expectedText);
+
+            Assert.True (expected.Equals (actual));
 
         }
 

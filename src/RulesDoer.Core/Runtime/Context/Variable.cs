@@ -147,7 +147,7 @@ namespace RulesDoer.Core.Runtime.Context {
                 case DataTypeEnum.Boolean:
                     return BoolVal.CompareTo (variable.BoolVal);
                 case DataTypeEnum.String:
-                    return StringVal.CompareTo (variable.StringVal);
+                    return string.CompareOrdinal (StringVal, variable.StringVal);
                 case DataTypeEnum.DateTime:
                     return DateAndTimeHelper.CompareDateTime (this, variable);
                 case DataTypeEnum.Time:
@@ -249,11 +249,13 @@ namespace RulesDoer.Core.Runtime.Context {
         }
 
         public static bool operator > (Variable operand1, Variable operand2) {
-            return operand1.CompareTo (operand2) == 1;
+            //reason is ordinal comparison returne value greater than 1
+            return operand1.CompareTo (operand2) > 0;
         }
 
         public static bool operator < (Variable operand1, Variable operand2) {
-            return operand1.CompareTo (operand2) == -1;
+             //reason is ordinal comparison returne value greater than 1
+            return operand1.CompareTo (operand2) < 0;
         }
 
         public static bool operator >= (Variable operand1, Variable operand2) {

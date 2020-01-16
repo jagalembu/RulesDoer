@@ -66,8 +66,8 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function.BuiltIn
             { UnionFunc.FuncName, (new UnionFunc(), new string[] {"list"})},
             { GetValueFunc.FuncName, (new GetValueFunc(), new string[] {"m","key"})},
             { GetEntriesFunc.FuncName, (new GetEntriesFunc(), new string[] {"m"})},
+            { SortFunc.FuncName, (new SortFunc(), new string[] {"list", "precedes"})}
             
-
         };
 
         public static (IFunc, string[]) GetFunc (string funcName) {
