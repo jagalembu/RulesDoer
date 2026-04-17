@@ -1,14 +1,34 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.7.2" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.0.0" />
-    <PackageReference Include="nodatime" Version="2.4.7" />
+    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1" />
+    <PackageReference Include="Antlr4BuildTasks" Version="12.14.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
+    <PackageReference Include="nodatime" Version="3.2.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Expressions\FEEL\FEELLexer.cs" />
+    <Compile Remove="Expressions\FEEL\FEELRule.cs" />
+    <Compile Remove="Expressions\FEEL\FEELRuleListener.cs" />
+    <Compile Remove="Expressions\FEEL\FEELRuleBaseListener.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Antlr4 Include="Expressions\FEEL\FEELLexer.g4">
+      <Listener>false</Listener>
+      <Visitor>false</Visitor>
+      <Package>RulesDoer.Core.Expressions.FEEL</Package>
+    </Antlr4>
+    <Antlr4 Include="Expressions\FEEL\FEELRule.g4">
+      <Listener>true</Listener>
+      <Visitor>false</Visitor>
+      <Package>RulesDoer.Core.Expressions.FEEL</Package>
+    </Antlr4>
+  </ItemGroup>
 
 </Project>
