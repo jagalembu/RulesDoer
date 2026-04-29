@@ -13,8 +13,9 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function.BuiltIn.ListFunc
             parameters.ExpectedParamCount (2);
             parameters[1].ExpectedDataType (DataTypeEnum.Function);
             if (parameters[0].IsListType ()) {
-                 parameters[0].ListVal.Sort ((v1, v2) => CompareFunc (parameters[1].UserFunction, new List<Variable> () { v1, v2 }));
-                 return parameters[0];
+                var sortedList = new List<Variable> (parameters[0].ListVal);
+                sortedList.Sort ((v1, v2) => CompareFunc (parameters[1].UserFunction, new List<Variable> () { v1, v2 }));
+                return new Variable (sortedList);
             }
 
             throw new FEELException ($"Failed sort function due to incorrect type:{parameters[0].ValueType}. Expected a list type");
