@@ -158,8 +158,17 @@ namespace RulesDoer.Core.Tests.TCK.Run {
                 return;
             }
 
-            Assert.True (VariableHelper.MakeVariable (expected, actualrslt.ValueType).Equals (actualrslt), $"Failed asserting equal for expected:{expected} for decision name:{name}");
-            //Assert.Equal<Variable> (VariableHelper.MakeVariable (expected, actualrslt.ValueType), actualrslt);
+            var expectedVar = VariableHelper.MakeVariable (expected, actualrslt.ValueType);
+
+            // FEEL spec allows results to be compared with a relative tolerance of 1e-10
+            // to accommodate different implementations using different precisions (e.g. double vs decimal).
+            if (actualrslt.ValueType == DataTypeEnum.Decimal && expectedVar.NumericVal != 0m) {
+                var relDiff = System.Math.Abs ((double) (actualrslt.NumericVal - expectedVar.NumericVal) / (double) expectedVar.NumericVal);
+                Assert.True (relDiff < 1e-10, $"Failed asserting equal for expected:{expected} actual:{actualrslt.NumericVal} relDiff:{relDiff} for decision name:{name}");
+                return;
+            }
+
+            Assert.True (expectedVar.Equals (actualrslt), $"Failed asserting equal for expected:{expected} for decision name:{name}");
 
         }
 

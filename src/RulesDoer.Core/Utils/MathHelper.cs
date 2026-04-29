@@ -73,20 +73,7 @@ namespace RulesDoer.Core.Utils {
         }
 
         public static Variable Pow (decimal left, decimal right) {
-            //var x = Decimal.Parse (rightVal.NumericVal.ToString ());
-            var x = Decimal.Parse (right.ToString ());
-            decimal powV = 1;
-            if (x < 0) {
-                x = x * -1;
-            }
-
-            for (; x > 0; x--) {
-                powV *= left;
-            }
-            if (right < 0) {
-                powV = 1 / powV;
-            }
-            return new Variable (powV);
+            return new Variable ((decimal) Math.Pow ((double) left, (double) right));
         }
 
     }

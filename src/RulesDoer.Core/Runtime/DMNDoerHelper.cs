@@ -37,6 +37,7 @@ namespace RulesDoer.Core.Runtime {
                     TDecisionTable decisionTable => EvalDecisionTable (decisionTable, runtimeContext),
                     TContext contextDecision => EvalContext (contextDecision, runtimeContext),
                     TRelation relation => EvalRelation (relation, runtimeContext),
+                    TInvocation invocation => EvalInvocation (invocation, runtimeContext),
                     _ =>
                     throw new DMNException ($"Decision expression {decision.Expression.Id} is not supported yet"),
             };
@@ -67,10 +68,19 @@ namespace RulesDoer.Core.Runtime {
 
             }
 
+            foreach (var input in decisionTable.Input) {
+                var inputExprText = input.InputExpression.Text;
+                if (!string.IsNullOrEmpty (inputExprText) && !runtimeContext.InputNameDict.ContainsKey (inputExprText)) {
+                    var inputVal = EvalLiteralExpression (inputExprText, runtimeContext);
+                    if (inputVal != null && inputVal.ValueType != DataTypeEnum.Null) {
+                        runtimeContext.AddToInputDict (inputExprText, inputVal);
+                    }
+                }
+            }
+
             foreach (var rule in decisionTable.Rule) {
                 var matched = false;
                 for (int i = 0; i < rule.InputEntry.Count; i++) {
-                    //TODO: the input clause for input variable name is literal epression which need to run through feel epresion evaluater
                     matched = evalExpression.EvaluateUnaryTestsBase (rule.InputEntry[i].Text, runtimeContext, decisionTable.Input[i].InputExpression.Text);
                     if (!matched) {
                         break;
@@ -182,6 +192,10 @@ namespace RulesDoer.Core.Runtime {
 
                     case TFunctionDefinition functionDefinition:
                         outVar = EvalUserDefinedFunction (functionDefinition);
+                        break;
+
+                    case TInvocation invocation:
+                        outVar = EvalInvocation (invocation, runtimeContext);
                         break;
 
                     case TContext contextType:
@@ -309,6 +323,36 @@ namespace RulesDoer.Core.Runtime {
                     _ =>
                     throw new DMNException ($"Expression {bkmModel.EncapsulatedLogic.Expression.GetType()} is not supported yet"),
             };
+        }
+
+        public static Variable EvalInvocation (TInvocation invocation, VariableContext runtimeContext) {
+            if (!(invocation.Expression is TLiteralExpression litExpr)) {
+                throw new DMNException ("Invocation callee must be a literal expression containing the BKM name");
+            }
+
+            var bkmName = litExpr.Text.Trim ();
+            if (!VariableContextHelper.RetrieveBkm (bkmName, runtimeContext, out var bkmMeta)) {
+                throw new DMNException ($"BKM '{bkmName}' not found in context");
+            }
+
+            var bindingsByParamName = new Dictionary<string, Variable> ();
+            foreach (var binding in invocation.Binding) {
+                var val = binding.Expression switch {
+                    TLiteralExpression le => EvalLiteralExpression (le.Text, runtimeContext),
+                    TContext ctx => EvalContext (ctx, runtimeContext),
+                    TDecisionTable dt => EvalDecisionTable (dt, runtimeContext),
+                    _ => throw new DMNException ($"Binding expression type {binding.Expression?.GetType ()} is not supported")
+                };
+                bindingsByParamName[binding.Parameter.Name] = val;
+            }
+
+            var paramVars = new List<Variable> ();
+            foreach (var formalParam in bkmMeta.BKMModel.EncapsulatedLogic.FormalParameter) {
+                bindingsByParamName.TryGetValue (formalParam.Name, out var paramVal);
+                paramVars.Add (paramVal ?? new Variable ());
+            }
+
+            return EvalBkm (bkmMeta.BKMModel, runtimeContext, paramVars);
         }
 
         public static Variable EvalUserDefinedFunction (TFunctionDefinition funcDef) {

@@ -86,12 +86,13 @@ namespace RulesDoer.Core.Tests.TCK.Run {
                 if (item.ComponentSpecified) {
                     var nestedCtx = MakeContextInputs (item.Name, item.Component, itemComponent, itemDefMetaDict);
                     ctx.Add (item.Name, nestedCtx);
-
+                    continue;
                 }
 
                 if (item.ListSpecified) {
                     var nestedList = MakeList (item.Name, item.List, itemComponent, itemDefMetaDict);
                     ctx.Add (item.Name, nestedList);
+                    continue;
                 }
 
                 if (itemComponent.TypeName == null) {
