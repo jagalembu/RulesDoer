@@ -139,6 +139,11 @@ namespace RulesDoer.Core.Runtime {
                 return dtr;
             }
 
+            // No rules matched — return the default output entry value if defined
+            if (decisionTable.Output.Count == 1 && decisionTable.Output[0].DefaultOutputEntry?.Text != null) {
+                return EvalLiteralExpression (decisionTable.Output[0].DefaultOutputEntry.Text, runtimeContext);
+            }
+
             return null;
         }
 

@@ -292,6 +292,7 @@ identifier
 	{var nameList = new List<string>();} (
 		token = NAME {nameList.Add($token.text);} (
 			token2 = NAME {nameList.Add($token2.text);}
+			| token2 = NUMBER {nameList.Add($token2.text);}
 		)*
 	) {$textVal = NameTokenHelper.BuildNameToken(nameList);}
 	| token = NOT {$textVal = $token.text;};
