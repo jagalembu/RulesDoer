@@ -315,6 +315,7 @@ namespace RulesDoer.Core.Runtime {
                 for (int i = 0; i < bkmModel.EncapsulatedLogic.FormalParameter.Count; i++) {
                     inputBkmDict.Add (bkmModel.EncapsulatedLogic.FormalParameter[i].Name, inputParamVars[i]);
                 }
+                SynthesizePrefixContexts (inputBkmDict);
                 bkmContext.InputNameDict = inputBkmDict;
             }
 
@@ -384,6 +385,27 @@ namespace RulesDoer.Core.Runtime {
             }
 
             return new UserFunction (paramList, expr, false);
+        }
+
+        // When BKM formal parameters use dotted names (e.g. "Person.Gender"), build
+        // a synthesized Context entry for the prefix ("Person") so that FEEL path
+        // expressions like Person.Gender resolve correctly inside the BKM body.
+        private static void SynthesizePrefixContexts (Dictionary<string, Variable> dict) {
+            var prefixBuilders = new Dictionary<string, ContextInputs> ();
+            foreach (var kv in dict) {
+                var dotIdx = kv.Key.IndexOf ('.');
+                if (dotIdx < 0) continue;
+                var prefix = kv.Key.Substring (0, dotIdx);
+                var field = kv.Key.Substring (dotIdx + 1);
+                if (!prefixBuilders.TryGetValue (prefix, out var ctx)) {
+                    ctx = new ContextInputs (prefix);
+                    prefixBuilders[prefix] = ctx;
+                }
+                ctx.Add (field, kv.Value);
+            }
+            foreach (var kv in prefixBuilders) {
+                dict[kv.Key] = kv.Value;
+            }
         }
 
     }
