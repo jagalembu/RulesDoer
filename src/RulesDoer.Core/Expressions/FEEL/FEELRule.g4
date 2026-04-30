@@ -57,7 +57,7 @@ expression
 		}
 	| left = expression BRACKET_OPEN filter = expression BRACKET_CLOSE {$ast = new Filter($left.ast, $filter.ast);
 		}
-	| parent = expression DOT child = NAME {$ast = new PathExpression($parent.ast, $child.text);
+	| parent = expression DOT child = identifier {$ast = new PathExpression($parent.ast, $child.textVal);
 		}
 	| expr = expression INSTANCE_OF typeIs {$ast = new InstanceOf($expr.ast, $typeIs.ast);
 		}

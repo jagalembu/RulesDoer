@@ -1,9 +1,12 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
+using System.Xml;
 
 namespace RulesDoer.Core.Repo {
     public class DefaultDMNPersistence : IDMNPersistence {
         private ConcurrentDictionary<string, Dictionary<int, string>> _dmnDict = new ConcurrentDictionary<string, Dictionary<int, string>> ();
+        private ConcurrentDictionary<string, string> _namespaceToName = new ConcurrentDictionary<string, string> ();
         private static readonly DefaultDMNPersistence _instance = new DefaultDMNPersistence ();
 
         static DefaultDMNPersistence () { }
@@ -40,9 +43,31 @@ namespace RulesDoer.Core.Repo {
 
             if (dmns is null) {
                 _dmnDict.TryAdd (definitionName, new Dictionary<int, string> () { { 1, dmn } });
-                return;
+            } else {
+                dmns.TryAdd (dmns.Count + 1, dmn);
             }
-            dmns.TryAdd (dmns.Count + 1, dmn);
+
+            var ns = TryExtractNamespace (dmn);
+            if (ns != null) {
+                _namespaceToName.TryAdd (ns, definitionName);
+            }
+        }
+
+        public string FindDefinitionNameByNamespace (string namespaceUri) {
+            _namespaceToName.TryGetValue (namespaceUri, out var name);
+            return name;
+        }
+
+        private static string TryExtractNamespace (string xml) {
+            try {
+                using var reader = XmlReader.Create (new StringReader (xml));
+                while (reader.Read ()) {
+                    if (reader.NodeType == XmlNodeType.Element) {
+                        return reader.GetAttribute ("namespace");
+                    }
+                }
+            } catch { }
+            return null;
         }
     }
 }

@@ -96,6 +96,21 @@ namespace RulesDoer.Core.Runtime {
                     context.BKMMetaByName.Add (bkmModel.Name, new BkmMeta () { BKMModel = bkmModel });
                 }
             }
+
+            if (definitions.ImportSpecified) {
+                foreach (var import in definitions.Import) {
+                    if (import.ImportType == "http://www.omg.org/spec/DMN/20180521/MODEL/") {
+                        var importedDefs = _repository.FindDefinitionsByNamespace (import.Namespace);
+                        if (importedDefs != null) {
+                            foreach (var elem in importedDefs.DrgElement) {
+                                if (elem is TBusinessKnowledgeModel importedBkm) {
+                                    context.BKMMetaByName[$"{import.Name}.{importedBkm.Name}"] = new BkmMeta () { BKMModel = importedBkm };
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         public (Dictionary<string, TDecision>, Dictionary<string, TDecision>) BuildDecisionMeta (TDefinitions definitions) {
@@ -134,6 +149,19 @@ namespace RulesDoer.Core.Runtime {
 
             if (definitions.ItemDefinitionSpecified) {
                 metaContext.ItemDefinitionMeta = BuildItemDefinitionsMeta (definitions);
+            }
+
+            if (definitions.ImportSpecified) {
+                foreach (var import in definitions.Import) {
+                    if (import.ImportType == "http://www.omg.org/spec/DMN/20180521/MODEL/") {
+                        var importedDefs = _repository.FindDefinitionsByNamespace (import.Namespace);
+                        if (importedDefs != null && importedDefs.ItemDefinitionSpecified) {
+                            foreach (var kvp in BuildItemDefinitionsMeta (importedDefs)) {
+                                metaContext.ItemDefinitionMeta[$"{import.Name}.{kvp.Key}"] = kvp.Value;
+                            }
+                        }
+                    }
+                }
             }
 
             var inputDicts = BuildInputDataMeta (definitions);

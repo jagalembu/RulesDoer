@@ -20,6 +20,12 @@ namespace RulesDoer.Core.Repo {
             _validation = validation;
         }
 
+        public TDefinitions FindDefinitionsByNamespace (string namespaceUri, int? versionNo = null) {
+            var name = _dmnPersistence.FindDefinitionNameByNamespace (namespaceUri);
+            if (name == null) return null;
+            return FindDefinitions (name, versionNo);
+        }
+
         public TDefinitions FindDefinitions (string definitionName, int? versionNo = null) {
 
             //TODO: Add cache solution
