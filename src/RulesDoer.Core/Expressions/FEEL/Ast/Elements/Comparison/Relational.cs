@@ -32,7 +32,11 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Comparison {
             }
             
             if (leftVar.ValueType == DataTypeEnum.Null || rightVar.ValueType == DataTypeEnum.Null) {
-                return new Variable (false);
+                switch (Operator) {
+                    case OperatorEnum.EQ: return new Variable (false);
+                    case OperatorEnum.NE: return new Variable (true);
+                    default: return new Variable (false);
+                }
             }
 
             if (leftVar.ValueType != rightVar.ValueType) {

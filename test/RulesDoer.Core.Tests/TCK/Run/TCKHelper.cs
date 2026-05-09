@@ -25,11 +25,12 @@ namespace RulesDoer.Core.Tests.TCK.Run {
 
                 if (inputnode.ComponentSpecified) {
 
-                    var ctx = MakeContextInputs (itemMeta.Name, inputnode.Component, itemMeta, context.ItemDefinitionMeta);
+                    var ctx = MakeContextInputs (itemMeta?.Name ?? inputnode.Name, inputnode.Component, itemMeta ?? new ItemDefinitionMeta { Name = inputnode.Name, TypeName = inputMeta.TypeName }, context.ItemDefinitionMeta);
                     inputDicts.Add (inputnode.Name, ctx);
 
                 } else if (inputnode.ListSpecified) {
-                    var lv = MakeList (itemMeta.Name, inputnode.List, itemMeta, context.ItemDefinitionMeta);
+                    var effectiveMeta = itemMeta ?? new ItemDefinitionMeta { Name = inputnode.Name, TypeName = inputMeta.TypeName };
+                    var lv = MakeList (effectiveMeta.Name, inputnode.List, effectiveMeta, context.ItemDefinitionMeta);
                     inputDicts.Add (inputnode.Name, lv);
 
                 } else {

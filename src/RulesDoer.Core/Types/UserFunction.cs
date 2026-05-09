@@ -38,7 +38,13 @@ namespace RulesDoer.Core.Types {
                 }
 
                 for (int i = _formalParams.Count - 1; i >= 0; i--) {
-                    context.AddToFunctionInputs (_formalParams[i].TwoTuple.a.StringVal, inputParams[i]);
+                    var paramName = _formalParams[i].TwoTuple.a.StringVal;
+                    var paramVal = inputParams[i] ?? new Variable ();
+                    var paramTypeRef = _formalParams[i].TwoTuple.b?.StringVal;
+                    if (!string.IsNullOrEmpty (paramTypeRef)) {
+                        paramVal = Runtime.TypeCoercionHelper.Coerce (paramVal, paramTypeRef, context?.ItemDefinitionMeta);
+                    }
+                    context.AddToFunctionInputs (paramName, paramVal);
                 }
 
             }

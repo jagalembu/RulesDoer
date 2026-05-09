@@ -24,10 +24,14 @@ namespace RulesDoer.Core.Runtime.Context {
         public static VariableContext MakeACopy (VariableContext context) {
             return new VariableContext () {
                 BKMMetaByName = context.BKMMetaByName,
-                    InputDataMetaById = context.InputDataMetaById,
-                    InputDataMetaByName = context.InputDataMetaByName,
-                    ItemDefinitionMeta = context.ItemDefinitionMeta
-
+                InputDataMetaById = context.InputDataMetaById,
+                InputDataMetaByName = context.InputDataMetaByName,
+                ItemDefinitionMeta = context.ItemDefinitionMeta,
+                DecisionMetaByName = context.DecisionMetaByName,
+                DecisionMetaById = context.DecisionMetaById,
+                DecisionServiceMetaByName = context.DecisionServiceMetaByName,
+                // HrefInputDecisionToDecisionServices intentionally not copied so
+                // inner service/BKM evaluation does not trigger the "service input" guard
             };
         }
 
