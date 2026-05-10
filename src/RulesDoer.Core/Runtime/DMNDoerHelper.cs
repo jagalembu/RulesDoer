@@ -22,15 +22,6 @@ namespace RulesDoer.Core.Runtime {
                 return null;
             }
 
-            //cannot run a decision serivce input without an input override value
-            if (decision.Id != null) {
-                runtimeContext.HrefInputDecisionToDecisionServices.TryGetValue (decision.Id, out var decisionServices);
-                runtimeContext.InputNameDict.TryGetValue ("decisionName", out var decisionInput);
-                if (decisionServices != null && decisionInput == null) {
-                    throw new DMNException ($"Decision :{decisionName} is part of a decision service input and is missing input data");
-                }
-            }
-
             var result = decision.Expression switch {
                 TLiteralExpression litExpr => EvalLiteralExpression (litExpr.Text, runtimeContext),
                 TDecisionTable decisionTable => EvalDecisionTable (decisionTable, runtimeContext),
@@ -305,7 +296,11 @@ namespace RulesDoer.Core.Runtime {
                 if (decision == null) continue;
                 bool hasOverride = inputParams != null && (inputDataOffset + i) < inputParams.Count;
                 if (hasOverride) {
-                    decisionServiceContext.AddToInputDict (decision.Name, inputParams[inputDataOffset + i]);
+                    var paramVal = inputParams[inputDataOffset + i] ?? new Variable ();
+                    if (!string.IsNullOrEmpty (decision.Variable?.TypeRef)) {
+                        paramVal = TypeCoercionHelper.Coerce (paramVal, decision.Variable.TypeRef, runtimeContext.ItemDefinitionMeta);
+                    }
+                    decisionServiceContext.AddToInputDict (decision.Name, paramVal);
                 } else {
                     var decisionRslt = EvaluateDecisionByName (decisionServiceContext, decision.Name);
                     decisionServiceContext.AddToInputDict (decision.Name, decisionRslt);

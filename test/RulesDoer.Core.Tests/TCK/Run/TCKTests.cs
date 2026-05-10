@@ -39,8 +39,7 @@ namespace RulesDoer.Core.Tests.TCK.Run {
         //0087 - chapter 11 test - bug cannot recognize semantic stuff - missing xml mapping
         [Theory]
         [TCKFiles ("compliance_level_3.",
-            "0076-feel-external-java-test-01",  // requires Java external function support
-            "0085-decision-services-test-01")]   // decision service invocation not yet fully supported
+            "0076-feel-external-java-test-01")]  // requires Java external function support
         public void Compliance_Level_3 (string filename, string inputTckXml) {
 
             var mockLogTrans = new Mock<ILogger<TCKTransformer>> ();
