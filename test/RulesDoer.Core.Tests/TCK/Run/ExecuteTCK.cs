@@ -229,11 +229,13 @@ namespace RulesDoer.Core.Tests.TCK.Run {
 
             var expectedVar = VariableHelper.MakeVariable (expected, actualrslt.ValueType);
 
-            // FEEL spec allows results to be compared with a relative tolerance of 1e-10
-            // to accommodate different implementations using different precisions (e.g. double vs decimal).
+            // FEEL spec allows results to be compared with a relative tolerance to accommodate
+            // different implementations using different precisions (e.g. double vs decimal).
+            // 1e-7 is used here because some TCK expected values only have 8 significant figures
+            // (e.g. trigonometric function results), which intrinsically limits comparison precision.
             if (actualrslt.ValueType == DataTypeEnum.Decimal && expectedVar.NumericVal != 0m) {
                 var relDiff = System.Math.Abs ((double) (actualrslt.NumericVal - expectedVar.NumericVal) / (double) expectedVar.NumericVal);
-                Assert.True (relDiff < 1e-10, $"Failed asserting equal for expected:{expected} actual:{actualrslt.NumericVal} relDiff:{relDiff} for decision name:{name}");
+                Assert.True (relDiff < 1e-7, $"Failed asserting equal for expected:{expected} actual:{actualrslt.NumericVal} relDiff:{relDiff} for decision name:{name}");
                 return;
             }
 

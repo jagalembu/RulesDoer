@@ -38,8 +38,7 @@ namespace RulesDoer.Core.Tests.TCK.Run {
         //0086 - import - need the feature for imports
         //0087 - chapter 11 test - bug cannot recognize semantic stuff - missing xml mapping
         [Theory]
-        [TCKFiles ("compliance_level_3.",
-            "0076-feel-external-java-test-01")]  // requires Java external function support
+        [TCKFiles ("compliance_level_3.")]
         public void Compliance_Level_3 (string filename, string inputTckXml) {
 
             var mockLogTrans = new Mock<ILogger<TCKTransformer>> ();

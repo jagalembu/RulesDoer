@@ -390,28 +390,38 @@ namespace RulesDoer.Core.Runtime {
 
         public static Variable EvalUserDefinedFunction (TFunctionDefinition funcDef) {
 
-            IExpression expr;
-            if (funcDef.Expression != null && funcDef.Expression is TLiteralExpression outExpr) {
-                var eval = new Evaluation ();
-                expr = eval.ReturnExpressionsBase (outExpr.Text);
-            } else {
-                throw new DMNException ("Expected a literal expression as the function body");
-            }
-
             var paramList = new List<Variable> ();
             foreach (var item in funcDef.FormalParameter) {
                 paramList.Add (new Variable (item.Name, item.TypeRef));
             }
 
             switch (funcDef.Kind) {
-                case TFunctionKind.FEEL:
-                    break;
+                case TFunctionKind.FEEL: {
+                    if (funcDef.Expression == null || !(funcDef.Expression is TLiteralExpression outExpr))
+                        throw new DMNException ("FEEL function body must be a literal expression");
+                    var eval = new Evaluation ();
+                    var expr = eval.ReturnExpressionsBase (outExpr.Text);
+                    return new UserFunction (paramList, expr, false);
+                }
+
+                case TFunctionKind.Java: {
+                    if (!(funcDef.Expression is TContext tctx))
+                        throw new DMNException ("Java function body must be a context");
+                    string javaClass = null, javaMethodSig = null;
+                    foreach (var entry in tctx.ContextEntry) {
+                        if (!(entry.Expression is TLiteralExpression litExpr)) continue;
+                        var value = litExpr.Text.Trim ().Trim ('"');
+                        switch (entry.Variable?.Name) {
+                            case "class": javaClass = value; break;
+                            case "method signature": javaMethodSig = value; break;
+                        }
+                    }
+                    return new UserFunction (paramList, javaClass ?? "", javaMethodSig ?? "");
+                }
 
                 default:
-                    throw new DMNException ($"Only FEEL expresssion function definitions are supported");
+                    throw new DMNException ($"Only FEEL and Java function definitions are supported");
             }
-
-            return new UserFunction (paramList, expr, false);
         }
 
         // When BKM formal parameters use dotted names (e.g. "Person.Gender"), build
