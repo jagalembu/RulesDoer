@@ -59,6 +59,8 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function {
                     case DataTypeEnum.YearMonthDuration:
                     case DataTypeEnum.DayTimeDuration:
                         return DateAndTimeHelper.DurationPropEvals (parentVar, Child);
+                    case DataTypeEnum.String:
+                        return new Variable ($"{parentVar.StringVal}.{Child}");
                     default:
                         throw new FEELException ($"Path expression for {parentVar.ValueType} is not supported");
                 }

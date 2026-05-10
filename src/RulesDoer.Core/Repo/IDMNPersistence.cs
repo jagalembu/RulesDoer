@@ -5,6 +5,8 @@ namespace RulesDoer.Core.Repo {
 
         void WriteDefinitions (string definitionName, string dmn);
 
+        string FindDefinitionNameByNamespace (string namespaceUri);
+
     }
 
 }

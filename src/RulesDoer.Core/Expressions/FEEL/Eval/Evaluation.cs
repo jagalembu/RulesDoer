@@ -63,7 +63,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Eval {
         }
 
         private FEELRule RetrieveParser (string exprText) {
-            var inputStream = CharStreams.fromstring (exprText);
+            var inputStream = CharStreams.fromString (exprText);
             var lexer = new FEELLexer (inputStream);
             lexer.RemoveErrorListeners ();
             lexer.AddErrorListener (new LexerErrors ());

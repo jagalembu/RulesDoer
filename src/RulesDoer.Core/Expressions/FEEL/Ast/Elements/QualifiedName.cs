@@ -62,7 +62,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements {
 
             }
 
-            if (ctxVar == null && ctxVar.ValueType != DataTypeEnum.Context) {
+            if (ctxVar == null || ctxVar.ValueType != DataTypeEnum.Context) {
                 throw new FEELException ("Failed finding a context variable");
             }
 

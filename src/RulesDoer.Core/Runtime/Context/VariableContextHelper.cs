@@ -24,10 +24,14 @@ namespace RulesDoer.Core.Runtime.Context {
         public static VariableContext MakeACopy (VariableContext context) {
             return new VariableContext () {
                 BKMMetaByName = context.BKMMetaByName,
-                    InputDataMetaById = context.InputDataMetaById,
-                    InputDataMetaByName = context.InputDataMetaByName,
-                    ItemDefinitionMeta = context.ItemDefinitionMeta
-
+                InputDataMetaById = context.InputDataMetaById,
+                InputDataMetaByName = context.InputDataMetaByName,
+                ItemDefinitionMeta = context.ItemDefinitionMeta,
+                DecisionMetaByName = context.DecisionMetaByName,
+                DecisionMetaById = context.DecisionMetaById,
+                DecisionServiceMetaByName = context.DecisionServiceMetaByName,
+                // HrefInputDecisionToDecisionServices intentionally not copied so
+                // inner service/BKM evaluation does not trigger the "service input" guard
             };
         }
 
@@ -43,24 +47,34 @@ namespace RulesDoer.Core.Runtime.Context {
                 }
                 return null;
             }
+
+            context.InputNameDict.TryGetValue (inputName, out var inputVariable);
+            if (inputVariable != null) return inputVariable;
+
             if (inputName.Contains (".")) {
                 var x = inputName.Split ('.');
 
                 context.InputNameDict.TryGetValue (x[0], out var cntxt);
+                if (cntxt == null) {
+                    if (doException) {
+                        throw new FEELException ($"Missing input data for input name {inputName}");
+                    }
+                    return null;
+                }
                 cntxt.ExpectedDataType (DataTypeEnum.Context);
 
                 Variable contextVal = null;
 
                 for (int i = 1; i < x.Length; i++) {
                     cntxt.ContextInputs.ContextDict.TryGetValue (x[i], out var newVal);
-                    if (newVal.ValueType == DataTypeEnum.Context) {
+                    if (newVal != null && newVal.ValueType == DataTypeEnum.Context) {
                         cntxt = newVal;
                     }
                     contextVal = newVal;
                 }
                 return contextVal;
             }
-            context.InputNameDict.TryGetValue (inputName, out var inputVariable);
+
             if (inputVariable == null && doException) {
                 throw new FEELException ($"Missing input value {inputName}");
             }
@@ -79,24 +93,34 @@ namespace RulesDoer.Core.Runtime.Context {
                 }
                 return null;
             }
+
+            context.FunctionInputs.TryGetValue (inputName, out var inputVariable);
+            if (inputVariable != null) return inputVariable;
+
             if (inputName.Contains (".")) {
                 var x = inputName.Split ('.');
 
                 context.FunctionInputs.TryGetValue (x[0], out var cntxt);
+                if (cntxt == null) {
+                    if (doException) {
+                        throw new FEELException ($"Missing function input data for input name {inputName}");
+                    }
+                    return null;
+                }
                 cntxt.ExpectedDataType (DataTypeEnum.Context);
 
                 Variable contextVal = null;
 
                 for (int i = 1; i < x.Length; i++) {
                     cntxt.ContextInputs.ContextDict.TryGetValue (x[i], out var newVal);
-                    if (newVal.ValueType == DataTypeEnum.Context) {
+                    if (newVal != null && newVal.ValueType == DataTypeEnum.Context) {
                         cntxt = newVal;
                     }
                     contextVal = newVal;
                 }
                 return contextVal;
             }
-            context.FunctionInputs.TryGetValue (inputName, out var inputVariable);
+
             if (inputVariable == null && doException) {
                 throw new FEELException ($"Missing input value {inputName}");
             }
@@ -134,6 +158,12 @@ namespace RulesDoer.Core.Runtime.Context {
 
             context.LocalContext.ContextDict.TryGetValue ("__currentContextX__", out var currCtxt);
 
+            context.LocalContext.ContextDict.TryGetValue (inputName, out var ctxVar);
+            if (ctxVar == null && currCtxt != null) {
+                currCtxt.ContextInputs.ContextDict.TryGetValue (inputName, out ctxVar);
+            }
+            if (ctxVar != null) return ctxVar;
+
             if (inputName.Contains (".")) {
                 var x = inputName.Split ('.');
 
@@ -146,18 +176,14 @@ namespace RulesDoer.Core.Runtime.Context {
                         currCtxt.ContextInputs.ContextDict.TryGetValue (x[i], out newVal);
                     }
 
-                    if (newVal.ValueType == DataTypeEnum.Context) {
+                    if (newVal != null && newVal.ValueType == DataTypeEnum.Context) {
                         cntxt = newVal;
                     }
                     contextVal = newVal;
                 }
                 return contextVal;
             }
-            context.LocalContext.ContextDict.TryGetValue (inputName, out var ctxVar);
-            if (ctxVar == null && currCtxt != null) {
-                currCtxt.ContextInputs.ContextDict.TryGetValue (inputName, out ctxVar);
-            }
-            if (ctxVar == null && doException) {
+            if (doException) {
                 throw new FEELException ($"Missing local context value {inputName}");
             }
             return ctxVar;

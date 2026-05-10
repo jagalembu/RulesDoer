@@ -46,7 +46,6 @@ namespace RulesDoer.Core.Tests.TCK.Run {
             var tckTransformer = new TCKTransformer (loggerTransfomer);
 
             var executeTCK = new ExecuteTCK (_fixture._dmnDoer, tckTransformer);
-
             //executeTCK.RunTest (filename, inputTckXml, "conditionWithFunctions");
             executeTCK.RunTest (filename, inputTckXml);
 

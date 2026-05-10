@@ -20,7 +20,7 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function {
 
         public object Execute (VariableContext context = null) {
 
-            if (_typeName == null) {
+            if (_type == null) {
                 return new Variable (_name, "__none__");
             }
 

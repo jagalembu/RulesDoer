@@ -39,6 +39,9 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function {
                         return DMNDoerHelper.EvalBkm (bkmMeta.BKMModel, context, lVars);
                     }
                     if (context.DecisionServiceMetaByName.TryGetValue (outFuncName, out var decisionService)) {
+                        int expectedArgs = decisionService.InputData.Count + decisionService.InputDecision.Count;
+                        if (lVars.Count != expectedArgs)
+                            return new Variable ();
                         return DMNDoerHelper.EvalDecisionService (decisionService, context, lVars);
                     }
                 }
@@ -73,22 +76,30 @@ namespace RulesDoer.Core.Expressions.FEEL.Ast.Elements.Function {
             var variables = new List<Variable> ();
             var parameters = nParam.Execute ();
             if (parameters is Dictionary<string, IExpression> outExprs) {
+                // InputData first
+                foreach (var item in decisionService.InputData) {
+                    var dataId = item.Href.TrimStart ('#');
+                    context.InputDataMetaById.TryGetValue (dataId, out var inputMeta);
+                    if (inputMeta != null && outExprs.TryGetValue (inputMeta.Name, out var expression)) {
+                        variables.Add ((Variable) expression.Execute (context));
+                    } else {
+                        variables.Add (new Variable ());
+                    }
+                }
+                // InputDecision next
                 foreach (var item in decisionService.InputDecision) {
                     var decId = item.Href.TrimStart ('#');
                     context.DecisionMetaById.TryGetValue (decId, out var decision);
-                    outExprs.TryGetValue (decision.Name, out var expression);
-                    if (expression == null) {
-                        throw new FEELException ($"Missing expected named parameter {decision.Name}");
-                    }
-                    if (expression != null) {
+                    if (decision != null && outExprs.TryGetValue (decision.Name, out var expression)) {
                         variables.Add ((Variable) expression.Execute (context));
+                    } else {
+                        variables.Add (new Variable ());
                     }
                 }
                 return variables;
             }
 
-            throw new FEELException ("Failed coverting named parameters");
-
+            return new List<Variable> ();
         }
 
         public static List<Variable> BKMConvertNamedParameter (NamedParameters nParam, TBusinessKnowledgeModel bkmModel, VariableContext context) {

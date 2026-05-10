@@ -5,6 +5,7 @@ using RulesDoer.Core.Runtime.Context;
 using RulesDoer.Core.Tests.TCK.Transformer;
 using RulesDoer.Core.Types;
 using Xunit;
+using ValueType = RulesDoer.Core.Tests.TCK.Transformer.ValueType;
 
 namespace RulesDoer.Core.Tests.TCK.Run {
     public class ExecuteTCK {
@@ -23,11 +24,13 @@ namespace RulesDoer.Core.Tests.TCK.Run {
             var context = _doer.BuildContext (splitNames[0]);
 
             foreach (var item in tckmodel.TestCase) {
-                var inputdict = new Dictionary<string, Variable> ();
-
                 var inputNameDict = TCKHelper.MakeInputData (item, context);
-                
                 context.InputNameDict = inputNameDict;
+
+                if (item.Type == TestCaseType.DecisionService && item.InvocableName != null) {
+                    HandleDecisionServiceTestCase (item, splitNames[0], testName);
+                    continue;
+                }
 
                 foreach (var rsltNode in item.ResultNode) {
                     if (testName == null || rsltNode.Name.Contains (testName)) {
@@ -47,6 +50,72 @@ namespace RulesDoer.Core.Tests.TCK.Run {
                 }
             }
 
+        }
+
+        private void HandleDecisionServiceTestCase (TestCasesTestCase item, string defName, string testName) {
+            var runtimeContext = _doer.BuildContext (defName);
+
+            runtimeContext.DecisionServiceMetaByName.TryGetValue (item.InvocableName, out var decisionService);
+            if (decisionService == null)
+                throw new TCKException ($"Decision service '{item.InvocableName}' not found");
+
+            // Build named inputs from raw XSD types (not pre-coerced)
+            var namedInputs = new Dictionary<string, Variable> ();
+            foreach (var inputNode in item.InputNode) {
+                namedInputs[inputNode.Name] = BuildRawVariable (inputNode);
+            }
+
+            // Order input params: InputData first, then InputDecision (caller-provided)
+            var inputParams = new List<Variable> ();
+            foreach (var inputDataRef in decisionService.InputData) {
+                var dataId = inputDataRef.Href.TrimStart ('#');
+                runtimeContext.InputDataMetaById.TryGetValue (dataId, out var inputMeta);
+                if (inputMeta != null && namedInputs.TryGetValue (inputMeta.Name, out var inputVar)) {
+                    inputParams.Add (inputVar);
+                } else {
+                    inputParams.Add (new Variable ());
+                }
+            }
+            foreach (var inputDecRef in decisionService.InputDecision) {
+                var decId = inputDecRef.Href.TrimStart ('#');
+                runtimeContext.DecisionMetaById.TryGetValue (decId, out var decMeta);
+                if (decMeta != null && namedInputs.TryGetValue (decMeta.Name, out var inputVar)) {
+                    inputParams.Add (inputVar);
+                } else {
+                    inputParams.Add (new Variable ());
+                }
+            }
+
+            var serviceResult = DMNDoerHelper.EvalDecisionService (decisionService, runtimeContext, inputParams);
+
+            foreach (var rsltNode in item.ResultNode) {
+                if (testName != null && !rsltNode.Name.Contains (testName)) continue;
+
+                Variable componentResult;
+                if (serviceResult != null && serviceResult.ValueType == DataTypeEnum.Context) {
+                    serviceResult.ContextInputs.ContextDict.TryGetValue (rsltNode.Name, out componentResult);
+                    componentResult ??= new Variable ();
+                } else {
+                    componentResult = new Variable ();
+                }
+
+                var rsltDict = new Dictionary<string, Variable> { { rsltNode.Name, componentResult } };
+                AssertResult (rsltNode, rsltDict);
+            }
+        }
+
+        private static Variable BuildRawVariable (TestCasesTestCaseInputNode inputNode) {
+            if (inputNode.ListSpecified) {
+                var list = new List<Variable> ();
+                foreach (var listItem in inputNode.List) {
+                    list.Add (TCKHelper.MakeVariableFromType (listItem.Value));
+                }
+                return new Variable (list);
+            }
+            if (inputNode.Value != null) {
+                return TCKHelper.MakeVariableFromType (inputNode.Value);
+            }
+            return new Variable ();
         }
 
         private void AssertResult (TestCasesTestCaseResultNode rsltnode, Dictionary<string, Variable> actualrslt) {
@@ -158,8 +227,19 @@ namespace RulesDoer.Core.Tests.TCK.Run {
                 return;
             }
 
-            Assert.True (VariableHelper.MakeVariable (expected, actualrslt.ValueType).Equals (actualrslt), $"Failed asserting equal for expected:{expected} for decision name:{name}");
-            //Assert.Equal<Variable> (VariableHelper.MakeVariable (expected, actualrslt.ValueType), actualrslt);
+            var expectedVar = VariableHelper.MakeVariable (expected, actualrslt.ValueType);
+
+            // FEEL spec allows results to be compared with a relative tolerance to accommodate
+            // different implementations using different precisions (e.g. double vs decimal).
+            // 1e-7 is used here because some TCK expected values only have 8 significant figures
+            // (e.g. trigonometric function results), which intrinsically limits comparison precision.
+            if (actualrslt.ValueType == DataTypeEnum.Decimal && expectedVar.NumericVal != 0m) {
+                var relDiff = System.Math.Abs ((double) (actualrslt.NumericVal - expectedVar.NumericVal) / (double) expectedVar.NumericVal);
+                Assert.True (relDiff < 1e-7, $"Failed asserting equal for expected:{expected} actual:{actualrslt.NumericVal} relDiff:{relDiff} for decision name:{name}");
+                return;
+            }
+
+            Assert.True (expectedVar.Equals (actualrslt), $"Failed asserting equal for expected:{expected} for decision name:{name}");
 
         }
 

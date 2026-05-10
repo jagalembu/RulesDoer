@@ -22,24 +22,16 @@ namespace RulesDoer.Core.Runtime {
                 return null;
             }
 
-            //cannot run a decision serivce input without an input override value
-            if (decision.Id != null) {
-                runtimeContext.HrefInputDecisionToDecisionServices.TryGetValue (decision.Id, out var decisionServices);
-                runtimeContext.InputNameDict.TryGetValue ("decisionName", out var decisionInput);
-                if (decisionServices != null && decisionInput == null) {
-                    throw new DMNException ($"Decision :{decisionName} is part of a decision service input and is missing input data");
-                }
-            }
-
-            return decision.Expression
-            switch {
+            var result = decision.Expression switch {
                 TLiteralExpression litExpr => EvalLiteralExpression (litExpr.Text, runtimeContext),
-                    TDecisionTable decisionTable => EvalDecisionTable (decisionTable, runtimeContext),
-                    TContext contextDecision => EvalContext (contextDecision, runtimeContext),
-                    TRelation relation => EvalRelation (relation, runtimeContext),
-                    _ =>
-                    throw new DMNException ($"Decision expression {decision.Expression.Id} is not supported yet"),
+                TDecisionTable decisionTable => EvalDecisionTable (decisionTable, runtimeContext),
+                TContext contextDecision => EvalContext (contextDecision, runtimeContext),
+                TRelation relation => EvalRelation (relation, runtimeContext),
+                TInvocation invocation => EvalInvocation (invocation, runtimeContext),
+                _ => throw new DMNException ($"Decision expression {decision.Expression.Id} is not supported yet"),
             };
+
+            return TypeCoercionHelper.Coerce (result ?? new Variable (), decision.Variable?.TypeRef, runtimeContext.ItemDefinitionMeta);
         }
         public static Variable EvalDecisionTable (TDecisionTable decisionTable, VariableContext runtimeContext) {
 
@@ -67,10 +59,19 @@ namespace RulesDoer.Core.Runtime {
 
             }
 
+            foreach (var input in decisionTable.Input) {
+                var inputExprText = input.InputExpression.Text;
+                if (!string.IsNullOrEmpty (inputExprText) && !runtimeContext.InputNameDict.ContainsKey (inputExprText)) {
+                    var inputVal = EvalLiteralExpression (inputExprText, runtimeContext);
+                    if (inputVal != null && inputVal.ValueType != DataTypeEnum.Null) {
+                        runtimeContext.AddToInputDict (inputExprText, inputVal);
+                    }
+                }
+            }
+
             foreach (var rule in decisionTable.Rule) {
                 var matched = false;
                 for (int i = 0; i < rule.InputEntry.Count; i++) {
-                    //TODO: the input clause for input variable name is literal epression which need to run through feel epresion evaluater
                     matched = evalExpression.EvaluateUnaryTestsBase (rule.InputEntry[i].Text, runtimeContext, decisionTable.Input[i].InputExpression.Text);
                     if (!matched) {
                         break;
@@ -119,7 +120,10 @@ namespace RulesDoer.Core.Runtime {
                     }
                 }
 
-                if (dtr.OutputResult.Count == 1 && dtr.OutputResult[0].Count == 1) {
+                // RULE_ORDER and OUTPUT_ORDER always return a list, even for a single match
+                if (dtr.OutputResult.Count == 1 && dtr.OutputResult[0].Count == 1 &&
+                    decisionTable.HitPolicy != THitPolicy.RULE_ORDER &&
+                    decisionTable.HitPolicy != THitPolicy.OUTPUT_ORDER) {
                     foreach (var item in dtr.OutputResult[0]) {
                         return item.Value;
                     }
@@ -127,6 +131,11 @@ namespace RulesDoer.Core.Runtime {
                 }
 
                 return dtr;
+            }
+
+            // No rules matched — return the default output entry value if defined
+            if (decisionTable.Output.Count == 1 && decisionTable.Output[0].DefaultOutputEntry?.Text != null) {
+                return EvalLiteralExpression (decisionTable.Output[0].DefaultOutputEntry.Text, runtimeContext);
             }
 
             return null;
@@ -182,6 +191,10 @@ namespace RulesDoer.Core.Runtime {
 
                     case TFunctionDefinition functionDefinition:
                         outVar = EvalUserDefinedFunction (functionDefinition);
+                        break;
+
+                    case TInvocation invocation:
+                        outVar = EvalInvocation (invocation, runtimeContext);
                         break;
 
                     case TContext contextType:
@@ -260,29 +273,56 @@ namespace RulesDoer.Core.Runtime {
 
             var decisionServiceContext = VariableContextHelper.MakeACopy (runtimeContext);
 
-            //run input decisions
+            // Seed with any pre-existing input values from the caller context
+            foreach (var kv in runtimeContext.InputNameDict) {
+                decisionServiceContext.AddToInputDict (kv.Key, kv.Value);
+            }
+
+            // Process InputData with type coercion
+            for (int i = 0; i < decisionService.InputData.Count; i++) {
+                var dataId = decisionService.InputData[i].Href.TrimStart ('#');
+                runtimeContext.InputDataMetaById.TryGetValue (dataId, out var inputMeta);
+                if (inputMeta != null && inputParams != null && i < inputParams.Count) {
+                    var coerced = TypeCoercionHelper.Coerce (inputParams[i] ?? new Variable (), inputMeta.TypeName, runtimeContext.ItemDefinitionMeta);
+                    decisionServiceContext.AddToInputDict (inputMeta.Name, coerced);
+                }
+            }
+
+            // Run input decisions
+            int inputDataOffset = decisionService.InputData.Count;
             for (int i = 0; i < decisionService.InputDecision.Count; i++) {
                 var decId = decisionService.InputDecision[i].Href.TrimStart ('#');
                 decisionServiceContext.DecisionMetaById.TryGetValue (decId, out var decision);
-                if (inputParams != null && inputParams.Any ()) {
-                    decisionServiceContext.InputNameDict.Add (decision.Name, inputParams[i]);
+                if (decision == null) continue;
+                bool hasOverride = inputParams != null && (inputDataOffset + i) < inputParams.Count;
+                if (hasOverride) {
+                    var paramVal = inputParams[inputDataOffset + i] ?? new Variable ();
+                    if (!string.IsNullOrEmpty (decision.Variable?.TypeRef)) {
+                        paramVal = TypeCoercionHelper.Coerce (paramVal, decision.Variable.TypeRef, runtimeContext.ItemDefinitionMeta);
+                    }
+                    decisionServiceContext.AddToInputDict (decision.Name, paramVal);
+                } else {
+                    var decisionRslt = EvaluateDecisionByName (decisionServiceContext, decision.Name);
+                    decisionServiceContext.AddToInputDict (decision.Name, decisionRslt);
                 }
-                var decisionRslt = EvaluateDecisionByName (decisionServiceContext, decision.Name);
-                decisionServiceContext.InputNameDict.Add (decision.Name, decisionRslt);
             }
 
             var outContext = new ContextInputs ();
 
-            //run output decisions - return as context outputs
+            // Run output decisions - return as context outputs
             foreach (var item in decisionService.OutputDecision) {
                 var decId = item.Href.TrimStart ('#');
                 decisionServiceContext.DecisionMetaById.TryGetValue (decId, out var decision);
                 var decisionRslt = EvaluateDecisionByName (decisionServiceContext, decision.Name);
-
                 outContext.Add (decision.Name, decisionRslt);
             }
 
-            return outContext;
+            Variable serviceResult = outContext;
+            if (!string.IsNullOrEmpty (decisionService.Variable?.TypeRef)) {
+                serviceResult = TypeCoercionHelper.Coerce (serviceResult, decisionService.Variable.TypeRef, runtimeContext.ItemDefinitionMeta);
+            }
+
+            return serviceResult;
 
         }
 
@@ -294,32 +334,61 @@ namespace RulesDoer.Core.Runtime {
 
                 var inputBkmDict = new Dictionary<string, Variable> ();
                 for (int i = 0; i < bkmModel.EncapsulatedLogic.FormalParameter.Count; i++) {
-                    inputBkmDict.Add (bkmModel.EncapsulatedLogic.FormalParameter[i].Name, inputParamVars[i]);
+                    var formalParam = bkmModel.EncapsulatedLogic.FormalParameter[i];
+                    var paramVal = inputParamVars[i] ?? new Variable ();
+                    if (!string.IsNullOrEmpty (formalParam.TypeRef)) {
+                        paramVal = TypeCoercionHelper.Coerce (paramVal, formalParam.TypeRef, runtimeContext.ItemDefinitionMeta);
+                    }
+                    inputBkmDict.Add (formalParam.Name, paramVal);
                 }
+                SynthesizePrefixContexts (inputBkmDict);
                 bkmContext.InputNameDict = inputBkmDict;
             }
 
-            return bkmModel.EncapsulatedLogic.Expression
-            switch {
+            var bkmResult = bkmModel.EncapsulatedLogic.Expression switch {
                 TLiteralExpression litExpr => EvalLiteralExpression (litExpr.Text, bkmContext),
-                    TFunctionDefinition functionDefinition => EvalUserDefinedFunction (functionDefinition),
-                    TDecisionTable decisionTable => EvalDecisionTable (decisionTable, bkmContext),
-                    TContext contextDecision => EvalContext (contextDecision, bkmContext),
-                    TRelation relation => EvalRelation (relation, bkmContext),
-                    _ =>
-                    throw new DMNException ($"Expression {bkmModel.EncapsulatedLogic.Expression.GetType()} is not supported yet"),
+                TFunctionDefinition functionDefinition => EvalUserDefinedFunction (functionDefinition),
+                TDecisionTable decisionTable => EvalDecisionTable (decisionTable, bkmContext),
+                TContext contextDecision => EvalContext (contextDecision, bkmContext),
+                TRelation relation => EvalRelation (relation, bkmContext),
+                _ => throw new DMNException ($"Expression {bkmModel.EncapsulatedLogic.Expression.GetType()} is not supported yet"),
             };
+
+            return TypeCoercionHelper.Coerce (bkmResult ?? new Variable (), bkmModel.Variable?.TypeRef, runtimeContext.ItemDefinitionMeta);
+        }
+
+        public static Variable EvalInvocation (TInvocation invocation, VariableContext runtimeContext) {
+            if (!(invocation.Expression is TLiteralExpression litExpr)) {
+                throw new DMNException ("Invocation callee must be a literal expression containing the BKM name");
+            }
+
+            var bkmName = litExpr.Text.Trim ();
+            if (!VariableContextHelper.RetrieveBkm (bkmName, runtimeContext, out var bkmMeta)) {
+                throw new DMNException ($"BKM '{bkmName}' not found in context");
+            }
+
+            var bindingsByParamName = new Dictionary<string, Variable> ();
+            foreach (var binding in invocation.Binding) {
+                var val = binding.Expression switch {
+                    TLiteralExpression le => EvalLiteralExpression (le.Text, runtimeContext),
+                    TContext ctx => EvalContext (ctx, runtimeContext),
+                    TDecisionTable dt => EvalDecisionTable (dt, runtimeContext),
+                    _ => throw new DMNException ($"Binding expression type {binding.Expression?.GetType ()} is not supported")
+                };
+                bindingsByParamName[binding.Parameter.Name] = val;
+            }
+
+            var paramVars = new List<Variable> ();
+            foreach (var formalParam in bkmMeta.BKMModel.EncapsulatedLogic.FormalParameter) {
+                bindingsByParamName.TryGetValue (formalParam.Name, out var paramVal);
+                paramVars.Add (paramVal ?? new Variable ());
+            }
+
+            var invocationResult = EvalBkm (bkmMeta.BKMModel, runtimeContext, paramVars);
+            return TypeCoercionHelper.Coerce (invocationResult ?? new Variable (), invocation.TypeRef, runtimeContext.ItemDefinitionMeta);
         }
 
         public static Variable EvalUserDefinedFunction (TFunctionDefinition funcDef) {
-
-            IExpression expr;
-            if (funcDef.Expression != null && funcDef.Expression is TLiteralExpression outExpr) {
-                var eval = new Evaluation ();
-                expr = eval.ReturnExpressionsBase (outExpr.Text);
-            } else {
-                throw new DMNException ("Expected a literal expression as the function body");
-            }
 
             var paramList = new List<Variable> ();
             foreach (var item in funcDef.FormalParameter) {
@@ -327,14 +396,53 @@ namespace RulesDoer.Core.Runtime {
             }
 
             switch (funcDef.Kind) {
-                case TFunctionKind.FEEL:
-                    break;
+                case TFunctionKind.FEEL: {
+                    if (funcDef.Expression == null || !(funcDef.Expression is TLiteralExpression outExpr))
+                        throw new DMNException ("FEEL function body must be a literal expression");
+                    var eval = new Evaluation ();
+                    var expr = eval.ReturnExpressionsBase (outExpr.Text);
+                    return new UserFunction (paramList, expr, false);
+                }
+
+                case TFunctionKind.Java: {
+                    if (!(funcDef.Expression is TContext tctx))
+                        throw new DMNException ("Java function body must be a context");
+                    string javaClass = null, javaMethodSig = null;
+                    foreach (var entry in tctx.ContextEntry) {
+                        if (!(entry.Expression is TLiteralExpression litExpr)) continue;
+                        var value = litExpr.Text.Trim ().Trim ('"');
+                        switch (entry.Variable?.Name) {
+                            case "class": javaClass = value; break;
+                            case "method signature": javaMethodSig = value; break;
+                        }
+                    }
+                    return new UserFunction (paramList, javaClass ?? "", javaMethodSig ?? "");
+                }
 
                 default:
-                    throw new DMNException ($"Only FEEL expresssion function definitions are supported");
+                    throw new DMNException ($"Only FEEL and Java function definitions are supported");
             }
+        }
 
-            return new UserFunction (paramList, expr, false);
+        // When BKM formal parameters use dotted names (e.g. "Person.Gender"), build
+        // a synthesized Context entry for the prefix ("Person") so that FEEL path
+        // expressions like Person.Gender resolve correctly inside the BKM body.
+        private static void SynthesizePrefixContexts (Dictionary<string, Variable> dict) {
+            var prefixBuilders = new Dictionary<string, ContextInputs> ();
+            foreach (var kv in dict) {
+                var dotIdx = kv.Key.IndexOf ('.');
+                if (dotIdx < 0) continue;
+                var prefix = kv.Key.Substring (0, dotIdx);
+                var field = kv.Key.Substring (dotIdx + 1);
+                if (!prefixBuilders.TryGetValue (prefix, out var ctx)) {
+                    ctx = new ContextInputs (prefix);
+                    prefixBuilders[prefix] = ctx;
+                }
+                ctx.Add (field, kv.Value);
+            }
+            foreach (var kv in prefixBuilders) {
+                dict[kv.Key] = kv.Value;
+            }
         }
 
     }

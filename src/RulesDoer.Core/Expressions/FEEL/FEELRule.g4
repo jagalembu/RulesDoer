@@ -57,7 +57,7 @@ expression
 		}
 	| left = expression BRACKET_OPEN filter = expression BRACKET_CLOSE {$ast = new Filter($left.ast, $filter.ast);
 		}
-	| parent = expression DOT child = NAME {$ast = new PathExpression($parent.ast, $child.text);
+	| parent = expression DOT child = identifier {$ast = new PathExpression($parent.ast, $child.textVal);
 		}
 	| expr = expression INSTANCE_OF typeIs {$ast = new InstanceOf($expr.ast, $typeIs.ast);
 		}
@@ -292,6 +292,7 @@ identifier
 	{var nameList = new List<string>();} (
 		token = NAME {nameList.Add($token.text);} (
 			token2 = NAME {nameList.Add($token2.text);}
+			| token2 = NUMBER {nameList.Add($token2.text);}
 		)*
 	) {$textVal = NameTokenHelper.BuildNameToken(nameList);}
 	| token = NOT {$textVal = $token.text;};
